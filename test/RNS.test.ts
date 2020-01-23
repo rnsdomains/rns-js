@@ -6,5 +6,5 @@ test('getAddr', async () => {
 
   const rns = new RNS(web3);
   const addr = await rns.getAddr('javier.rsk');
-  expect(addr).toBe('0xe9a4e6fae8217e032a08848e227d2b57d3e1e0a5');
+  expect(addr).toBe('0xe9a4e6fae8217E032A08848E227d2b57D3E1e0A5');
 });

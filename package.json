@@ -6,16 +6,18 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "prepare" : "npm run build",
-    "prepublishOnly" : "npm test && npm run lint",
-    "preversion" : "npm run lint",
-    "version" : "npm run format && git add -A src",
-    "postversion" : "git push && git push --tags",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --config jestconfig.json"
   },
-  "files": ["lib/**/*"],
+  "files": [
+    "lib/**/*"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rnsdomains/rns-js.git"
@@ -28,9 +30,18 @@
   },
   "homepage": "https://github.com/rnsdomains/rns-js#readme",
   "devDependencies": {
+    "@types/jest": "^24.9.0",
+    "jest": "^25.1.0",
     "prettier": "^1.19.1",
+    "ts-jest": "^24.3.0",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "@rsksmart/rns-registry": "^1.0.1",
+    "bignumber.js": "^9.0.0",
+    "eth-ens-namehash": "^2.0.8",
+    "web3": "^1.2.5-rc.0"
   }
 }

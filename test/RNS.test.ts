@@ -1,10 +1,9 @@
-import { RNS } from '../src/index';
 import Web3 from 'web3';
+import RNS from '../src/index';
 
-test('getAddr', async () => {
-  const web3 = new Web3('https://public-node.testnet.rsk.co');
-
+test('addr', async () => {
+  const web3 = new Web3('https://public-node.rsk.co');
   const rns = new RNS(web3);
-  const addr = await rns.getAddr('javier.rsk');
-  expect(addr).toBe('0xe9a4e6fae8217E032A08848E227d2b57D3E1e0A5');
+  const addr = await rns.addr('testing.rsk');
+  expect(addr).toBe('0x0000000000000000000000000000000001000006');
 });

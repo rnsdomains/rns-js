@@ -1,4 +1,4 @@
-import { Configuration } from '../types';
+import { Configuration } from '../@types';
 
 let config: Configuration = {
   rns: '0xcb868aeabd31e2b66f74e9a55cf064abb31a4ad5',

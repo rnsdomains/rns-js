@@ -1,8 +1,8 @@
 import Web3 from 'web3';
-import { default as RNSRegistryData } from '@rsksmart/rns-registry/RNSRegistryData.json';
-import { Configuration, Address, Chain } from './types';
+//import { default as RNSRegistryData } from '@rsksmart/rns-registry/RNSRegistryData.json';
+import { Configuration, Address, Chain } from './@types';
 import { MainnetConfig, TestnetConfig } from './defaults';
-const namehash = require('eth-ens-namehash').hash;
+import { hash as namehash } from 'eth-ens-namehash';
 
 export default class RNS {
   constructor(private web3: Web3, private config?: Configuration) {

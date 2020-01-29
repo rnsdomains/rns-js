@@ -3,6 +3,8 @@ import { Contract } from 'web3-eth-contract/types';
 import { RNS, Contracts, Options, ContractAddresses } from './types';
 import { hash as namehash } from 'eth-ens-namehash';
 import { createRegistry, createAddrResolver, createContractAddresses } from './factories';
+import { NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_RESOLVER, LIBRARY_NOT_COMPOSED } from './errors';
+import { ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE } from './constants';
 
 export default class implements RNS {
   private _contracts!: Contracts
@@ -16,18 +18,18 @@ export default class implements RNS {
 
   get contracts(): Contracts {
     if(!this._contracts) {
-      throw 'Library not composed.'
+      throw LIBRARY_NOT_COMPOSED;
     }
     return this._contracts;
   }
 
-  public async compose() {
+  public async compose(): Promise<void> {
     await this._detectNetwork()
   }
 
   private async _detectNetwork() {
     if (!this._contractAddresses) {
-      const networkId = await this.web3.eth.net.getId()
+      const networkId = await this.web3.eth.net.getId();
       this._contractAddresses = createContractAddresses(networkId)
     }
 
@@ -38,24 +40,38 @@ export default class implements RNS {
     }
   }
 
-  async addr(domain: string): Promise<string> {
+  private async _hasMethod(contractAddress: string, signatureHash: string) {
+    const code = await this.web3.eth.getCode(contractAddress);
+    return code.indexOf(signatureHash.slice(2, signatureHash.length)) > 0;
+  }
+
+  async getAddress(domain: string): Promise<string> {
     await this._detectNetwork();
 
     const node: string = namehash(domain);
 
     const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
 
-    if (resolverAddress === '0x0000000000000000000000000000000000000000') throw 'No resolver';
+    if (resolverAddress === ZERO_ADDRESS) {
+      throw NO_RESOLVER;
+    }
+    const isErc165Contract = await this._hasMethod(resolverAddress, ERC165_INTERFACE);
+    if (!isErc165Contract) {
+      throw NO_ADDR_RESOLUTION;
+    }
 
     const addrResolver: Contract = createAddrResolver(this.web3, resolverAddress);
-
-    const addrInterface: string = '0x3b3b57de';
-    const supportsAddr: boolean = await addrResolver.methods.supportsInterface(addrInterface).call();
-    if (!supportsAddr) throw 'No addr resolution';
+    
+    const supportsAddr: boolean = await addrResolver.methods.supportsInterface(ADDR_INTERFACE).call();
+    if (!supportsAddr) { 
+      throw NO_ADDR_RESOLUTION;
+    }
 
     const addr: string = await addrResolver.methods.addr(node).call();
 
-    if (addr === '0x0000000000000000000000000000000000000000') throw 'No addr resolution set';
+    if (addr === ZERO_ADDRESS){ 
+      throw NO_ADDR_RESOLUTION_SET;
+    }
 
     return addr;
   }

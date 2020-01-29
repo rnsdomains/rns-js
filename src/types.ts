@@ -22,5 +22,5 @@ export interface RNS {
   web3: Web3
   contracts: Contracts
   compose(): void
-  addr(domain: string): Promise<string>
+  getAddress(domain: string): Promise<string>
 }

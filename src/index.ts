@@ -18,7 +18,7 @@ export default class implements RNS {
 
   get contracts(): Contracts {
     if(!this._contracts) {
-      throw LIBRARY_NOT_COMPOSED;
+      throw new Error(LIBRARY_NOT_COMPOSED);
     }
     return this._contracts;
   }
@@ -45,7 +45,7 @@ export default class implements RNS {
     return code.indexOf(signatureHash.slice(2, signatureHash.length)) > 0;
   }
 
-  async getAddress(domain: string): Promise<string> {
+  async addr(domain: string): Promise<string> {
     await this._detectNetwork();
 
     const node: string = namehash(domain);
@@ -53,24 +53,24 @@ export default class implements RNS {
     const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
 
     if (resolverAddress === ZERO_ADDRESS) {
-      throw NO_RESOLVER;
+      throw new Error(NO_RESOLVER);
     }
     const isErc165Contract = await this._hasMethod(resolverAddress, ERC165_INTERFACE);
     if (!isErc165Contract) {
-      throw NO_ADDR_RESOLUTION;
+      throw new Error(NO_ADDR_RESOLUTION);
     }
 
     const addrResolver: Contract = createAddrResolver(this.web3, resolverAddress);
     
     const supportsAddr: boolean = await addrResolver.methods.supportsInterface(ADDR_INTERFACE).call();
     if (!supportsAddr) { 
-      throw NO_ADDR_RESOLUTION;
+      throw new Error(NO_ADDR_RESOLUTION);
     }
 
     const addr: string = await addrResolver.methods.addr(node).call();
 
     if (addr === ZERO_ADDRESS){ 
-      throw NO_ADDR_RESOLUTION_SET;
+      throw new Error(NO_ADDR_RESOLUTION_SET);
     }
 
     return addr;

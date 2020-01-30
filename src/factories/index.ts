@@ -15,7 +15,7 @@ export const createContractAddresses = (networkId: NetworkId) => {
       return {
         registry: RNSRegistryData.address.rskTestnet
       }
-    default: throw NO_ADDRESSES_PROVIDED;
+    default: throw new Error(NO_ADDRESSES_PROVIDED);
   }
 }
 

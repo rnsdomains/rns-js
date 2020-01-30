@@ -52,7 +52,7 @@ describe('should fail when getting contracts if library not composed', () => {
     try {
       rns.contracts;
     } catch (_error) {
-      error = _error;
+      error = _error.message;
     } finally {
       expect(error).toBe(LIBRARY_NOT_COMPOSED);
     };
@@ -65,7 +65,7 @@ describe('should fail when getting contracts if library not composed', () => {
     try {
       rns.contracts;
     } catch (_error) {
-      error = _error;
+      error = _error.message;
     } finally {
       expect(error).toBe(LIBRARY_NOT_COMPOSED);
     };

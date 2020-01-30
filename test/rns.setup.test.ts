@@ -59,7 +59,7 @@ describe('should fail when getting contracts if library not composed', () => {
   });
 
   test('testnet', () => {
-    const web3 = new Web3(PUBLIC_NODE_MAINNET)
+    const web3 = new Web3(PUBLIC_NODE_TESTNET)
     const rns = new RNS(web3)
     let error;
     try {

@@ -1,10 +1,13 @@
 import Web3 from 'web3/types';
 import { Contract } from 'web3-eth-contract/types';
-import { RNS, Contracts, Options, ContractAddresses } from './types';
+import { RNS, Contracts, Options, ContractAddresses, NetworkId, ChainId } from './types';
 import { hash as namehash } from 'eth-ens-namehash';
-import { createRegistry, createAddrResolver, createContractAddresses } from './factories';
-import { NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_RESOLVER, LIBRARY_NOT_COMPOSED } from './errors';
-import { ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE } from './constants';
+import { createRegistry, createAddrResolver, createContractAddresses, createChainAddrResolver } from './factories';
+import { 
+  NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_RESOLVER,
+  LIBRARY_NOT_COMPOSED, NO_CHAIN_ADDR_RESOLUTION, NO_CHAIN_ADDR_RESOLUTION_SET
+} from './errors';
+import { ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE, CHAIN_ADDR_INTERFACE } from './constants';
 
 export default class implements RNS {
   private _contracts!: Contracts
@@ -24,7 +27,7 @@ export default class implements RNS {
   }
 
   public async compose(): Promise<void> {
-    await this._detectNetwork()
+    await this._detectNetwork();
   }
 
   private async _detectNetwork() {
@@ -45,7 +48,15 @@ export default class implements RNS {
     return code.indexOf(signatureHash.slice(2, signatureHash.length)) > 0;
   }
 
-  async addr(domain: string): Promise<string> {
+  async addr(domain: string, chainId?: ChainId): Promise<string> {
+    if (!chainId) {
+      return this._addr(domain);
+    } else {
+      return this._chainAddr(domain, chainId);
+    }
+  }
+
+  private async _addr(domain: string): Promise<string> {
     await this._detectNetwork();
 
     const node: string = namehash(domain);
@@ -55,6 +66,7 @@ export default class implements RNS {
     if (resolverAddress === ZERO_ADDRESS) {
       throw new Error(NO_RESOLVER);
     }
+
     const isErc165Contract = await this._hasMethod(resolverAddress, ERC165_INTERFACE);
     if (!isErc165Contract) {
       throw new Error(NO_ADDR_RESOLUTION);
@@ -71,6 +83,37 @@ export default class implements RNS {
 
     if (addr === ZERO_ADDRESS){ 
       throw new Error(NO_ADDR_RESOLUTION_SET);
+    }
+
+    return addr;
+  }
+
+  private async _chainAddr(domain: string, chainId: ChainId) {
+    await this._detectNetwork();
+
+    const node: string = namehash(domain);
+
+    const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
+
+    if (resolverAddress === ZERO_ADDRESS) {
+      throw new Error(NO_RESOLVER);
+    }
+
+    const isErc165Contract = await this._hasMethod(resolverAddress, ERC165_INTERFACE);
+    if (!isErc165Contract) {
+      throw new Error(NO_CHAIN_ADDR_RESOLUTION);
+    }
+
+    const chainAddrResolver: Contract = createChainAddrResolver(this.web3, resolverAddress);
+    
+    const supportsChainAddr: boolean = await chainAddrResolver.methods.supportsInterface(CHAIN_ADDR_INTERFACE).call();
+    if (!supportsChainAddr) { 
+      throw new Error(NO_CHAIN_ADDR_RESOLUTION);
+    }
+
+    const addr: string = await chainAddrResolver.methods.chainAddr(node, chainId.toString()).call();
+    if (!addr || addr === ZERO_ADDRESS){ 
+      throw new Error(NO_CHAIN_ADDR_RESOLUTION_SET);
     }
 
     return addr;

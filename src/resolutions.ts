@@ -10,12 +10,16 @@ import {
 import { ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE, CHAIN_ADDR_INTERFACE } from './constants';
 import { ChainId, Resolutions } from './types';
 
+interface ResolverConstants {
+  INTERFACE: string;
+  ERROR: string;
+  FACTORY(web3: Web3, address: string);
+}
+
 export default class implements Resolutions {
   constructor(private web3: Web3, private registry: Contract) { }
 
-  async addr(domain: string): Promise<string> {
-    const node: string = namehash(domain);
-
+  private async _checkResolverAndErc165(node: string, constants: ResolverConstants): Promise<Contract> {
     const resolverAddress: string = await this.registry.methods.resolver(node).call();
 
     if (resolverAddress === ZERO_ADDRESS) {
@@ -24,17 +28,31 @@ export default class implements Resolutions {
 
     const isErc165Contract = await hasMethod(this.web3, resolverAddress, ERC165_INTERFACE);
     if (!isErc165Contract) {
-      throw new Error(NO_ADDR_RESOLUTION);
+      throw new Error(constants.ERROR);
     }
 
-    const addrResolver: Contract = createAddrResolver(this.web3, resolverAddress);
+    const resolver: Contract = constants.FACTORY(this.web3, resolverAddress);
     
-    const supportsAddr: boolean = await addrResolver.methods.supportsInterface(ADDR_INTERFACE).call();
-    if (!supportsAddr) { 
-      throw new Error(NO_ADDR_RESOLUTION);
+    const supportsInterface: boolean = await resolver.methods.supportsInterface(constants.INTERFACE).call();
+    if (!supportsInterface) { 
+      throw new Error(constants.ERROR);
     }
 
-    const addr: string = await addrResolver.methods.addr(node).call();
+    return resolver;
+  } 
+
+  async addr(domain: string): Promise<string> {
+    const node: string = namehash(domain);
+
+    const addrConstants: ResolverConstants = {
+      ERROR: NO_ADDR_RESOLUTION,
+      INTERFACE: ADDR_INTERFACE,
+      FACTORY: createAddrResolver
+    }
+
+    const resolver = await this._checkResolverAndErc165(node, addrConstants);
+
+    const addr: string = await resolver.methods.addr(node).call();
 
     if (addr === ZERO_ADDRESS){ 
       throw new Error(NO_ADDR_RESOLUTION_SET);
@@ -46,25 +64,15 @@ export default class implements Resolutions {
   async chainAddr(domain: string, chainId: ChainId) {
     const node: string = namehash(domain);
 
-    const resolverAddress: string = await this.registry.methods.resolver(node).call();
-
-    if (resolverAddress === ZERO_ADDRESS) {
-      throw new Error(NO_RESOLVER);
+    const chainAddrConstants: ResolverConstants = {
+      ERROR: NO_CHAIN_ADDR_RESOLUTION,
+      INTERFACE: CHAIN_ADDR_INTERFACE,
+      FACTORY: createChainAddrResolver
     }
 
-    const isErc165Contract = await hasMethod(this.web3, resolverAddress, ERC165_INTERFACE);
-    if (!isErc165Contract) {
-      throw new Error(NO_CHAIN_ADDR_RESOLUTION);
-    }
+    const resolver = await this._checkResolverAndErc165(node, chainAddrConstants);
 
-    const chainAddrResolver: Contract = createChainAddrResolver(this.web3, resolverAddress);
-    
-    const supportsChainAddr: boolean = await chainAddrResolver.methods.supportsInterface(CHAIN_ADDR_INTERFACE).call();
-    if (!supportsChainAddr) { 
-      throw new Error(NO_CHAIN_ADDR_RESOLUTION);
-    }
-
-    const addr: string = await chainAddrResolver.methods.chainAddr(node, chainId.toString()).call();
+    const addr: string = await resolver.methods.chainAddr(node, chainId).call();
     if (!addr || addr === ZERO_ADDRESS){ 
       throw new Error(NO_CHAIN_ADDR_RESOLUTION_SET);
     }

@@ -7,8 +7,8 @@ import Resolutions from './resolutions';
 export default class implements RNS {
   private _contracts!: Contracts;
   private _contractAddresses!: ContractAddresses;
-  private _resolutionHelper: Resolutions;
-  private _composed: boolean;
+  private _resolutionHelper!: Resolutions;
+  private _composed!: boolean;
 
   constructor (public web3: Web3, options?: Options) {
     if(options && options.contractAddresses) {

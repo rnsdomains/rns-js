@@ -29,5 +29,10 @@ export interface RNS {
   web3: Web3
   contracts: Contracts
   compose(): void
+  addr(domain: string, chainId?: ChainId): Promise<string>
+}
+
+export interface Resolutions {
   addr(domain: string): Promise<string>
+  chainAddr(domain: string, chainId: ChainId): Promise<string>
 }

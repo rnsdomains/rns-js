@@ -24,21 +24,21 @@ describe ('chainAddr resolution', () => {
     });
   });
 
-  // describe ('should resolve a name for ETH', () => {
-  //   test('mainnet', async () => {
-  //     const web3 = new Web3(PUBLIC_NODE_MAINNET);
-  //     const rns = new RNS(web3);
-  //     const addr = await rns.addr('multichain.testing.rsk');
-  //     expect(addr).toBe('0x0000000000000000000000000000000001000006', ChainId.ETHEREUM_MAINNET);
-  //   });
+  describe ('should resolve a name for ETH', () => {
+    test('mainnet', async () => {
+      const web3 = new Web3(PUBLIC_NODE_MAINNET);
+      const rns = new RNS(web3);
+      const addr = await rns.addr('multichain.testing.rsk', ChainId.ETHEREUM_MAINNET);
+      expect(addr).toBe('0x0000000000000000000000000000000001000006');
+    });
 
-  //   test('testnet', async () => {
-  //     const web3 = new Web3(PUBLIC_NODE_TESTNET);
-  //     const rns = new RNS(web3);
-  //     const addr = await rns.addr('multichain.testing.rsk');
-  //     expect(addr).toBe('0x0000000000000000000000000000000001000006', ChainId.ETHEREUM_MAINNET);
-  //   });
-  // });
+    test('testnet', async () => {
+      const web3 = new Web3(PUBLIC_NODE_TESTNET);
+      const rns = new RNS(web3);
+      const addr = await rns.addr('multichain.testing.rsk', ChainId.ETHEREUM_MAINNET);
+      expect(addr).toBe('0x0000000000000000000000000000000001000006');
+    });
+  });
 
   describe ('should throw an error when resolver has not been set', () => {
     test('mainnet', async () => {

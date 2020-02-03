@@ -33,3 +33,33 @@ async function myCustomGetOwner(domain) {
   return owner;
 }
 ```
+
+## Run for development
+
+Install dependencies:
+
+```
+git clone git@github.com:rnsdomains/rns-js.git
+cd rns-js
+npm i
+```
+
+Run tests:
+
+```
+npm test
+```
+
+Try out your development, create a testing project:
+
+```
+# in rns-js folder
+npm run build
+npm link
+cd ..
+mkdir rns-js-test
+cd rns-js-test
+npm init
+npm i web3
+npm link @rskmsart/rns
+```

@@ -1,10 +1,11 @@
 import Web3 from 'web3/types';
-import { RNS, Contracts, Options, ContractAddresses, ChainId } from './types';
+import { RNS as IRNS, Contracts, Options, ContractAddresses, ChainId } from './types';
 import { createRegistry, createContractAddresses } from './factories';
 import { LIBRARY_NOT_COMPOSED } from './errors';
 import Resolutions from './resolutions';
 
-export default class implements RNS {
+export = RNS;
+class RNS implements IRNS {
   private _contracts!: Contracts;
   private _contractAddresses!: ContractAddresses;
   private _resolutionHelper!: Resolutions;

@@ -61,5 +61,5 @@ mkdir rns-js-test
 cd rns-js-test
 npm init
 npm i web3
-npm link @rskmsart/rns
+npm link @rsksmart/rns
 ```

@@ -70,7 +70,7 @@ npm link @rsksmart/rns
 ## Versioning
 
 - `master` branch point to latest release.
-- `develop` branch contains changes that will apply next release. The first commit of the branch bumps to new version
+- `develop` branch contains changes that will apply next release. The first after release bumps to next version.
 - Other branches (feature branches) point to `develop`.
 
 Find releases scopes in [milestones](https://github.com/rnsdomains/rns-js/milestones)

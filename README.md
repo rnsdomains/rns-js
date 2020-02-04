@@ -1,4 +1,7 @@
 # rns-js
+
+[![npm version](https://badge.fury.io/js/%40rsksmart%2Frns.svg)](https://badge.fury.io/js/%40rsksmart%2Frns)
+
 RNS JavaScript library.
 
 ```
@@ -63,3 +66,11 @@ npm init
 npm i web3
 npm link @rsksmart/rns
 ```
+
+## Versioning
+
+- `master` branch point to latest release.
+- `develop` branch contains changes that will apply next release. The first commit after release bumps to next version.
+- Other branches (feature branches) point to `develop`.
+
+Find releases scopes in [milestones](https://github.com/rnsdomains/rns-js/milestones)

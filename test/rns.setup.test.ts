@@ -81,11 +81,11 @@ describe('library setup', () => {
     });
   });
 
-  describe('should fail when compose if custom network and no addresses provided', () => {
-    it('', async () => {
-      const web3 = new Web3('http://localhost:7545')
-      const rns = new RNS(web3)
-      await asyncExpectThrowError(async () => await rns.compose(), NO_ADDRESSES_PROVIDED);
-    });
-  });
+  // describe('should fail when compose if custom network and no addresses provided', () => {
+  //   it('', async () => {
+  //     const web3 = new Web3('http://localhost:7545')
+  //     const rns = new RNS(web3)
+  //     await asyncExpectThrowError(async () => await rns.compose(), NO_ADDRESSES_PROVIDED);
+  //   });
+  // });
 });

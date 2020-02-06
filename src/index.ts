@@ -4,7 +4,7 @@ import { createRegistry, createContractAddresses } from './factories';
 import { LIBRARY_NOT_COMPOSED } from './errors';
 import Resolutions from './resolutions';
 
-export default class implements RNS {
+export = class implements RNS {
   private _contracts!: Contracts;
   private _contractAddresses!: ContractAddresses;
   private _resolutionHelper!: Resolutions;

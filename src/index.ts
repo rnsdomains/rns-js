@@ -33,7 +33,11 @@ export = class implements RNS {
    *
    * @throws LIBRARY_NOT_COMPOSED if the library was not previously composed with compose method - KB004.
    * 
+<<<<<<< HEAD
    * @returns Web3 Contract instances of RNS public smart contracts
+=======
+   * @returns Object with a web3.eth.Contract instance for each necessary contract.
+>>>>>>> Added more comments
    */
   get contracts(): Contracts {
     if(!this._contracts) {

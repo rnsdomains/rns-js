@@ -10,9 +10,28 @@ import {
 import { ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE, CHAIN_ADDR_INTERFACE } from './constants';
 import { ChainId, Resolutions } from './types';
 
+/**
+ * Set of resolution related methods
+ */
 export default class implements Resolutions {
+  /**
+   * 
+   * @param web3 - current Web3 instance
+   * @param registry - RNS registry used to look for given domain's resolvers
+   */
   constructor(private web3: Web3, private registry: Contract) { }
 
+  /**
+   * Instance the resolver associated with the given node and checks if is valid according to the given interface
+   * 
+   * @throws
+   * Throws an error when the node does not have a resolver set, when given address is not ERC165 or when the given interface is not supported
+   * 
+   * @param node - namehash of the domain to resolve 
+   * @param methodInterface - interface needed to the resolve
+   * @param errorMessage - error message in case the resolver is not valid
+   * @param contractFactory - factory function used to instance the resolver
+   */
   private async _createResolver(
     node: string,
     methodInterface: string,
@@ -40,6 +59,14 @@ export default class implements Resolutions {
     return resolver;
   } 
 
+  /**
+   * Resolves the given domain using the AbstractAddrResolver interface
+   *
+   * @throws
+   * Throws an error when the domain doesn't have resolver, when it has an invalid resolver or if the resolution hasn't been set yet.
+   * 
+   * @param domain - Domain to be resolved
+   */
   async addr(domain: string): Promise<string> {
     const node: string = namehash(domain);
 
@@ -54,6 +81,15 @@ export default class implements Resolutions {
     return addr;
   }
 
+  /**
+   * Resolves the given domain using the AbstractMultiChainResolver interface
+   *
+   * @throws
+   * Throws an error when the domain doesn't have resolver, when it has an invalid resolver or if the resolution hasn't been set yet.
+   * 
+   * @param domain - Domain to be resolved
+   * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   */
   async chainAddr(domain: string, chainId: ChainId) {
     const node: string = namehash(domain);
 

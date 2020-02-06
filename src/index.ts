@@ -35,7 +35,7 @@ export = class implements RNS {
    * @throws
    * Throws an error if the library was not previously composed
    * 
-   * @returns Object with a {@link https://web3js.readthedocs.io/en/v1.2.4/web3-eth-contract.html | web3.eth.Contract} instance for each necessary contract.
+   * @returns Object with a web3.eth.Contract instance for each necessary contract.
    */
   get contracts(): Contracts {
     if(!this._contracts) {
@@ -49,7 +49,6 @@ export = class implements RNS {
    *
    * @throws
    * Throws an error if the network is not RSK Mainnet or RSK Testnet and the options parameter was not provided in the constructor.
-   * 
    */
   public async compose(): Promise<void> {
     if (!this._composed) {
@@ -79,7 +78,7 @@ export = class implements RNS {
    * Throws an error when the domain doesn't have resolver, when it has an invalid resolver or if the resolution hasn't been set yet.
    
    * @param domain - Domain to be resolved
-   * @param chainId - Should match one of the listed in {@link https://github.com/satoshilabs/slips/blob/master/slip-0044.md | SLIP44}
+   * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    */
   async addr(domain: string, chainId?: ChainId): Promise<string> {
     await this.compose();

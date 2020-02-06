@@ -67,6 +67,9 @@ export default class implements Resolutions {
    * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
    * 
    * @param domain - Domain to be resolved
+   * 
+   * @return 
+   * Address resolution for the given domain
    */
   async addr(domain: string): Promise<string> {
     const node: string = namehash(domain);

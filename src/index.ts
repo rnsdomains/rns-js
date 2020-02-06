@@ -3,6 +3,7 @@ import { RNS, Contracts, Options, ContractAddresses, ChainId } from './types';
 import { createRegistry, createContractAddresses } from './factories';
 import { LIBRARY_NOT_COMPOSED } from './errors';
 import Resolutions from './resolutions';
+import Subdomains from './subdomains';
 
 /**
  * RNS JavaScript library.
@@ -11,6 +12,7 @@ export = class implements RNS {
   private _contracts!: Contracts;
   private _contractAddresses!: ContractAddresses;
   private _resolutionHelper!: Resolutions;
+  private _subdomainsHelper!: Subdomains;
   private _composed!: boolean;
 
   /**
@@ -33,11 +35,7 @@ export = class implements RNS {
    *
    * @throws LIBRARY_NOT_COMPOSED if the library was not previously composed with compose method - KB004.
    * 
-<<<<<<< HEAD
    * @returns Web3 Contract instances of RNS public smart contracts
-=======
-   * @returns Object with a web3.eth.Contract instance for each necessary contract.
->>>>>>> Added more comments
    */
   get contracts(): Contracts {
     if(!this._contracts) {
@@ -55,6 +53,7 @@ export = class implements RNS {
     if (!this._composed) {
       await this._detectNetwork();
       this._resolutionHelper = new Resolutions(this.web3, this._contracts.registry);
+      this._subdomainsHelper = new Subdomains(this.web3, this._contracts.registry);
       this._composed = true;
     }
   }
@@ -92,4 +91,22 @@ export = class implements RNS {
       return this._resolutionHelper.chainAddr(domain, chainId);
     }
   }
+
+  /**
+   * Checks if the given label subdomain is available under the given domain tree
+   * 
+   * @throws
+   * Throws an error if the given domain is not .rsk, if it is a subdomain or if it is not alphanumeric
+   * 
+   * @param domain - Parent .rsk domain. ie: wallet.rsk
+   * @param label - Subdomain to check if is available. ie: alice
+   * 
+   * @returns
+   * true if available, false if not
+   */
+  async checkSubdomainAvailability(domain: string, label: string): Promise<boolean> {
+    await this.compose();
+    return this._subdomainsHelper.available(domain, label);
+  }
+
 }

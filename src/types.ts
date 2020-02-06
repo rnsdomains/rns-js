@@ -69,6 +69,9 @@ export interface RNS {
    *
    * @param domain - Domain to be resolved
    * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   * 
+   * @return 
+   * Address resolution for the given domain in the given chain (if provided)
    */
   addr(domain: string, chainId?: ChainId): Promise<string>;
 }
@@ -81,6 +84,9 @@ export interface Resolutions {
    * Resolves the given domain using the AbstractAddrResolver interface.
    *
    * @param domain - Domain to be resolved
+   * 
+   * @return 
+   * Address resolution for the given domain
    */
   addr(domain: string): Promise<string>;
   /**
@@ -90,4 +96,20 @@ export interface Resolutions {
    * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    */
   chainAddr(domain: string, chainId: ChainId): Promise<string>;
+}
+
+/**
+ * Set of subdomains related methods
+ */
+export interface Subdomains {
+  /**
+   * Checks if the given label subdomain is available under the given domain tree
+   * 
+   * @param domain - Parent .rsk domain. ie: wallet.rsk
+   * @param label - Subdomain to check if is available. ie: alice
+   * 
+   * @returns
+   * true if available, false if not
+   */
+  available(domain: string, label: string): Promise<boolean>;
 }

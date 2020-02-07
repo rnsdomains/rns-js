@@ -121,8 +121,7 @@ export default class implements Resolutions {
    * name resolution protocol.
    *
    * @throws NO_REVERSE_RESOLUTION_SET when the domain has not the reverse resolution set - KB014.
-   * @throws NO_REVERSE_RESOLUTION_SET if the reverse resolution hasn't been set yet - KB014.
-   * @throws NO_NAME_RESOLUTION if has an invalid reverse resolver - KB013.
+   * @throws NO_NAME_RESOLUTION if has an invalid name resolver - KB013.
    * 
    * @param address - address to be resolved
    * 

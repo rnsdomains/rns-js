@@ -96,6 +96,7 @@ export = class implements RNS {
    * Get name resolution of a given address.
    * 
    * @throws NO_REVERSE_RESOLUTION_SET when the domain has not set the reverse resolution yet - KB014.
+   * @throws NO_NAME_RESOLUTION when the domain has an invalid name resolver - KB013.
    * 
    * @param address - address to be resolved
    * 

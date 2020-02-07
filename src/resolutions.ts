@@ -23,9 +23,9 @@ export default class implements Resolutions {
 
   /**
    * Instance the resolver associated with the given node and checks if is valid according to the given interface.
-   * 
-   * @throws
-   * Throws an error when the node does not have a resolver set, when given address is not ERC165 or when the given interface is not supported
+   *
+   * @throws provided `errorMessage` if the resolver is not ERC165 or it doesn't implement the necessary given interface.
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
    * 
    * @param node - namehash of the domain to resolve 
    * @param methodInterface - standard resolution interface id
@@ -61,9 +61,10 @@ export default class implements Resolutions {
 
   /**
    * addr resolution protocol.
-   *
-   * @throws
-   * Throws an error when the domain doesn't have resolver, when it has an invalid resolver or if the resolution hasn't been set yet.
+   
+   * @throws NO_ADDR_RESOLUTION_SET if the resolution hasn't been set yet - KB001.
+   * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
    * 
    * @param domain - Domain to be resolved
    */
@@ -84,8 +85,9 @@ export default class implements Resolutions {
   /**
    * chainAddr resolution protocol.
    *
-   * @throws
-   * Throws an error when the domain doesn't have resolver, when it has an invalid resolver or if the resolution hasn't been set yet.
+   * @throws NO_CHAIN_ADDR_RESOLUTION_SET if the resolution hasn't been set yet - KB007.
+   * @throws NO_CHAIN_ADDR_RESOLUTION it has an invalid resolver - KB006.
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
    * 
    * @param domain - Domain to be resolved
    * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)

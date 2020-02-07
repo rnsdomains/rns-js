@@ -31,8 +31,7 @@ export = class implements RNS {
   /**
    * RNS suite contract instances.
    *
-   * @throws
-   * Throws LIBRARY_NOT_COMPOSED if the library was not previously composed with compose method - KB004.
+   * @throws LIBRARY_NOT_COMPOSED if the library was not previously composed with compose method - KB004.
    * 
    * @returns Web3 Contract instances of RNS public smart contracts
    */
@@ -46,8 +45,7 @@ export = class implements RNS {
   /**
    * Detects the current network and instances the contracts.
    *
-   * @throws
-   * Throws NO_ADDRESSES_PROVIDED if the network is not RSK Mainnet or RSK Testnet and the options parameter was not provided in the constructor - KB005.
+   * @throws NO_ADDRESSES_PROVIDED if the network is not RSK Mainnet or RSK Testnet and the options parameter was not provided in the constructor - KB005.
    */
   public async compose(): Promise<void> {
     if (!this._composed) {
@@ -73,9 +71,12 @@ export = class implements RNS {
   /**
    * Get address of a given domain and chain. If chainId is not provided, it resolves current blockchain address.
    *
-   * @throws
-   * Throws an error when the domain doesn't have resolver, when it has an invalid resolver or if the resolution hasn't been set yet.
-   
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
+   * @throws NO_ADDR_RESOLUTION_SET if the resolution hasn't been set yet - KB001.
+   * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
+   * @throws NO_CHAIN_ADDR_RESOLUTION_SET if `chainId` provided and the resolution hasn't been set yet - KB007.
+   * @throws NO_CHAIN_ADDR_RESOLUTION `chainId` provided and it has an invalid resolver - KB006.
+   * 
    * @param domain - Domain to be resolved
    * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    */

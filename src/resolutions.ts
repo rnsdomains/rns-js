@@ -11,24 +11,24 @@ import { ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE, CHAIN_ADDR_INTERFACE } 
 import { ChainId, Resolutions } from './types';
 
 /**
- * Set of resolution related methods
+ * Standard resolution protocols.
  */
 export default class implements Resolutions {
   /**
    * 
    * @param web3 - current Web3 instance
-   * @param registry - RNS registry used to look for given domain's resolvers
+   * @param registry - RNS Registry Web3 Contract instance
    */
   constructor(private web3: Web3, private registry: Contract) { }
 
   /**
-   * Instance the resolver associated with the given node and checks if is valid according to the given interface
+   * Instance the resolver associated with the given node and checks if is valid according to the given interface.
    * 
    * @throws
    * Throws an error when the node does not have a resolver set, when given address is not ERC165 or when the given interface is not supported
    * 
    * @param node - namehash of the domain to resolve 
-   * @param methodInterface - interface needed to the resolve
+   * @param methodInterface - standard resolution interface id
    * @param errorMessage - error message in case the resolver is not valid
    * @param contractFactory - factory function used to instance the resolver
    */
@@ -60,7 +60,7 @@ export default class implements Resolutions {
   } 
 
   /**
-   * Resolves the given domain using the AbstractAddrResolver interface
+   * addr resolution protocol.
    *
    * @throws
    * Throws an error when the domain doesn't have resolver, when it has an invalid resolver or if the resolution hasn't been set yet.
@@ -82,13 +82,13 @@ export default class implements Resolutions {
   }
 
   /**
-   * Resolves the given domain using the AbstractMultiChainResolver interface
+   * chainAddr resolution protocol.
    *
    * @throws
    * Throws an error when the domain doesn't have resolver, when it has an invalid resolver or if the resolution hasn't been set yet.
    * 
    * @param domain - Domain to be resolved
-   * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    */
   async chainAddr(domain: string, chainId: ChainId) {
     const node: string = namehash(domain);

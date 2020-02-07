@@ -48,7 +48,6 @@ export interface Contracts {
 
 /**
  * RNS JavaScript library.
- * Used to interact with the complete RNS suite.
  */
 export interface RNS {
   /**
@@ -66,7 +65,7 @@ export interface RNS {
    */
   compose(): void;
   /**
-   * Resolves the given domain for the given blockchain. If not chainId provided, it will resolve the domain in the current blockchain
+   * Get address of a given domain and chain. If chainId is not provided, it resolves current blockchain address.
    *
    * @param domain - Domain to be resolved
    * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
@@ -79,7 +78,7 @@ export interface RNS {
  */
 export interface Resolutions {
   /**
-   * Resolves the given domain using the AbstractAddrResolver interface
+   * Resolves the given domain using the AbstractAddrResolver interface.
    *
    * @param domain - Domain to be resolved
    */
@@ -88,7 +87,7 @@ export interface Resolutions {
    * Resolves the given domain using the AbstractMultiChainResolver interface
    *
    * @param domain - Domain to be resolved
-   * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    */
   chainAddr(domain: string, chainId: ChainId): Promise<string>;
 }

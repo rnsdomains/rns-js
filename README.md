@@ -31,6 +31,11 @@ Get Bitcoin address:
 rns.addr('testing.rsk', '0x80000000')
 ```
 
+Check if `example.testing.rsk` subdomain is available:
+```javascript
+rns.isSubdomainAvailable('testing.rsk', 'example')
+```
+
 ## Advanced usage
 
 Use Web3 `Contract` directly

@@ -1,11 +1,17 @@
 import { Contract } from 'web3-eth-contract';
 import Web3 from 'web3';
 
+/**
+ * RSK Mainnet and Testnet network ids. Used to identify the current network.
+ */
 export enum NetworkId {
   RSK_MAINNET = 30,
   RSK_TESTNET = 31
 }
 
+/**
+ * Represents some of the chain ids listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md) 
+ */
 export enum ChainId {
   RSK_MAINNET = '0x80000089',
   BITCOIN_MAINNET = '0x80000000',
@@ -13,26 +19,75 @@ export enum ChainId {
   LITECOIN = '0x80000002'
 }
 
+/**
+ * Contains the necessary contract addresses to run the current lib.
+ */
 export interface ContractAddresses {
+  /**
+   * RNS.sol address
+   */
   registry: string
 }
 
+/**
+ * Configuration object used to run the lib if the current network is not RSK Mainnet or RSK Testnet
+ */
 export interface Options {
   contractAddresses?: ContractAddresses
 }
 
+/**
+ * web3.eth.Contract wrapper. Contains an instance for each Contract used to run the lib.
+ */
 export interface Contracts {
+  /**
+   * RNS.sol instance
+   */
   registry: Contract
 }
 
+/**
+ * RNS JavaScript library.
+ */
 export interface RNS {
-  web3: Web3
-  contracts: Contracts
-  compose(): void
-  addr(domain: string, chainId?: ChainId): Promise<string>
+  /**
+   * Web3 instance used to interact with the blockchain
+   */
+  web3: Web3;
+  /**
+   * RNS suite contract instances
+   *
+   * @returns Object with a web3.eth.Contract instance for each necessary contract.
+   */
+  contracts: Contracts;
+  /**
+   * Detects the current network and instances the contracts.
+   */
+  compose(): void;
+  /**
+   * Get address of a given domain and chain. If chainId is not provided, it resolves current blockchain address.
+   *
+   * @param domain - Domain to be resolved
+   * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   */
+  addr(domain: string, chainId?: ChainId): Promise<string>;
 }
 
+/**
+ * Set of resolution related methods
+ */
 export interface Resolutions {
-  addr(domain: string): Promise<string>
-  chainAddr(domain: string, chainId: ChainId): Promise<string>
+  /**
+   * Resolves the given domain using the AbstractAddrResolver interface.
+   *
+   * @param domain - Domain to be resolved
+   */
+  addr(domain: string): Promise<string>;
+  /**
+   * Resolves the given domain using the AbstractMultiChainResolver interface
+   *
+   * @param domain - Domain to be resolved
+   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   */
+  chainAddr(domain: string, chainId: ChainId): Promise<string>;
 }

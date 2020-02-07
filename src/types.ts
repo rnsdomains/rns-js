@@ -74,6 +74,17 @@ export interface RNS {
    * Address resolution for the given domain in the given chain (if provided)
    */
   addr(domain: string, chainId?: ChainId): Promise<string>;
+
+  /**
+   * Checks if the given label subdomain is available under the given domain tree
+   * 
+   * @param domain - Parent .rsk domain. ie: wallet.rsk
+   * @param label - Subdomain to check if is available. ie: alice
+   * 
+   * @returns
+   * true if available, false if not
+   */
+  isSubdomainAvailable(domain: string, label: string): Promise<boolean>;
 }
 
 /**

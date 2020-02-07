@@ -16,6 +16,15 @@ export default class implements Subdomains {
    */
   constructor(private web3: Web3, private registry: Contract) { }
 
+  /**
+   * Validates the given domain
+   * 
+   * @throws SEARCH_ONLY_SIMPLE_DOMAINS if the given domain is not a simple domain (example.tld) - KB008
+   * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is not a simple domain under valid TLDs - KB009
+   * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
+   * 
+   * @param domain - domain to validate
+   */
   private _validateDomain(domain:string) {
     const labels = domain.split('.');
 
@@ -32,6 +41,13 @@ export default class implements Subdomains {
     }
   }
 
+  /**
+   * Validates the given label
+   * 
+   * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
+   * 
+   * @param label - label to validate
+   */
   private _validateLabel(label: string) {
     if (!label || label.match('[^a-z0-9]')) {
       throw new Error(INVALID_LABEL);
@@ -41,8 +57,11 @@ export default class implements Subdomains {
   /**
    * Checks if the given label subdomain is available under the given domain tree
    * 
-   * @throws
-   * Throws an error if the given domain does not exist, if it is not .rsk, if it is a subdomain or if the parameters are not alphanumeric
+   * @throws SEARCH_ONLY_SIMPLE_DOMAINS if the given domain is not a simple domain (example.tld) - KB008
+   * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is not a simple domain under valid TLDs - KB009
+   * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
+   * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
+   * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
    * 
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to check if is available. ie: alice

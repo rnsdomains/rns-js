@@ -42,7 +42,7 @@ export default class implements Subdomains {
   }
 
   /**
-   * Validates the give label
+   * Validates the given label
    * 
    * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
    * 

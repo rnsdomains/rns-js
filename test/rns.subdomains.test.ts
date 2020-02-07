@@ -7,18 +7,18 @@ import { asyncExpectThrowError } from './utils';
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
 
-describe('checkSubdomainAvailability validations', () => {
+describe('isSubdomainAvailable validations', () => {
   describe('should fail when sending a subdomain', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('not.simple.domain', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('not.simple.domain', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('not.simple.domain', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('not.simple.domain', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
     });
   });
 
@@ -26,13 +26,13 @@ describe('checkSubdomainAvailability validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('tld', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('tld', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('tld', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('tld', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
     });
   });
 
@@ -40,13 +40,13 @@ describe('checkSubdomainAvailability validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
     });
   });
 
@@ -54,13 +54,13 @@ describe('checkSubdomainAvailability validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('.', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('.', 'willfail'), INVALID_DOMAIN);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('.', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('.', 'willfail'), INVALID_DOMAIN);
     });
   });
 
@@ -68,13 +68,13 @@ describe('checkSubdomainAvailability validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     });
   });
 
@@ -82,13 +82,13 @@ describe('checkSubdomainAvailability validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
   });
 
@@ -96,13 +96,13 @@ describe('checkSubdomainAvailability validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
   });
 
@@ -110,13 +110,13 @@ describe('checkSubdomainAvailability validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
     });
   });
 
@@ -124,13 +124,13 @@ describe('checkSubdomainAvailability validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('domain.rsk', ''), INVALID_LABEL);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('domain.rsk', ''), INVALID_LABEL);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('domain.rsk', ''), INVALID_LABEL);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('domain.rsk', ''), INVALID_LABEL);
     });
   });
 
@@ -138,13 +138,13 @@ describe('checkSubdomainAvailability validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('domain.rsk', 'iNVAlid'), INVALID_LABEL);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('domain.rsk', 'iNVAlid'), INVALID_LABEL);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('domain.rsk', 'iNVAlid'), INVALID_LABEL);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('domain.rsk', 'iNVAlid'), INVALID_LABEL);
     });
   });
 
@@ -152,30 +152,30 @@ describe('checkSubdomainAvailability validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.checkSubdomainAvailability('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
     });
   });
 });
 
-describe('checkSubdomainAvailability happy paths', () => {
+describe('isSubdomainAvailable happy paths', () => {
   describe('should return false if label is not available', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      const available = await rns.checkSubdomainAvailability('testing.rsk', 'multichain');
+      const available = await rns.isSubdomainAvailable('testing.rsk', 'multichain');
       expect(available).toBe(false);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      const available = await rns.checkSubdomainAvailability('testing.rsk', 'multichain');
+      const available = await rns.isSubdomainAvailable('testing.rsk', 'multichain');
       expect(available).toBe(false);
     });
   });
@@ -184,14 +184,14 @@ describe('checkSubdomainAvailability happy paths', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      const available = await rns.checkSubdomainAvailability('testing.rsk', 'available');
+      const available = await rns.isSubdomainAvailable('testing.rsk', 'available');
       expect(available).toBe(true);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      const available = await rns.checkSubdomainAvailability('testing.rsk', 'available');
+      const available = await rns.isSubdomainAvailable('testing.rsk', 'available');
       expect(available).toBe(true);
     });
   });

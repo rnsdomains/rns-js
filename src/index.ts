@@ -104,7 +104,7 @@ export = class implements RNS {
    * @returns
    * true if available, false if not
    */
-  async checkSubdomainAvailability(domain: string, label: string): Promise<boolean> {
+  async isSubdomainAvailable(domain: string, label: string): Promise<boolean> {
     await this.compose();
     return this._subdomainsHelper.available(domain, label);
   }

@@ -10,9 +10,28 @@ import {
 import { ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE, CHAIN_ADDR_INTERFACE } from './constants';
 import { ChainId, Resolutions } from './types';
 
+/**
+ * Standard resolution protocols.
+ */
 export default class implements Resolutions {
+  /**
+   * 
+   * @param web3 - current Web3 instance
+   * @param registry - RNS Registry Web3 Contract instance
+   */
   constructor(private web3: Web3, private registry: Contract) { }
 
+  /**
+   * Instance the resolver associated with the given node and checks if is valid according to the given interface.
+   *
+   * @throws provided `errorMessage` if the resolver is not ERC165 or it doesn't implement the necessary given interface.
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
+   * 
+   * @param node - namehash of the domain to resolve 
+   * @param methodInterface - standard resolution interface id
+   * @param errorMessage - error message in case the resolver is not valid
+   * @param contractFactory - factory function used to instance the resolver
+   */
   private async _createResolver(
     node: string,
     methodInterface: string,
@@ -40,6 +59,18 @@ export default class implements Resolutions {
     return resolver;
   } 
 
+  /**
+   * addr resolution protocol.
+   
+   * @throws NO_ADDR_RESOLUTION_SET if the resolution hasn't been set yet - KB001.
+   * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
+   * 
+   * @param domain - Domain to be resolved
+   * 
+   * @return 
+   * Address resolution for the given domain
+   */
   async addr(domain: string): Promise<string> {
     const node: string = namehash(domain);
 
@@ -54,6 +85,16 @@ export default class implements Resolutions {
     return addr;
   }
 
+  /**
+   * chainAddr resolution protocol.
+   *
+   * @throws NO_CHAIN_ADDR_RESOLUTION_SET if the resolution hasn't been set yet - KB007.
+   * @throws NO_CHAIN_ADDR_RESOLUTION it has an invalid resolver - KB006.
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
+   * 
+   * @param domain - Domain to be resolved
+   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   */
   async chainAddr(domain: string, chainId: ChainId) {
     const node: string = namehash(domain);
 

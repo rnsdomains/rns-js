@@ -1,6 +1,6 @@
 {
   "name": "@rsksmart/rns",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "RIF Name Service library.",
   "keywords": [
     "rsk",
@@ -41,12 +41,14 @@
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
     "babel-jest": "^25.1.0",
+    "babel-plugin-add-module-exports": "^1.0.2",
     "eslint": "^6.8.0",
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-jest": "^23.6.0",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "jest": "^25.1.0",
+    "ts-jest": "^25.2.0",
     "typescript": "^3.7.5"
   },
   "types": "./lib/index.d.ts"

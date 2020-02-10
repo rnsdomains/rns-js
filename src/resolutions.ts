@@ -102,7 +102,7 @@ export default class implements Resolutions {
    * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    * 
    * @return 
-   * Address resolution for the given domain in the given chain
+   * Address resolution for a domain in a given chain
    */
   async chainAddr(domain: string, chainId: ChainId): Promise<string> {
     const node: string = namehash(domain);

@@ -76,14 +76,14 @@ export interface RNS {
   addr(domain: string, chainId?: ChainId): Promise<string>;
 
   /**
-   * Get name resolution of a given address.
+   * Reverse lookup: get name of a given address.
    * 
    * @param address - address to be resolved
    * 
    * @returns
    * Domain or subdomain associated to the given address.
    */
-  reverseResolution(address: string): Promise<string>;
+  reverse(address: string): Promise<string>;
 
   /**
    * Checks if the given label subdomain is available under the given domain tree

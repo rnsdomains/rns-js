@@ -76,6 +76,16 @@ export interface RNS {
   addr(domain: string, chainId?: ChainId): Promise<string>;
 
   /**
+   * Reverse lookup: get name of a given address.
+   * 
+   * @param address - address to be resolved
+   * 
+   * @returns
+   * Domain or subdomain associated to the given address.
+   */
+  reverse(address: string): Promise<string>;
+
+  /**
    * Checks if the given label subdomain is available under the given domain tree
    * 
    * @param domain - Parent .rsk domain. ie: wallet.rsk

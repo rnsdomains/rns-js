@@ -28,12 +28,17 @@ rns.addr('testing.rsk').then(console.log)
 
 Get Bitcoin address:
 ```javascript
-rns.addr('testing.rsk', '0x80000000')
+rns.addr('testing.rsk', '0x80000000').then(console.log)
 ```
 
 Check if `example.testing.rsk` subdomain is available:
 ```javascript
-rns.isSubdomainAvailable('testing.rsk', 'example')
+rns.isSubdomainAvailable('testing.rsk', 'example').then(console.log)
+```
+
+Reverse lookup: get name of a given address:
+```javascript
+rns.reverse('0x0000000000000000000000000000000123456789').then(console.log)
 ```
 
 ## Advanced usage

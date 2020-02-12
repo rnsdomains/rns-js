@@ -93,6 +93,23 @@ export = class implements RNS {
   }
 
   /**
+   * Reverse lookup: get name of a given address.
+   * 
+   * @throws NO_REVERSE_RESOLUTION_SET when the domain has not set the reverse resolution yet - KB014.
+   * @throws NO_NAME_RESOLUTION when the domain has an invalid name resolver - KB013.
+   * 
+   * @param address - address to be resolved
+   * 
+   * @returns
+   * Domain or subdomain associated to the given address.
+   */
+  async reverse(address: string): Promise<string> {
+    await this.compose();
+    return this._resolutionHelper.name(address);
+  }
+
+
+  /**
    * Checks if the given label subdomain is available under the given domain tree
    * 
    * @throws SEARCH_ONLY_SIMPLE_DOMAINS if the given domain is not a simple domain (example.tld) - KB008

@@ -1,6 +1,7 @@
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import ChainAddrResolverData from '@rsksmart/rns-resolver/ChainAddrResolverData.json';
+import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { NetworkId } from '../types';
@@ -25,3 +26,5 @@ export const createRegistry = (web3: Web3, address: string) => new web3.eth.Cont
 export const createAddrResolver = (web3: Web3, address: string) => new web3.eth.Contract(AddrResolverData.abi as AbiItem[], address)
 
 export const createChainAddrResolver = (web3: Web3, address: string) => new web3.eth.Contract(ChainAddrResolverData.abi as AbiItem[], address)
+
+export const createNameResolver = (web3: Web3, address: string) => new web3.eth.Contract(NameResolverData.abi as AbiItem[], address)

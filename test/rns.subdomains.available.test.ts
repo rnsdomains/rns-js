@@ -1,7 +1,6 @@
 import Web3 from 'web3';
 import RNS from '../src/index';
-import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
-import { LIBRARY_NOT_COMPOSED, SEARCH_ONLY_SIMPLE_DOMAINS, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN, INVALID_LABEL, DOMAIN_NOT_EXISTS } from '../src/errors';
+import { SEARCH_ONLY_SIMPLE_DOMAINS, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN, INVALID_LABEL, DOMAIN_NOT_EXISTS } from '../src/errors';
 import { asyncExpectThrowError } from './utils';
 
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';

@@ -85,7 +85,7 @@ export default class implements Subdomains {
   }
 
   /**
-   * Creates a new dubdomain under the given domain tree
+   * Creates a new subdomain under the given domain tree
    * 
    * @throws SEARCH_ONLY_SIMPLE_DOMAINS if the given domain is not a simple domain (example.tld) - KB008
    * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is not a simple domain under valid TLDs - KB009
@@ -95,6 +95,7 @@ export default class implements Subdomains {
    * 
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice
+   * @param owner - The owner of the new subdomain
    */
   async createSubdomain(domain: string, label: string, owner: string): Promise<void> {
     this._validateDomain(domain);

@@ -129,4 +129,9 @@ export = class implements RNS {
     return this._subdomainsHelper.available(domain, label);
   }
 
+  async createSubdomain(domain: string, label: string, owner: string): Promise<void> {
+    await this.compose();
+    return this._subdomainsHelper.createSubdomain(domain, label, owner);
+  }
+
 }

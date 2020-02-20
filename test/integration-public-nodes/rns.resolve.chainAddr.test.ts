@@ -1,8 +1,8 @@
 import Web3 from 'web3';
-import RNS from '../src/index';
-import { NO_CHAIN_ADDR_RESOLUTION, NO_RESOLVER, NO_CHAIN_ADDR_RESOLUTION_SET } from '../src/errors';
-import { asyncExpectThrowError } from './utils';
-import { ChainId } from '../src/types';
+import RNS from '../../src/index';
+import { NO_CHAIN_ADDR_RESOLUTION, NO_RESOLVER, NO_CHAIN_ADDR_RESOLUTION_SET } from '../../src/errors';
+import { asyncExpectThrowError } from '../utils';
+import { ChainId } from '../../src/types';
 
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';

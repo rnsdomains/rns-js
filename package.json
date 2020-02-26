@@ -23,12 +23,14 @@
   "scripts": {
     "build": "npx tsc",
     "test": "npx jest --coverage",
+    "test:unit": "npx jest --coverage test/unit/",
+    "test:integration": "npx jest --coverage test/integration-public-nodes/",
     "lint": "npx eslint src/**/*.ts test/**/*.ts",
     "prepublishOnly": "npm run test && npm run build"
   },
   "dependencies": {
-    "@rsksmart/rns-registry": "^1.0.1",
-    "@rsksmart/rns-resolver": "^1.0.1",
+    "@rsksmart/rns-registry": "^1.0.2",
+    "@rsksmart/rns-resolver": "^1.0.2",
     "@rsksmart/rns-reverse": "^1.0.1",
     "bignumber.js": "^9.0.0",
     "eth-ens-namehash": "^2.0.8",

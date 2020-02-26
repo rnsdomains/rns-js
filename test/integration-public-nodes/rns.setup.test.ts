@@ -1,8 +1,8 @@
 import Web3 from 'web3';
-import RNS from '../src/index';
+import RNS from '../../src/index';
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
-import { LIBRARY_NOT_COMPOSED, NO_ADDRESSES_PROVIDED } from '../src/errors';
-import { asyncExpectThrowError } from './utils';
+import { LIBRARY_NOT_COMPOSED, NO_ADDRESSES_PROVIDED } from '../../src/errors';
+import { asyncExpectThrowError } from '../utils';
 
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
@@ -80,12 +80,4 @@ describe('library setup', () => {
       await asyncExpectThrowError(async () => await rns.compose());
     });
   });
-
-  // describe('should fail when compose if custom network and no addresses provided', () => {
-  //   it('', async () => {
-  //     const web3 = new Web3('http://localhost:7545')
-  //     const rns = new RNS(web3)
-  //     await asyncExpectThrowError(async () => await rns.compose(), NO_ADDRESSES_PROVIDED);
-  //   });
-  // });
 });

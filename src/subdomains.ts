@@ -83,4 +83,32 @@ export default class implements Subdomains {
 
     return owner === ZERO_ADDRESS;
   }
+
+  /**
+   * Creates a new subdomain under the given domain tree
+   * 
+   * @throws SEARCH_ONLY_SIMPLE_DOMAINS if the given domain is not a simple domain (example.tld) - KB008
+   * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is not a simple domain under valid TLDs - KB009
+   * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
+   * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
+   * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
+   * 
+   * @param domain - Parent .rsk domain. ie: wallet.rsk
+   * @param label - Subdomain to register. ie: alice
+   * @param owner - The owner of the new subdomain
+   */
+  async createSubdomain(domain: string, label: string, owner: string): Promise<void> {
+    this._validateDomain(domain);
+    this._validateLabel(label);
+
+    const domainOwner = await this.registry.methods.owner(namehash(domain)).call();
+    if (domainOwner === ZERO_ADDRESS) {
+      throw new Error(DOMAIN_NOT_EXISTS);
+    }
+
+    const node: string = namehash(`${domain}`);
+    const accounts = await this.web3.eth.getAccounts();
+    
+    await this.registry.methods.setSubnodeOwner(node, this.web3.utils.sha3(label), owner).send({ from: accounts[0] });    
+  }
 }

@@ -1,7 +1,7 @@
 import Web3 from 'web3';
-import RNS from '../src/index';
-import { NO_REVERSE_RESOLUTION_SET, NO_NAME_RESOLUTION } from '../src/errors';
-import { asyncExpectThrowError } from './utils';
+import RNS from '../../src/index';
+import { NO_REVERSE_RESOLUTION_SET, NO_NAME_RESOLUTION } from '../../src/errors';
+import { asyncExpectThrowError } from '../utils';
 
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';

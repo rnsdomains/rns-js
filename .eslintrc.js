@@ -6,7 +6,8 @@ module.exports = {
     'jest/globals': true
   },
   extends: [
-    'eslint:recommended'
+    'eslint:recommended',
+    'airbnb-typescript/base',
   ],
   globals: {
     Atomics: 'readonly',
@@ -15,7 +16,8 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: 'module'
+    sourceType: 'module',
+    project: './tsconfig.json',
   },
   plugins: [
     '@typescript-eslint',
@@ -26,8 +28,6 @@ module.exports = {
     'jest/no-focused-tests': 'error',
     'jest/no-identical-title': 'error',
     'jest/prefer-to-have-length': 'warn',
-    'jest/valid-expect': 'error',
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': 'error'
+    'jest/valid-expect': 'error'
   }
 }

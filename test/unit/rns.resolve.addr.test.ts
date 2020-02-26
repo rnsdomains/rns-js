@@ -1,6 +1,8 @@
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
-import { accounts, contract, web3, defaultSender } from '@openzeppelin/test-environment';
+import {
+  accounts, contract, web3, defaultSender,
+} from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import { NO_ADDR_RESOLUTION_SET, NO_RESOLVER, NO_ADDR_RESOLUTION } from '../../src/errors';
@@ -9,8 +11,8 @@ import { asyncExpectThrowError } from '../utils';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
 
-describe ('addr resolution', () => {
-  const [ resolution, anotherAccount ] = accounts;
+describe('addr resolution', () => {
+  const [resolution, anotherAccount] = accounts;
 
   const TLD = 'rsk';
 
@@ -25,21 +27,21 @@ describe ('addr resolution', () => {
     const PublicResolver = contract.fromABI(AddrResolverData.abi, AddrResolverData.bytecode);
     registry = await Registry.new();
     publicResolver = await PublicResolver.new(registry.address);
-    
+
     await registry.setDefaultResolver(publicResolver.address);
 
     await registry.setSubnodeOwner('0x00', web3.utils.sha3(TLD), defaultSender);
 
-    options = { 
+    options = {
       contractAddresses: {
-        registry: registry.address
-      }
-    }
+        registry: registry.address,
+      },
+    };
 
     rns = new RNS(web3Instance, options);
   });
 
-  it ('should resolve a name', async () => {
+  it('should resolve a name', async () => {
     await registry.setSubnodeOwner(namehash(TLD), web3.utils.sha3('alice'), defaultSender);
     await publicResolver.setAddr(namehash('alice.rsk'), resolution);
 
@@ -50,11 +52,11 @@ describe ('addr resolution', () => {
   it('should throw an error when resolver has not been set', async () => {
     await registry.setSubnodeOwner(namehash(TLD), web3.utils.sha3('noresolver'), defaultSender);
     await registry.setResolver(namehash('noresolver.rsk'), ZERO_ADDRESS);
-    
-    await asyncExpectThrowError(async () => await rns.addr('noresolver.rsk'), NO_RESOLVER);
+
+    await asyncExpectThrowError(async () => rns.addr('noresolver.rsk'), NO_RESOLVER);
   });
 
-  describe ('should throw an error when resolver does not support addr interface', () => {
+  describe('should throw an error when resolver does not support addr interface', () => {
   //   it('ERC165 contract as resolver that not implements addr method', async () => {
   //     // the resolver address is the NameResolver contract. Is an ERC165 that not supports addr interface
   //     const web3 = new Web3(PUBLIC_NODE_TESTNET);
@@ -66,17 +68,17 @@ describe ('addr resolution', () => {
       await registry.setSubnodeOwner(namehash(TLD), web3.utils.sha3('accountasresolver'), defaultSender);
       await registry.setResolver(namehash('accountasresolver.rsk'), anotherAccount);
 
-      await asyncExpectThrowError(async () => await rns.addr('accountasresolver.rsk'), NO_ADDR_RESOLUTION);
+      await asyncExpectThrowError(async () => rns.addr('accountasresolver.rsk'), NO_ADDR_RESOLUTION);
     });
   });
 
   it('should throw an error when no resolution set', async () => {
     await registry.setSubnodeOwner(namehash(TLD), web3.utils.sha3('noresolution'), defaultSender);
 
-    await asyncExpectThrowError(async () => await rns.addr('noresolution.rsk'), NO_ADDR_RESOLUTION_SET);
+    await asyncExpectThrowError(async () => rns.addr('noresolution.rsk'), NO_ADDR_RESOLUTION_SET);
   });
 
   it('should throw an error when domain do not exist', async () => {
-    await asyncExpectThrowError(async () => await rns.addr('noexists.rsk'), NO_RESOLVER);
+    await asyncExpectThrowError(async () => rns.addr('noexists.rsk'), NO_RESOLVER);
   });
 });

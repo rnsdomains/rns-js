@@ -54,21 +54,6 @@ export const validDomain = (domain:string) => {
   return true;
 }
 
-
-/**
- * Validates that the given domain amount of labels is 2
- * 
- * @param domain - domain to validate
- * 
- * @returns
- * true if valid, false if not
- */
-export const validSimpleDomain = (domain:string) => {
-  const labels = domain.split('.');
-
-  return labels.length == 2;
-}
-
 /**
  * Validates the given domain TLD
  * 

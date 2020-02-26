@@ -25,7 +25,7 @@
     "test": "npx jest --coverage",
     "test:unit": "npx jest --coverage test/unit/",
     "test:integration": "npx jest --coverage test/integration-public-nodes/",
-    "lint": "npx eslint src/**/*.ts test/**/*.ts",
+    "lint": "npx eslint src/**/*.ts test/**/*.ts --fix",
     "prepublishOnly": "npm run test && npm run build"
   },
   "dependencies": {

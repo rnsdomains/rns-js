@@ -7,31 +7,35 @@ const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
 
 describe('isSubdomainAvailable validations', () => {
-  describe('should fail when sending a subdomain', () => {
+  describe('should not fail when sending a subdomain', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('not.simple.domain', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      const available = await rns.isSubdomainAvailable('multichain.testing.rsk', 'check');
+      expect(available).toBe(true);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('not.simple.domain', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      const available = await rns.isSubdomainAvailable('multichain.testing.rsk', 'check');
+      expect(available).toBe(true);
     });
   });
 
-  describe('should fail when sending just a tld', () => {
+  describe('should not fail when sending just a tld', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('tld', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      const available = await rns.isSubdomainAvailable('rsk', 'testing');
+      expect(available).toBe(false);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('tld', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      const available = await rns.isSubdomainAvailable('rsk', 'testing');
+      expect(available).toBe(false);
     });
   });
 
@@ -39,13 +43,13 @@ describe('isSubdomainAvailable validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('', 'willfail'), INVALID_DOMAIN);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('', 'willfail'), SEARCH_ONLY_SIMPLE_DOMAINS);
+      await asyncExpectThrowError(async () => await rns.isSubdomainAvailable('', 'willfail'), INVALID_DOMAIN);
     });
   });
 

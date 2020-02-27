@@ -1,5 +1,6 @@
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
+import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
 import {
   accounts, contract, web3, defaultSender,
 } from '@openzeppelin/test-environment';
@@ -57,12 +58,15 @@ describe('addr resolution', () => {
   });
 
   describe('should throw an error when resolver does not support addr interface', () => {
-  //   it('ERC165 contract as resolver that not implements addr method', async () => {
-  //     // the resolver address is the NameResolver contract. Is an ERC165 that not supports addr interface
-  //     const web3 = new Web3(PUBLIC_NODE_TESTNET);
-  //     const rns = new RNS(web3);
-  //     await asyncExpectThrowError(async () => await rns.addr('noaddrresolver.testing.rsk'), NO_ADDR_RESOLUTION);
-  //   });
+    it('ERC165 contract as resolver that not implements addr method', async () => {
+      // the resolver address is the NameResolver contract. Is an ERC165 that not supports addr interface
+      const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
+      const nameResolver = await NameResolver.new(registry.address);        
+
+      await registry.setSubnodeOwner(namehash(TLD), web3.utils.sha3('anothererc165'), defaultSender);
+      await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
+      await asyncExpectThrowError(async () => await rns.addr('anothererc165.rsk'), NO_ADDR_RESOLUTION);
+    });
 
     it('account address as a resolver', async () => {
       await registry.setSubnodeOwner(namehash(TLD), web3.utils.sha3('accountasresolver'), defaultSender);

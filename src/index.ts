@@ -112,7 +112,6 @@ export = class implements RNS {
   /**
    * Checks if the given label subdomain is available under the given domain tree
    * 
-   * @throws SEARCH_ONLY_SIMPLE_DOMAINS if the given domain is not a simple domain (example.tld) - KB008
    * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is not a simple domain under valid TLDs - KB009
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
    * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
@@ -132,7 +131,6 @@ export = class implements RNS {
   /**
    * Creates a new subdomain under the given domain tree
    * 
-   * @throws SEARCH_ONLY_SIMPLE_DOMAINS if the given domain is not a simple domain (example.tld) - KB008
    * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is not a simple domain under valid TLDs - KB009
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
    * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
@@ -146,5 +144,4 @@ export = class implements RNS {
     await this.compose();
     return this._subdomainsHelper.createSubdomain(domain, label, owner);
   }
-
 }

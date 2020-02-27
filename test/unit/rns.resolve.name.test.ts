@@ -24,7 +24,10 @@ describe('name resolution', () => {
   beforeEach(async () => {
     const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
     const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
-    const ReverseRegistrar = contract.fromABI(ReverseRegistrarData.abi, ReverseRegistrarData.bytecode);
+    const ReverseRegistrar = contract.fromABI(
+      ReverseRegistrarData.abi,
+      ReverseRegistrarData.bytecode,
+    );
 
     registry = await Registry.new();
     nameResolver = await NameResolver.new(registry.address);

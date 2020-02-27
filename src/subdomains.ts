@@ -2,9 +2,9 @@ import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract/types';
 import { hash as namehash } from 'eth-ens-namehash';
 import { Subdomains } from './types';
-import { SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN, INVALID_LABEL, DOMAIN_NOT_EXISTS } from './errors';
+import { SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN, INVALID_LABEL, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN } from './errors';
 import { ZERO_ADDRESS } from './constants';
-import { validLabel, validDomain, validTld } from './utils';
+import { validLabel, validDomain, validTld, hasAccounts } from './utils';
 
 /**
  * Set of subdomains related methods
@@ -68,6 +68,10 @@ export default class implements Subdomains {
    * @param owner - The owner of the new subdomain
    */
   async createSubdomain(domain: string, label: string, owner: string): Promise<void> {
+    if (!await hasAccounts(this.web3)) {
+      throw new Error(NO_ACCOUNTS_TO_SIGN);
+    }
+
     if (!validDomain(domain)) {
       throw new Error(INVALID_DOMAIN);
     }

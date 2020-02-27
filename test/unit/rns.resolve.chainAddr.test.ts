@@ -77,13 +77,13 @@ describe('chainAddr resolution', () => {
 
   describe('should throw an error when resolver does not support chainAddr interface', () => {
     it('ERC165 contract as resolver that not implements addr method', async () => {
-      // the resolver address is the NameResolver contract. Is an ERC165 that not supports addr interface
+      // the address is the NameResolver contract, an ERC165 that not supports chainAddr interface
       const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
-      const nameResolver = await NameResolver.new(registry.address);        
+      const nameResolver = await NameResolver.new(registry.address);
 
       await registry.setSubnodeOwner(namehash(TLD), web3.utils.sha3('anothererc165'), defaultSender);
       await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
-      await asyncExpectThrowError(async () => await rns.addr('anothererc165.rsk', ChainId.BITCOIN_MAINNET), NO_CHAIN_ADDR_RESOLUTION);
+      await asyncExpectThrowError(async () => rns.addr('anothererc165.rsk', ChainId.BITCOIN_MAINNET), NO_CHAIN_ADDR_RESOLUTION);
     });
 
     it('account address as a resolver', async () => {

@@ -17,6 +17,24 @@ export const hasMethod = async(web3: Web3, contractAddress: string, signatureHas
 }
 
 /**
+ * Checks if the given web3 instance has accounts to sign txs
+ * 
+ * @param web3 - Web3 instance 
+ * 
+ * @returns
+ * true if has accounts, false if not
+ */
+export const hasAccounts = async(web3: Web3) => {
+  let accounts = [];
+  try {
+    accounts = await web3.eth.getAccounts();
+  } catch {
+    return false;
+  }
+  return accounts.length > 0;
+}
+
+/**
  * Validates the given label
  * 
  * @param label - label to validate

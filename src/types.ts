@@ -153,5 +153,5 @@ export interface Subdomains {
    * @param label - Subdomain to register. ie: alice
    * @param owner - The owner of the new subdomain
    */
-  create(domain: string, label: string, owner: string): Promise<void>;
+  setOwner(domain: string, label: string, owner: string): Promise<void>;
 }

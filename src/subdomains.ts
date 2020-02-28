@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import { hash as namehash } from 'eth-ens-namehash';
 import { Subdomains, Options } from './types';
-import { SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN, INVALID_LABEL, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN } from './errors';
+import { SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN, INVALID_LABEL, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN, SUBDOMAIN_NOT_AVAILABLE } from './errors';
 import { ZERO_ADDRESS } from './constants';
 import { validLabel, validDomain, validTld, hasAccounts } from './utils';
 import { Composer } from './composer';
@@ -59,7 +59,7 @@ export default class extends Composer implements Subdomains {
   }
 
   /**
-   * Creates a new subdomain under the given domain tree
+   * Creates a new subdomain under the given domain tree if not exists.
    * 
    * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is not a domain under valid TLDs - KB009
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
@@ -70,7 +70,7 @@ export default class extends Composer implements Subdomains {
    * @param label - Subdomain to register. ie: alice
    * @param owner - The owner of the new subdomain
    */
-  async create(domain: string, label: string, owner: string): Promise<void> {
+  async setOwner(domain: string, label: string, owner: string): Promise<void> {
     await this.compose();
     if (!await hasAccounts(this.web3)) {
       throw new Error(NO_ACCOUNTS_TO_SIGN);
@@ -91,6 +91,10 @@ export default class extends Composer implements Subdomains {
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
       throw new Error(DOMAIN_NOT_EXISTS);
+    }
+
+    if (!await this.available(domain, label)) {
+      throw new Error(SUBDOMAIN_NOT_AVAILABLE);
     }
 
     const node: string = namehash(`${domain}`);

@@ -9,8 +9,8 @@ import { Composer } from './composer';
  * RNS JavaScript library.
  */
 export = class extends Composer implements RNS {
-  private _resolutionHelper!: Resolutions;
-  private _subdomainsHelper!: Subdomains;
+  private _resolutions!: Resolutions;
+  private _subdomains!: Subdomains;
 
   /**
    * Create RNS library.
@@ -23,8 +23,8 @@ export = class extends Composer implements RNS {
    */
   constructor (public web3: Web3, options?: Options) {
     super(web3, options);
-    this._subdomainsHelper = new Subdomains(this.web3, options);
-    this._resolutionHelper = new Resolutions(this.web3, options);
+    this._subdomains = new Subdomains(this.web3, options);
+    this._resolutions = new Resolutions(this.web3, options);
   }
 
   /**
@@ -55,9 +55,9 @@ export = class extends Composer implements RNS {
    */
   async addr(domain: string, chainId?: ChainId): Promise<string> {
     if (!chainId) {
-      return this._resolutionHelper.addr(domain);
+      return this._resolutions.addr(domain);
     } else {
-      return this._resolutionHelper.chainAddr(domain, chainId);
+      return this._resolutions.chainAddr(domain, chainId);
     }
   }
 
@@ -73,7 +73,7 @@ export = class extends Composer implements RNS {
    * Domain or subdomain associated to the given address.
    */
   async reverse(address: string): Promise<string> {
-    return this._resolutionHelper.name(address);
+    return this._resolutions.name(address);
   }
 
   /**
@@ -82,6 +82,6 @@ export = class extends Composer implements RNS {
    * @returns Object with subdomains related methods ready to use.
    */
   get subdomains(): Subdomains {
-    return this._subdomainsHelper;
+    return this._subdomains;
   }
 }

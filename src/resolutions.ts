@@ -1,7 +1,5 @@
 import Web3 from 'web3/types';
 import { Contract } from 'web3-eth-contract/types';
-import { hash as namehash } from 'eth-ens-namehash';
-import { hasMethod } from './utils';
 import { createAddrResolver, createChainAddrResolver, createNameResolver } from './factories';
 import { 
   NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_RESOLVER,
@@ -12,7 +10,7 @@ import {
   ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE,
   CHAIN_ADDR_INTERFACE, NAME_INTERFACE 
 } from './constants';
-import { ChainId, Resolutions, Options } from './types';
+import { ChainId, Resolutions, Options, Utils } from './types';
 import { Composer } from './composer';
 
 /**
@@ -24,7 +22,7 @@ export default class extends Composer implements Resolutions {
    * @param web3 - current Web3 instance
    * @param registry - RNS Registry Web3 Contract instance
    */
-  constructor(public web3: Web3, private options?: Options) {
+  constructor(public web3: Web3, private utils: Utils, options?: Options) {
     super(web3, options);
   }
 
@@ -53,7 +51,7 @@ export default class extends Composer implements Resolutions {
       throw new Error(noResolverError || NO_RESOLVER);
     }
 
-    const isErc165Contract = await hasMethod(this.web3, resolverAddress, ERC165_INTERFACE);
+    const isErc165Contract = await this.utils.hasMethod(resolverAddress, ERC165_INTERFACE);
     if (!isErc165Contract) {
       throw new Error(errorMessage);
     }
@@ -82,7 +80,7 @@ export default class extends Composer implements Resolutions {
    */
   async addr(domain: string): Promise<string> {
     await this.compose();
-    const node: string = namehash(domain);
+    const node: string = this.utils.namehash(domain);
 
     const resolver = await this._createResolver(node, ADDR_INTERFACE, NO_ADDR_RESOLUTION, createAddrResolver);
 
@@ -110,7 +108,7 @@ export default class extends Composer implements Resolutions {
    */
   async chainAddr(domain: string, chainId: ChainId): Promise<string> {
     await this.compose();
-    const node: string = namehash(domain);
+    const node: string = this.utils.namehash(domain);
 
     const resolver = await this._createResolver(node, CHAIN_ADDR_INTERFACE, NO_CHAIN_ADDR_RESOLUTION, createChainAddrResolver);
 
@@ -137,7 +135,7 @@ export default class extends Composer implements Resolutions {
     await this.compose();
     address = address.substring(2).toLowerCase(); // remove '0x' and convert it to lowercase.
     
-    const node: string = namehash(`${address}.addr.reverse`);
+    const node: string = this.utils.namehash(`${address}.addr.reverse`);
 
     const resolver = await this._createResolver(node, NAME_INTERFACE, NO_NAME_RESOLUTION, createNameResolver, NO_REVERSE_RESOLUTION_SET);
 

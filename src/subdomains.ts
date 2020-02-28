@@ -1,9 +1,7 @@
 import Web3 from 'web3';
-import { hash as namehash } from 'eth-ens-namehash';
-import { Subdomains, Options } from './types';
+import { Subdomains, Options, Utils } from './types';
 import { SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN, INVALID_LABEL, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN, SUBDOMAIN_NOT_AVAILABLE } from './errors';
 import { ZERO_ADDRESS } from './constants';
-import { validLabel, validDomain, validTld, hasAccounts } from './utils';
 import { Composer } from './composer';
 
 /**
@@ -15,7 +13,7 @@ export default class extends Composer implements Subdomains {
    * @param web3 - current Web3 instance
    * @param registry - RNS registry used to look for given domains
    */
-  constructor(public web3: Web3, private options?: Options) {
+  constructor(public web3: Web3, private utils: Utils, options?: Options) {
     super(web3, options);
   }
 
@@ -35,24 +33,24 @@ export default class extends Composer implements Subdomains {
    */
   async available(domain: string, label: string): Promise<boolean> {
     await this.compose();
-    if (!validDomain(domain)) {
+    if (!this.utils.validDomain(domain)) {
       throw new Error(INVALID_DOMAIN);
     }
 
-    if (!validTld(domain)) {
+    if (!this.utils.validTld(domain)) {
       throw new Error(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     }
 
-    if (!validLabel(label)) {
+    if (!this.utils.validLabel(label)) {
       throw new Error(INVALID_LABEL);
     }
 
-    const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
+    const domainOwner = await this._contracts.registry.methods.owner(this.utils.namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
       throw new Error(DOMAIN_NOT_EXISTS);
     }
 
-    const node: string = namehash(`${label}.${domain}`);
+    const node: string = this.utils.namehash(`${label}.${domain}`);
     const owner: string = await this._contracts.registry.methods.owner(node).call();
 
     return owner === ZERO_ADDRESS;
@@ -72,23 +70,24 @@ export default class extends Composer implements Subdomains {
    */
   async setOwner(domain: string, label: string, owner: string): Promise<void> {
     await this.compose();
-    if (!await hasAccounts(this.web3)) {
+
+    if (!await this.utils.hasAccounts(this.web3)) {
       throw new Error(NO_ACCOUNTS_TO_SIGN);
     }
 
-    if (!validDomain(domain)) {
+    if (!this.utils.validDomain(domain)) {
       throw new Error(INVALID_DOMAIN);
     }
 
-    if (!validTld(domain)) {
+    if (!this.utils.validTld(domain)) {
       throw new Error(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     }
 
-    if (!validLabel(label)) {
+    if (!this.utils.validLabel(label)) {
       throw new Error(INVALID_LABEL);
     }
 
-    const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
+    const domainOwner = await this._contracts.registry.methods.owner(this.utils.namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
       throw new Error(DOMAIN_NOT_EXISTS);
     }
@@ -97,7 +96,7 @@ export default class extends Composer implements Subdomains {
       throw new Error(SUBDOMAIN_NOT_AVAILABLE);
     }
 
-    const node: string = namehash(`${domain}`);
+    const node: string = this.utils.namehash(`${domain}`);
     const accounts = await this.web3.eth.getAccounts();
     
     await this._contracts.registry.methods.setSubnodeOwner(node, this.web3.utils.sha3(label), owner).send({ from: accounts[0] });    

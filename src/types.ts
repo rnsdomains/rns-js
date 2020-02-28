@@ -89,6 +89,13 @@ export interface RNS {
    * @returns Object with subdomains related methods ready to use.
    */
   subdomains: Subdomains;
+
+  /**
+   * Set of utils and validators methods
+   *
+   * @returns Object with utils methods
+   */
+  utils: Utils;
 }
 
 export interface Composable {
@@ -154,4 +161,70 @@ export interface Subdomains {
    * @param owner - The owner of the new subdomain
    */
   setOwner(domain: string, label: string, owner: string): Promise<void>;
+}
+
+/**
+ * Set of utils and validators methods
+ */
+export interface Utils {
+  /**
+   * Checks if the given web3 instance has accounts to sign txs
+   * 
+   * @param web3 - Web3 instance 
+   * 
+   * @returns
+   * true if has accounts, false if not
+   */
+  hasAccounts(web3: Web3): Promise<boolean>;
+
+  /**
+   * Checks if the contract in the given address has the given method 
+   * 
+   * @param contractAddress - address of the contract to check 
+   * @param signatureHash - keccak256 of the method signature
+   * 
+   * @returns
+   * true if method exists, false if not
+   */
+  hasMethod(contractAddress: string, signatureHash: string): Promise<boolean>;
+
+  /**
+   * Validates the given label
+   * 
+   * @param label - label to validate
+   * 
+   * @returns
+   * true if valid, false if not
+   */
+  validLabel(label: string): boolean;
+
+  /**
+   * Validates the given domain syntax
+   * 
+   * @param domain - domain to validate
+   * 
+   * @returns
+   * true if valid, false if not
+   */
+  validDomain(domain:string): boolean;
+
+  /**
+   * Validates the given domain TLD
+   * 
+   * @param domain - domain to validate
+   * 
+   * @returns
+   * true if valid, false if not
+   */
+  validTld(domain:string): boolean;
+
+  /**
+   * Returns namehash of the given domain
+   * 
+   * @param domain - domain to apply namehash function
+   * 
+   * @returns
+   * namehash of the given domain
+   */
+  namehash(domain:string): string;
 }

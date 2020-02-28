@@ -4,6 +4,7 @@ import { LIBRARY_NOT_COMPOSED } from './errors';
 import Resolutions from './resolutions';
 import Subdomains from './subdomains';
 import { Composer } from './composer';
+import Utils from './utils';
 
 /**
  * RNS JavaScript library.
@@ -11,6 +12,7 @@ import { Composer } from './composer';
 export = class extends Composer implements RNS {
   private _resolutions!: Resolutions;
   private _subdomains!: Subdomains;
+  private _utils: Utils;  
 
   /**
    * Create RNS library.
@@ -23,8 +25,9 @@ export = class extends Composer implements RNS {
    */
   constructor (public web3: Web3, options?: Options) {
     super(web3, options);
-    this._subdomains = new Subdomains(this.web3, options);
-    this._resolutions = new Resolutions(this.web3, options);
+    this._utils = new Utils(web3);
+    this._subdomains = new Subdomains(this.web3, this._utils, options);
+    this._resolutions = new Resolutions(this.web3, this._utils, options);
   }
 
   /**
@@ -83,5 +86,14 @@ export = class extends Composer implements RNS {
    */
   get subdomains(): Subdomains {
     return this._subdomains;
+  }
+
+  /**
+   * Set of subdomains related methods
+   *
+   * @returns Object with subdomains related methods ready to use.
+   */
+  get utils(): Utils {
+    return this._utils;
   }
 }

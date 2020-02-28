@@ -3,6 +3,7 @@ import {
   accounts, contract, web3, defaultSender,
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
+import { expectRevert } from '@openzeppelin/test-helpers';
 import Web3 from 'web3';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
@@ -11,8 +12,6 @@ import {
   INVALID_DOMAIN, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS,
   DOMAIN_NOT_EXISTS, INVALID_LABEL, SUBDOMAIN_NOT_AVAILABLE,
 } from '../../src/errors';
-
-const { expectRevert } = require('@openzeppelin/test-helpers');
 
 describe('subdomains.setOwner', () => {
   const TLD = 'rsk';

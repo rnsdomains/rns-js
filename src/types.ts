@@ -54,16 +54,14 @@ export interface RNS {
    * Web3 instance used to interact with the blockchain
    */
   web3: Web3;
+
   /**
    * RNS suite contract instances
    *
    * @returns Object with a web3.eth.Contract instance for each necessary contract.
    */
   contracts: Contracts;
-  /**
-   * Detects the current network and instances the contracts.
-   */
-  compose(): void;
+
   /**
    * Get address of a given domain and chain. If chainId is not provided, it resolves current blockchain address.
    *
@@ -86,15 +84,18 @@ export interface RNS {
   reverse(address: string): Promise<string>;
 
   /**
-   * Checks if the given label subdomain is available under the given domain tree
-   * 
-   * @param domain - Parent .rsk domain. ie: wallet.rsk
-   * @param label - Subdomain to check if is available. ie: alice
-   * 
-   * @returns
-   * true if available, false if not
+   * Set of subdomains related methods
+   *
+   * @returns Object with subdomains related methods ready to use.
    */
-  isSubdomainAvailable(domain: string, label: string): Promise<boolean>;
+  subdomains: Subdomains;
+}
+
+export interface Composable {
+  /**
+   * Detects the current network and instantiates the contracts.
+   */
+  compose(): void;
 }
 
 /**
@@ -117,6 +118,16 @@ export interface Resolutions {
    * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    */
   chainAddr(domain: string, chainId: ChainId): Promise<string>;
+
+  /**
+   * Reverse lookup: get name of a given address.
+   * 
+   * @param address - address to be resolved
+   * 
+   * @returns
+   * Domain or subdomain associated to the given address.
+   */
+  name(address: string): Promise<string>;
 }
 
 /**
@@ -133,4 +144,14 @@ export interface Subdomains {
    * true if available, false if not
    */
   available(domain: string, label: string): Promise<boolean>;
+
+  /**
+   * Creates a new subdomain under the given domain tree
+   * 
+   * 
+   * @param domain - Parent .rsk domain. ie: wallet.rsk
+   * @param label - Subdomain to register. ie: alice
+   * @param owner - The owner of the new subdomain
+   */
+  create(domain: string, label: string, owner: string): Promise<void>;
 }

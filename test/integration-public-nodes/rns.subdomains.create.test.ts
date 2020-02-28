@@ -12,7 +12,7 @@ describe('create', () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
       await asyncExpectThrowError(
-        async () => rns.createSubdomain('multichain.testing.rsk', 'check', '0x0000000000000000000000000000000000000001'),
+        async () => rns.subdomains.create('multichain.testing.rsk', 'check', '0x0000000000000000000000000000000000000001'),
         NO_ACCOUNTS_TO_SIGN,
       );
     });
@@ -21,7 +21,7 @@ describe('create', () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
       await asyncExpectThrowError(
-        async () => rns.createSubdomain('multichain.testing.rsk', 'check', '0x0000000000000000000000000000000000000001'),
+        async () => rns.subdomains.create('multichain.testing.rsk', 'check', '0x0000000000000000000000000000000000000001'),
         NO_ACCOUNTS_TO_SIGN,
       );
     });

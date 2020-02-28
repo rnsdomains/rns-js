@@ -1,21 +1,23 @@
 import Web3 from 'web3';
-import { Contract } from 'web3-eth-contract/types';
 import { hash as namehash } from 'eth-ens-namehash';
-import { Subdomains } from './types';
+import { Subdomains, Options } from './types';
 import { SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN, INVALID_LABEL, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN } from './errors';
 import { ZERO_ADDRESS } from './constants';
 import { validLabel, validDomain, validTld, hasAccounts } from './utils';
+import { Composer } from './composer';
 
 /**
  * Set of subdomains related methods
  */
-export default class implements Subdomains {
+export default class extends Composer implements Subdomains {
   /**
    * 
    * @param web3 - current Web3 instance
    * @param registry - RNS registry used to look for given domains
    */
-  constructor(private web3: Web3, private registry: Contract) { }
+  constructor(public web3: Web3, private options?: Options) {
+    super(web3, options);
+  }
 
   /**
    * Checks if the given label subdomain is available under the given domain tree
@@ -32,6 +34,7 @@ export default class implements Subdomains {
    * true if available, false if not
    */
   async available(domain: string, label: string): Promise<boolean> {
+    await this.compose();
     if (!validDomain(domain)) {
       throw new Error(INVALID_DOMAIN);
     }
@@ -44,13 +47,13 @@ export default class implements Subdomains {
       throw new Error(INVALID_LABEL);
     }
 
-    const domainOwner = await this.registry.methods.owner(namehash(domain)).call();
+    const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
       throw new Error(DOMAIN_NOT_EXISTS);
     }
 
     const node: string = namehash(`${label}.${domain}`);
-    const owner: string = await this.registry.methods.owner(node).call();
+    const owner: string = await this._contracts.registry.methods.owner(node).call();
 
     return owner === ZERO_ADDRESS;
   }
@@ -67,7 +70,8 @@ export default class implements Subdomains {
    * @param label - Subdomain to register. ie: alice
    * @param owner - The owner of the new subdomain
    */
-  async createSubdomain(domain: string, label: string, owner: string): Promise<void> {
+  async create(domain: string, label: string, owner: string): Promise<void> {
+    await this.compose();
     if (!await hasAccounts(this.web3)) {
       throw new Error(NO_ACCOUNTS_TO_SIGN);
     }
@@ -84,7 +88,7 @@ export default class implements Subdomains {
       throw new Error(INVALID_LABEL);
     }
 
-    const domainOwner = await this.registry.methods.owner(namehash(domain)).call();
+    const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
       throw new Error(DOMAIN_NOT_EXISTS);
     }
@@ -92,6 +96,6 @@ export default class implements Subdomains {
     const node: string = namehash(`${domain}`);
     const accounts = await this.web3.eth.getAccounts();
     
-    await this.registry.methods.setSubnodeOwner(node, this.web3.utils.sha3(label), owner).send({ from: accounts[0] });    
+    await this._contracts.registry.methods.setSubnodeOwner(node, this.web3.utils.sha3(label), owner).send({ from: accounts[0] });    
   }
 }

@@ -11,7 +11,7 @@ import { asyncExpectThrowError } from '../utils';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
 
-describe('isSubdomainAvailable', () => {
+describe('subdomains.available', () => {
   const TLD = 'rsk';
 
   let registry: any;
@@ -39,63 +39,63 @@ describe('isSubdomainAvailable', () => {
     it('should not fail when sending a subdomain', async () => {
       await registry.setSubnodeOwner(namehash(TLD), web3.utils.sha3('alice'), defaultSender);
       await registry.setSubnodeOwner(namehash('alice.rsk'), web3.utils.sha3('subdomain'), defaultSender);
-      const available = await rns.isSubdomainAvailable('subdomain.alice.rsk', 'check');
+      const available = await rns.subdomains.available('subdomain.alice.rsk', 'check');
       expect(available).toBe(true);
     });
 
     it('should not fail when sending just a tld', async () => {
-      const available = await rns.isSubdomainAvailable('rsk', 'alice');
+      const available = await rns.subdomains.available('rsk', 'alice');
       expect(available).toBe(true);
     });
 
     it('should fail when sending an empty domain', async () => {
-      await asyncExpectThrowError(async () => rns.isSubdomainAvailable('', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowError(async () => rns.subdomains.available('', 'willfail'), INVALID_DOMAIN);
     });
 
     it('should fail when sending an just a dot with no labels', async () => {
-      await asyncExpectThrowError(async () => rns.isSubdomainAvailable('.', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowError(async () => rns.subdomains.available('.', 'willfail'), INVALID_DOMAIN);
     });
 
     it('should fail when not sending an .rsk domain', async () => {
-      await asyncExpectThrowError(async () => rns.isSubdomainAvailable('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      await asyncExpectThrowError(async () => rns.subdomains.available('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     });
 
     it('should fail when sending upper case domain', async () => {
-      await asyncExpectThrowError(async () => rns.isSubdomainAvailable('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowError(async () => rns.subdomains.available('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
 
     it('should fail when sending invalid characters', async () => {
-      await asyncExpectThrowError(async () => rns.isSubdomainAvailable('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowError(async () => rns.subdomains.available('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
 
     it('should fail when given domain does not exist', async () => {
-      await asyncExpectThrowError(async () => rns.isSubdomainAvailable('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowError(async () => rns.subdomains.available('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
     });
 
     it('should fail when sending empty label', async () => {
-      await asyncExpectThrowError(async () => rns.isSubdomainAvailable('domain.rsk', ''), INVALID_LABEL);
+      await asyncExpectThrowError(async () => rns.subdomains.available('domain.rsk', ''), INVALID_LABEL);
     });
 
     it('should fail when sending label with upper case characters', async () => {
-      await asyncExpectThrowError(async () => rns.isSubdomainAvailable('domain.rsk', 'iNVAlid'), INVALID_LABEL);
+      await asyncExpectThrowError(async () => rns.subdomains.available('domain.rsk', 'iNVAlid'), INVALID_LABEL);
     });
 
     it('should fail when sending label with invalid characters', async () => {
-      await asyncExpectThrowError(async () => rns.isSubdomainAvailable('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
+      await asyncExpectThrowError(async () => rns.subdomains.available('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
     });
   });
 
-  describe('isSubdomainAvailable happy paths', () => {
+  describe('subdomains.available happy paths', () => {
     it('should return true if label is available', async () => {
       await registry.setSubnodeOwner(namehash(TLD), web3.utils.sha3('alice'), defaultSender);
-      const available = await rns.isSubdomainAvailable('alice.rsk', 'check');
+      const available = await rns.subdomains.available('alice.rsk', 'check');
       expect(available).toBe(true);
     });
 
     it('should return false if label is not available', async () => {
       await registry.setSubnodeOwner(namehash(TLD), web3.utils.sha3('alice'), defaultSender);
       await registry.setSubnodeOwner(namehash('alice.rsk'), web3.utils.sha3('test'), defaultSender);
-      const available = await rns.isSubdomainAvailable('alice.rsk', 'test');
+      const available = await rns.subdomains.available('alice.rsk', 'test');
       expect(available).toBe(false);
     });
   });

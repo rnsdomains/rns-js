@@ -12,18 +12,21 @@ import {
   ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE,
   CHAIN_ADDR_INTERFACE, NAME_INTERFACE 
 } from './constants';
-import { ChainId, Resolutions } from './types';
+import { ChainId, Resolutions, Options } from './types';
+import { Composer } from './composer';
 
 /**
  * Standard resolution protocols.
  */
-export default class implements Resolutions {
+export default class extends Composer implements Resolutions {
   /**
    * 
    * @param web3 - current Web3 instance
    * @param registry - RNS Registry Web3 Contract instance
    */
-  constructor(private web3: Web3, private registry: Contract) { }
+  constructor(public web3: Web3, private options?: Options) {
+    super(web3, options);
+  }
 
   /**
    * Instance the resolver associated with the given node and checks if is valid according to the given interface.
@@ -44,7 +47,7 @@ export default class implements Resolutions {
     contractFactory: (web3: Web3, address: string) => Contract,
     noResolverError?: string
   ): Promise<Contract> {
-    const resolverAddress: string = await this.registry.methods.resolver(node).call();
+    const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
 
     if (resolverAddress === ZERO_ADDRESS) {
       throw new Error(noResolverError || NO_RESOLVER);
@@ -78,6 +81,7 @@ export default class implements Resolutions {
    * Address resolution for the given domain
    */
   async addr(domain: string): Promise<string> {
+    await this.compose();
     const node: string = namehash(domain);
 
     const resolver = await this._createResolver(node, ADDR_INTERFACE, NO_ADDR_RESOLUTION, createAddrResolver);
@@ -105,6 +109,7 @@ export default class implements Resolutions {
    * Address resolution for a domain in a given chain
    */
   async chainAddr(domain: string, chainId: ChainId): Promise<string> {
+    await this.compose();
     const node: string = namehash(domain);
 
     const resolver = await this._createResolver(node, CHAIN_ADDR_INTERFACE, NO_CHAIN_ADDR_RESOLUTION, createChainAddrResolver);
@@ -129,6 +134,7 @@ export default class implements Resolutions {
    * Domain or subdomain associated to the given address.
    */
   async name(address: string): Promise<string> {
+    await this.compose();
     address = address.substring(2).toLowerCase(); // remove '0x' and convert it to lowercase.
     
     const node: string = namehash(`${address}.addr.reverse`);

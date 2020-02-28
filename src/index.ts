@@ -1,19 +1,16 @@
 import Web3 from 'web3/types';
-import { RNS, Contracts, Options, ContractAddresses, ChainId } from './types';
-import { createRegistry, createContractAddresses } from './factories';
+import { RNS, Contracts, Options, ChainId } from './types';
 import { LIBRARY_NOT_COMPOSED } from './errors';
 import Resolutions from './resolutions';
 import Subdomains from './subdomains';
+import { Composer } from './composer';
 
 /**
  * RNS JavaScript library.
  */
-export = class implements RNS {
-  private _contracts!: Contracts;
-  private _contractAddresses!: ContractAddresses;
-  private _resolutionHelper!: Resolutions;
-  private _subdomainsHelper!: Subdomains;
-  private _composed!: boolean;
+export = class extends Composer implements RNS {
+  private _resolutions!: Resolutions;
+  private _subdomains!: Subdomains;
 
   /**
    * Create RNS library.
@@ -25,9 +22,9 @@ export = class implements RNS {
    * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
    */
   constructor (public web3: Web3, options?: Options) {
-    if(options && options.contractAddresses) {
-      this._contractAddresses = options.contractAddresses
-    }
+    super(web3, options);
+    this._subdomains = new Subdomains(this.web3, options);
+    this._resolutions = new Resolutions(this.web3, options);
   }
 
   /**
@@ -45,33 +42,6 @@ export = class implements RNS {
   }
 
   /**
-   * Detects the current network and instances the contracts.
-   *
-   * @throws NO_ADDRESSES_PROVIDED if the network is not RSK Mainnet or RSK Testnet and the options parameter was not provided in the constructor - KB005.
-   */
-  public async compose(): Promise<void> {
-    if (!this._composed) {
-      await this._detectNetwork();
-      this._resolutionHelper = new Resolutions(this.web3, this._contracts.registry);
-      this._subdomainsHelper = new Subdomains(this.web3, this._contracts.registry);
-      this._composed = true;
-    }
-  }
-
-  private async _detectNetwork() {
-    if (!this._contractAddresses) {
-      const networkId = await this.web3.eth.net.getId();
-      this._contractAddresses = createContractAddresses(networkId)
-    }
-
-    if(!this._contracts) {
-      this._contracts = {
-        registry: createRegistry(this.web3, this._contractAddresses.registry)
-      }
-    }
-  }
-
-  /**
    * Get address of a given domain and chain. If chainId is not provided, it resolves current blockchain address.
    *
    * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
@@ -84,11 +54,10 @@ export = class implements RNS {
    * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    */
   async addr(domain: string, chainId?: ChainId): Promise<string> {
-    await this.compose();
     if (!chainId) {
-      return this._resolutionHelper.addr(domain);
+      return this._resolutions.addr(domain);
     } else {
-      return this._resolutionHelper.chainAddr(domain, chainId);
+      return this._resolutions.chainAddr(domain, chainId);
     }
   }
 
@@ -104,29 +73,15 @@ export = class implements RNS {
    * Domain or subdomain associated to the given address.
    */
   async reverse(address: string): Promise<string> {
-    await this.compose();
-    return this._resolutionHelper.name(address);
+    return this._resolutions.name(address);
   }
-
 
   /**
-   * Checks if the given label subdomain is available under the given domain tree
-   * 
-   * @throws SEARCH_ONLY_SIMPLE_DOMAINS if the given domain is not a simple domain (example.tld) - KB008
-   * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is not a simple domain under valid TLDs - KB009
-   * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
-   * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
-   * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
-   * 
-   * @param domain - Parent .rsk domain. ie: wallet.rsk
-   * @param label - Subdomain to check if is available. ie: alice
-   * 
-   * @returns
-   * true if available, false if not
+   * Set of subdomains related methods
+   *
+   * @returns Object with subdomains related methods ready to use.
    */
-  async isSubdomainAvailable(domain: string, label: string): Promise<boolean> {
-    await this.compose();
-    return this._subdomainsHelper.available(domain, label);
+  get subdomains(): Subdomains {
+    return this._subdomains;
   }
-
 }

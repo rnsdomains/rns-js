@@ -4,16 +4,17 @@
     "module": "commonjs",
     "declaration": true,
     "outDir": "lib",
+    "rootDir": "src",
     "strict": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "src",
-    "test"
+    "src"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "test"
   ]
 }

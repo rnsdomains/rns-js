@@ -6,8 +6,8 @@ import { asyncExpectThrowError } from '../utils';
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
 
-describe ('addr resolution', () => {
-  describe ('should resolve a name', () => {
+describe('addr resolution', () => {
+  describe('should resolve a name', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
@@ -23,33 +23,33 @@ describe ('addr resolution', () => {
     });
   });
 
-  describe ('should throw an error when resolver has not been set', () => {
+  describe('should throw an error when resolver has not been set', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.addr('noresolver.testing.rsk'), NO_RESOLVER);
+      await asyncExpectThrowError(async () => rns.addr('noresolver.testing.rsk'), NO_RESOLVER);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.addr('noresolver.testing.rsk'), NO_RESOLVER);
+      await asyncExpectThrowError(async () => rns.addr('noresolver.testing.rsk'), NO_RESOLVER);
     });
   });
 
-  describe ('should throw an error when resolver does not support addr interface', () => {
-    describe ('ERC165 contract as resolver that not implements addr method', () => {
-      // the resolver address is the NameResolver contract. Is an ERC165 that not supports addr interface
+  describe('should throw an error when resolver does not support addr interface', () => {
+    describe('ERC165 contract as resolver that not implements addr method', () => {
+      // resolver address is the NameResolver contract. an ERC165 that not supports addr interface
       test('mainnet', async () => {
         const web3 = new Web3(PUBLIC_NODE_MAINNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowError(async () => await rns.addr('noaddrresolver.testing.rsk'), NO_ADDR_RESOLUTION);
+        await asyncExpectThrowError(async () => rns.addr('noaddrresolver.testing.rsk'), NO_ADDR_RESOLUTION);
       });
 
       test('testnet with another ERC165  as resolver', async () => {
         const web3 = new Web3(PUBLIC_NODE_TESTNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowError(async () => await rns.addr('noaddrresolver.testing.rsk'), NO_ADDR_RESOLUTION);
+        await asyncExpectThrowError(async () => rns.addr('noaddrresolver.testing.rsk'), NO_ADDR_RESOLUTION);
       });
     });
 
@@ -57,42 +57,42 @@ describe ('addr resolution', () => {
       test('mainnet', async () => {
         const web3 = new Web3(PUBLIC_NODE_MAINNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowError(async () => await rns.addr('accountasresolver.testing.rsk'), NO_ADDR_RESOLUTION);
+        await asyncExpectThrowError(async () => rns.addr('accountasresolver.testing.rsk'), NO_ADDR_RESOLUTION);
       });
 
       test('testnet', async () => {
         const web3 = new Web3(PUBLIC_NODE_TESTNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowError(async () => await rns.addr('accountasresolver.testing.rsk'), NO_ADDR_RESOLUTION);
+        await asyncExpectThrowError(async () => rns.addr('accountasresolver.testing.rsk'), NO_ADDR_RESOLUTION);
       });
     });
   });
 
-  describe ('should throw an error when no resolution set', () => {
+  describe('should throw an error when no resolution set', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.addr('noresolution.testing.rsk'), NO_ADDR_RESOLUTION_SET);
+      await asyncExpectThrowError(async () => rns.addr('noresolution.testing.rsk'), NO_ADDR_RESOLUTION_SET);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.addr('noresolution.testing.rsk'), NO_ADDR_RESOLUTION_SET);
+      await asyncExpectThrowError(async () => rns.addr('noresolution.testing.rsk'), NO_ADDR_RESOLUTION_SET);
     });
   });
 
-  describe ('should throw an error when domain do not exist', () => {
+  describe('should throw an error when domain do not exist', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.addr('noexist.testing.rsk'), NO_RESOLVER);
+      await asyncExpectThrowError(async () => rns.addr('noexist.testing.rsk'), NO_RESOLVER);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => await rns.addr('noexist.testing.rsk'), NO_RESOLVER);
+      await asyncExpectThrowError(async () => rns.addr('noexist.testing.rsk'), NO_RESOLVER);
     });
   });
 });

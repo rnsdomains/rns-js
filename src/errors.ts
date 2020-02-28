@@ -11,4 +11,6 @@ export const INVALID_DOMAIN = 'KB010: Invalid domain, must be alphanumeric and l
 export const INVALID_LABEL = 'KB011: Invalid label, must be alphanumeric and lower case';
 export const DOMAIN_NOT_EXISTS = 'KB012: The given domain does not exist';
 export const NO_NAME_RESOLUTION = 'KB013: No name resolution';
-export const NO_REVERSE_RESOLUTION_SET = 'KB014: No reverse resolution set'
+export const NO_REVERSE_RESOLUTION_SET = 'KB014: No reverse resolution set';
+export const NO_ACCOUNTS_TO_SIGN = 'KB015: There are no accounts to sign the transaction';
+export const SUBDOMAIN_NOT_AVAILABLE = 'KB016: The subdomain is not available';

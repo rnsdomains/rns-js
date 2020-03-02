@@ -13,7 +13,7 @@ describe('rns.utils', () => {
   let rns: RNS;
   let options: Options;
   const web3Instance = web3 as unknown as Web3;
-  
+
   beforeEach(async () => {
     const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
 
@@ -96,7 +96,7 @@ describe('rns.utils', () => {
       const label = 'iNValiD';
       expect(rns.utils.validLabel(label)).toBe(false);
     });
-    
+
     it('should return false for empty label', () => {
       const label = '';
       expect(rns.utils.validLabel(label)).toBe(false);
@@ -147,19 +147,23 @@ describe('rns.utils', () => {
   describe('.hasMethod', () => {
     it('should return false when sending an account address', async () => {
       const [anAccount] = accounts;
-  
+
       expect(await rns.utils.hasMethod(web3Instance, anAccount, ERC165_INTERFACE)).toEqual(false);
     });
 
     it('should return false when sending the registry contract that does not support the ERC165 interface', async () => {
-      expect(await rns.utils.hasMethod(web3Instance, registry.address, ERC165_INTERFACE)).toEqual(false);
+      const hasMethod = await rns.utils.hasMethod(web3Instance, registry.address, ERC165_INTERFACE);
+      expect(hasMethod).toEqual(false);
     });
 
     it('should return true when sending the publicResolver contract that supports the ERC165 interface', async () => {
       const PublicResolver = contract.fromABI(AddrResolverData.abi, AddrResolverData.bytecode);
       const publicResolver = await PublicResolver.new(registry.address);
 
-      expect(await rns.utils.hasMethod(web3Instance, publicResolver.address, ERC165_INTERFACE)).toEqual(true);
+      const hasMethod = await rns.utils.hasMethod(
+        web3Instance, publicResolver.address, ERC165_INTERFACE,
+      );
+      expect(hasMethod).toEqual(true);
     });
   });
 });

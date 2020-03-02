@@ -196,7 +196,7 @@ export interface Utils {
    * @returns
    * true if valid, false if not
    */
-  validLabel(label: string): boolean;
+  isValidLabel(label: string): boolean;
 
   /**
    * Validates the given domain syntax
@@ -206,7 +206,7 @@ export interface Utils {
    * @returns
    * true if valid, false if not
    */
-  validDomain(domain:string): boolean;
+  isValidDomain(domain:string): boolean;
 
   /**
    * Validates the given domain TLD
@@ -216,7 +216,7 @@ export interface Utils {
    * @returns
    * true if valid, false if not
    */
-  validTld(domain:string): boolean;
+  isValidTld(domain:string): boolean;
 
   /**
    * Returns namehash of the given domain
@@ -227,4 +227,14 @@ export interface Utils {
    * namehash of the given domain
    */
   namehash(domain:string): string;
+
+  /**
+   * Returns sha3 of the given label
+   * 
+   * @param label - label to apply sha3 function
+   * 
+   * @returns
+   * sha3 of the given domain
+   */
+  sha3(label:string): string;
 }

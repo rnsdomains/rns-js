@@ -31,92 +31,152 @@ describe('rns.utils', () => {
   describe('.validDomain', () => {
     it('should return true for valid simple domain', () => {
       const domain = 'test.domain';
-      expect(rns.utils.validDomain(domain)).toBe(true);
+      expect(rns.utils.isValidDomain(domain)).toBe(true);
     });
 
     it('should return true for valid domain with numbers', () => {
       const domain = 'test123.domain';
-      expect(rns.utils.validDomain(domain)).toBe(true);
+      expect(rns.utils.isValidDomain(domain)).toBe(true);
     });
 
 
     it('should return true for valid pure numbers domain', () => {
       const domain = '1234.5678';
-      expect(rns.utils.validDomain(domain)).toBe(true);
+      expect(rns.utils.isValidDomain(domain)).toBe(true);
     });
 
     it('should return true for valid mulptiple label domain', () => {
       const domain = 'test.domain.is.valid';
-      expect(rns.utils.validDomain(domain)).toBe(true);
+      expect(rns.utils.isValidDomain(domain)).toBe(true);
     });
 
     it('should return false for upper case domain', () => {
-      const domain = 'INVALID.DOMAIN';
-      expect(rns.utils.validDomain(domain)).toBe(false);
+      const domain = 'INVALID.domain';
+      expect(rns.utils.isValidDomain(domain)).toBe(false);
+    });
+
+    it('should return false for domain with -', () => {
+      const domain = 'invalid-.domain';
+      expect(rns.utils.isValidDomain(domain)).toBe(false);
+    });
+
+    it('should return false for domain with _', () => {
+      const domain = 'invalid_.domain';
+      expect(rns.utils.isValidDomain(domain)).toBe(false);
+    });
+
+    it('should return false for domain with &', () => {
+      const domain = 'invalid&.domain';
+      expect(rns.utils.isValidDomain(domain)).toBe(false);
+    });
+
+    it('should return false for domain with /', () => {
+      const domain = 'invalid/.domain';
+      expect(rns.utils.isValidDomain(domain)).toBe(false);
+    });
+
+    it('should return false for domain with \\', () => {
+      const domain = 'invalid\\.domain';
+      expect(rns.utils.isValidDomain(domain)).toBe(false);
+    });
+
+    it('should return false for domain with other special characters', () => {
+      const domain = '!"·$@#%^*()=+{}[]|:;';
+      expect(rns.utils.isValidDomain(domain)).toBe(false);
     });
 
     it('should return false for mixed case domain', () => {
       const domain = 'iNValiD.DomAIn';
-      expect(rns.utils.validDomain(domain)).toBe(false);
+      expect(rns.utils.isValidDomain(domain)).toBe(false);
     });
 
     it('should return false for empty domain', () => {
       const domain = '';
-      expect(rns.utils.validDomain(domain)).toBe(false);
+      expect(rns.utils.isValidDomain(domain)).toBe(false);
     });
 
     it('should return false for only dot domain', () => {
       const domain = '.';
-      expect(rns.utils.validDomain(domain)).toBe(false);
+      expect(rns.utils.isValidDomain(domain)).toBe(false);
     });
   });
 
   describe('.validLabel', () => {
     it('should return true for valid label', () => {
       const label = 'isvalid';
-      expect(rns.utils.validLabel(label)).toBe(true);
+      expect(rns.utils.isValidLabel(label)).toBe(true);
     });
 
     it('should return true for label with numbers', () => {
       const label = 'isvalid123';
-      expect(rns.utils.validLabel(label)).toBe(true);
+      expect(rns.utils.isValidLabel(label)).toBe(true);
     });
 
     it('should return true for pure number label', () => {
       const label = '1234567';
-      expect(rns.utils.validLabel(label)).toBe(true);
+      expect(rns.utils.isValidLabel(label)).toBe(true);
     });
 
     it('should return false for upper case label', () => {
       const label = 'INVALID';
-      expect(rns.utils.validLabel(label)).toBe(false);
+      expect(rns.utils.isValidLabel(label)).toBe(false);
     });
 
     it('should return false for mixed case label', () => {
       const label = 'iNValiD';
-      expect(rns.utils.validLabel(label)).toBe(false);
+      expect(rns.utils.isValidLabel(label)).toBe(false);
     });
 
     it('should return false for empty label', () => {
       const label = '';
-      expect(rns.utils.validLabel(label)).toBe(false);
+      expect(rns.utils.isValidLabel(label)).toBe(false);
+    });
+
+    it('should return false for label with -', () => {
+      const label = 'invalid-.domain';
+      expect(rns.utils.isValidLabel(label)).toBe(false);
+    });
+
+    it('should return false for label with _', () => {
+      const label = 'invalid_';
+      expect(rns.utils.isValidLabel(label)).toBe(false);
+    });
+
+    it('should return false for label with &', () => {
+      const label = 'invalid&';
+      expect(rns.utils.isValidLabel(label)).toBe(false);
+    });
+
+    it('should return false for label with /', () => {
+      const label = 'invalid/';
+      expect(rns.utils.isValidLabel(label)).toBe(false);
+    });
+
+    it('should return false for label with \\', () => {
+      const label = 'invalid\\';
+      expect(rns.utils.isValidLabel(label)).toBe(false);
+    });
+
+    it('should return false for label with other special characters', () => {
+      const label = '!"·$@#%^*()=+{}[]|:;';
+      expect(rns.utils.isValidLabel(label)).toBe(false);
     });
 
     it('should return false for only dot label', () => {
       const label = '.';
-      expect(rns.utils.validLabel(label)).toBe(false);
+      expect(rns.utils.isValidLabel(label)).toBe(false);
     });
   });
 
   describe('.validTld', () => {
     it('should return true for rsk', () => {
       const tld = 'rsk';
-      expect(rns.utils.validLabel(tld)).toBe(true);
+      expect(rns.utils.isValidLabel(tld)).toBe(true);
     });
 
     it('should return false for other tlds', () => {
       const tld = 'notvalid';
-      expect(rns.utils.validLabel(tld)).toBe(true);
+      expect(rns.utils.isValidLabel(tld)).toBe(true);
     });
   });
 

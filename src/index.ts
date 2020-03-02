@@ -1,10 +1,10 @@
 import Web3 from 'web3/types';
-import { RNS, Contracts, Options, ChainId } from './types';
+import { RNS, Contracts, Options, ChainId, Utils } from './types';
 import { LIBRARY_NOT_COMPOSED } from './errors';
 import Resolutions from './resolutions';
 import Subdomains from './subdomains';
 import { Composer } from './composer';
-import Utils from './utils';
+import * as utils from './utils';
 
 /**
  * RNS JavaScript library.
@@ -12,7 +12,6 @@ import Utils from './utils';
 export = class extends Composer implements RNS {
   private _resolutions!: Resolutions;
   private _subdomains!: Subdomains;
-  private _utils: Utils;  
 
   /**
    * Create RNS library.
@@ -25,9 +24,8 @@ export = class extends Composer implements RNS {
    */
   constructor (public web3: Web3, options?: Options) {
     super(web3, options);
-    this._utils = new Utils();
-    this._subdomains = new Subdomains(this.web3, this._utils, options);
-    this._resolutions = new Resolutions(this.web3, this._utils, options);
+    this._subdomains = new Subdomains(this.web3, options);
+    this._resolutions = new Resolutions(this.web3, options);
   }
 
   /**
@@ -94,6 +92,14 @@ export = class extends Composer implements RNS {
    * @returns Object with subdomains related methods ready to use.
    */
   get utils(): Utils {
-    return this._utils;
+    return {
+      hasAccounts: utils.hasAccounts,
+      hasMethod: utils.hasMethod,
+      isValidLabel: utils.isValidLabel,
+      isValidDomain: utils.isValidDomain,
+      isValidTld: utils.isValidTld,
+      namehash: utils.namehash,
+      sha3: utils.sha3
+    };
   }
 }

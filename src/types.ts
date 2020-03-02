@@ -186,7 +186,7 @@ export interface Utils {
    * @returns
    * true if method exists, false if not
    */
-  hasMethod(contractAddress: string, signatureHash: string): Promise<boolean>;
+  hasMethod(web3: Web3, contractAddress: string, signatureHash: string): Promise<boolean>;
 
   /**
    * Validates the given label

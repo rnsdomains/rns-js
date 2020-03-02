@@ -2,10 +2,11 @@ import Web3 from 'web3';
 import { AVAILABLE_TLDS } from './constants';
 import { Utils } from './types';
 import { hash as namehash } from 'eth-ens-namehash';
+import { keccak256 } from 'js-sha3';
 
 export default class implements Utils {
   
-  constructor(private web3: Web3) { }
+  constructor() { }
   
   /**
    * Checks if the contract in the given address has the given method 
@@ -17,8 +18,8 @@ export default class implements Utils {
    * @returns
    * true if method exists, false if not
    */
-  async hasMethod(contractAddress: string, signatureHash: string): Promise<boolean>{
-    const code = await this.web3.eth.getCode(contractAddress);
+  async hasMethod(web3: Web3, contractAddress: string, signatureHash: string): Promise<boolean>{
+    const code = await web3.eth.getCode(contractAddress);
     return code.indexOf(signatureHash.slice(2, signatureHash.length)) > 0;
   }
 
@@ -118,6 +119,6 @@ export default class implements Utils {
    * sha3 of the given domain
    */
   sha3(label:string): string {
-    return this.web3.utils.sha3(label) as string;
+    return keccak256(label);
   }
 }

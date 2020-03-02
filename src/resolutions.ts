@@ -51,7 +51,7 @@ export default class extends Composer implements Resolutions {
       throw new Error(noResolverError || NO_RESOLVER);
     }
 
-    const isErc165Contract = await this.utils.hasMethod(resolverAddress, ERC165_INTERFACE);
+    const isErc165Contract = await this.utils.hasMethod(this.web3, resolverAddress, ERC165_INTERFACE);
     if (!isErc165Contract) {
       throw new Error(errorMessage);
     }

@@ -25,7 +25,7 @@ export = class extends Composer implements RNS {
    */
   constructor (public web3: Web3, options?: Options) {
     super(web3, options);
-    this._utils = new Utils(web3);
+    this._utils = new Utils();
     this._subdomains = new Subdomains(this.web3, this._utils, options);
     this._resolutions = new Resolutions(this.web3, this._utils, options);
   }

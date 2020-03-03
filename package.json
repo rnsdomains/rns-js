@@ -22,7 +22,7 @@
   },
   "scripts": {
     "build": "npx tsc -p tsconfig.build.json",
-    "test": "npx run test:local && npm run test:public && npm run lint",
+    "test": "npm run test:local && npm run test:public && npm run lint",
     "test:local": "npx jest --coverage test/local/",
     "test:public": "npx jest --coverage test/public-nodes/",
     "lint": "npx eslint 'src/**' 'test/**'",

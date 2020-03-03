@@ -230,12 +230,12 @@ export interface Utils {
   namehash(domain:string): string;
 
   /**
-   * Returns '0x' + sha3 of the given label
+   * Returns '0x' + keccak256 of the given label
    *
-   * @param label - label to apply sha3 function
+   * @param label - label to apply keccak256 function
    *
    * @returns
-   * '0x' + sha3 of the given label
+   * '0x' + keccak256 of the given label
    */
   labelhash(label:string): string;
 }

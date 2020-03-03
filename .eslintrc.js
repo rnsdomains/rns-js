@@ -3,7 +3,7 @@ module.exports = {
     browser: true,
     es6: true,
     node: true,
-    'jest/globals': true
+    // 'jest/globals': true
   },
   extends: [
     'eslint:recommended',
@@ -29,6 +29,8 @@ module.exports = {
     'jest/no-identical-title': 'error',
     'jest/prefer-to-have-length': 'warn',
     'jest/valid-expect': 'error',
-    'eol-last': 'error'
+    'eol-last': 'error',
+    'no-underscore-dangle': ['error', { 'allowAfterThis': true }],
+    'max-len': ['error', { 'code': 100, 'ignoreStrings': true, 'ignoreComments': true }]
   }
 }

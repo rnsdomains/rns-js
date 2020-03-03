@@ -10,7 +10,7 @@ export enum NetworkId {
 }
 
 /**
- * Represents some of the chain ids listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md) 
+ * Represents some of the chain ids listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
  */
 export enum ChainId {
   RSK_MAINNET = '0x80000089',
@@ -63,21 +63,22 @@ export interface RNS {
   contracts: Contracts;
 
   /**
-   * Get address of a given domain and chain. If chainId is not provided, it resolves current blockchain address.
+   * Get address of a given domain and chain.
+   * If chainId is not provided, it resolves current blockchain address.
    *
    * @param domain - Domain to be resolved
    * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
-   * 
-   * @return 
+   *
+   * @return
    * Address resolution for the given domain in the given chain (if provided)
    */
   addr(domain: string, chainId?: ChainId): Promise<string>;
 
   /**
    * Reverse lookup: get name of a given address.
-   * 
+   *
    * @param address - address to be resolved
-   * 
+   *
    * @returns
    * Domain or subdomain associated to the given address.
    */
@@ -113,8 +114,8 @@ export interface Resolutions {
    * Resolves the given domain using the AbstractAddrResolver interface.
    *
    * @param domain - Domain to be resolved
-   * 
-   * @return 
+   *
+   * @return
    * Address resolution for the given domain
    */
   addr(domain: string): Promise<string>;
@@ -128,9 +129,9 @@ export interface Resolutions {
 
   /**
    * Reverse lookup: get name of a given address.
-   * 
+   *
    * @param address - address to be resolved
-   * 
+   *
    * @returns
    * Domain or subdomain associated to the given address.
    */
@@ -143,10 +144,10 @@ export interface Resolutions {
 export interface Subdomains {
   /**
    * Checks if the given label subdomain is available under the given domain tree
-   * 
+   *
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to check if is available. ie: alice
-   * 
+   *
    * @returns
    * true if available, false if not
    */
@@ -154,8 +155,8 @@ export interface Subdomains {
 
   /**
    * Creates a new subdomain under the given domain tree
-   * 
-   * 
+   *
+   *
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice
    * @param owner - The owner of the new subdomain
@@ -169,20 +170,20 @@ export interface Subdomains {
 export interface Utils {
   /**
    * Checks if the given web3 instance has accounts to sign txs
-   * 
-   * @param web3 - Web3 instance 
-   * 
+   *
+   * @param web3 - Web3 instance
+   *
    * @returns
    * true if has accounts, false if not
    */
   hasAccounts(web3: Web3): Promise<boolean>;
 
   /**
-   * Checks if the contract in the given address has the given method 
-   * 
-   * @param contractAddress - address of the contract to check 
+   * Checks if the contract in the given address has the given method
+   *
+   * @param contractAddress - address of the contract to check
    * @param signatureHash - keccak256 of the method signature
-   * 
+   *
    * @returns
    * true if method exists, false if not
    */
@@ -190,9 +191,9 @@ export interface Utils {
 
   /**
    * Validates the given label
-   * 
+   *
    * @param label - label to validate
-   * 
+   *
    * @returns
    * true if valid, false if not
    */
@@ -200,9 +201,9 @@ export interface Utils {
 
   /**
    * Validates the given domain syntax
-   * 
+   *
    * @param domain - domain to validate
-   * 
+   *
    * @returns
    * true if valid, false if not
    */
@@ -210,9 +211,9 @@ export interface Utils {
 
   /**
    * Validates the given domain TLD
-   * 
+   *
    * @param domain - domain to validate
-   * 
+   *
    * @returns
    * true if valid, false if not
    */
@@ -220,9 +221,9 @@ export interface Utils {
 
   /**
    * Returns namehash of the given domain
-   * 
+   *
    * @param domain - domain to apply namehash function
-   * 
+   *
    * @returns
    * namehash of the given domain
    */
@@ -230,9 +231,9 @@ export interface Utils {
 
   /**
    * Returns sha3 of the given label
-   * 
+   *
    * @param label - label to apply sha3 function
-   * 
+   *
    * @returns
    * sha3 of the given domain
    */

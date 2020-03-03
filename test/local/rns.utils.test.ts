@@ -190,7 +190,7 @@ describe('rns.utils', () => {
   describe('.sha3', () => {
     it('should return sha3 implementation of the given label', () => {
       const label = 'test';
-      expect(rns.utils.sha3(label)).toEqual(keccak256(label));
+      expect(rns.utils.sha3(label)).toEqual(`0x${keccak256(label)}`);
     });
   });
 

@@ -1,11 +1,14 @@
-import { Composable, Options, ContractAddresses, Contracts } from "./types";
-import Web3 from "web3";
-import { createRegistry, createContractAddresses } from './factories'; 
+import Web3 from 'web3';
+import {
+  Composable, Options, ContractAddresses, Contracts,
+} from './types';
+import { createRegistry, createContractAddresses } from './factories';
 
-
-export abstract class Composer implements Composable {
+export default abstract class implements Composable {
   private _contractAddresses!: ContractAddresses;
+
   private _composed!: boolean;
+
   protected _contracts!: Contracts;
 
   /**
@@ -13,13 +16,13 @@ export abstract class Composer implements Composable {
    *
    * @remarks
    * If web3 points to RSK Mainnet or RSK Testnet, no options are required. Contract addresses are detected automatically.
-   * 
-   * @param web3 - Web3 instance 
+   *
+   * @param web3 - Web3 instance
    * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
    */
-  constructor (public web3: Web3, options?: Options) {
-    if(options && options.contractAddresses) {
-      this._contractAddresses = options.contractAddresses
+  constructor(public web3: Web3, options?: Options) {
+    if (options && options.contractAddresses) {
+      this._contractAddresses = options.contractAddresses;
     }
   }
 
@@ -31,13 +34,13 @@ export abstract class Composer implements Composable {
   private async _detectNetwork() {
     if (!this._contractAddresses) {
       const networkId = await this.web3.eth.net.getId();
-      this._contractAddresses = createContractAddresses(networkId)
+      this._contractAddresses = createContractAddresses(networkId);
     }
 
-    if(!this._contracts) {
+    if (!this._contracts) {
       this._contracts = {
-        registry: createRegistry(this.web3, this._contractAddresses.registry)
-      }
+        registry: createRegistry(this.web3, this._contractAddresses.registry),
+      };
     }
   }
 

@@ -11,6 +11,7 @@ import { NO_REVERSE_RESOLUTION_SET, NO_NAME_RESOLUTION } from '../../src/errors'
 import { asyncExpectThrowError } from '../utils';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
+import { labelhash } from '../../src/utils';
 
 describe('name resolution', () => {
   let registry: any;
@@ -33,9 +34,9 @@ describe('name resolution', () => {
     nameResolver = await NameResolver.new(registry.address);
     reverseRegistrar = await ReverseRegistrar.new(registry.address);
 
-    await registry.setSubnodeOwner('0x00', web3.utils.sha3('reverse'), defaultSender);
+    await registry.setSubnodeOwner('0x00', labelhash('reverse'), defaultSender);
     await registry.setResolver(namehash('reverse'), nameResolver.address);
-    await registry.setSubnodeOwner(namehash('reverse'), web3.utils.sha3('addr'), reverseRegistrar.address);
+    await registry.setSubnodeOwner(namehash('reverse'), labelhash('addr'), reverseRegistrar.address);
 
     options = {
       contractAddresses: {

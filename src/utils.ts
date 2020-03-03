@@ -104,11 +104,11 @@ export const isValidTld = (domain:string) => {
 export const namehash = (domain:string) => namehashFn(domain);
 
 /**
- * Returns sha3 of the given label
+ * Returns '0x' + sha3 of the given label
  *
  * @param label - label to apply sha3 function
  *
  * @returns
- * sha3 of the given domain
+ * '0x' + sha3 of the given label
  */
-export const sha3 = (label:string) => `0x${keccak256(label)}`;
+export const labelhash = (label:string) => `0x${keccak256(label)}`;

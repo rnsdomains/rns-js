@@ -12,6 +12,7 @@ import {
   INVALID_DOMAIN, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS,
   DOMAIN_NOT_EXISTS, INVALID_LABEL, SUBDOMAIN_NOT_AVAILABLE,
 } from '../../src/errors';
+import { labelhash } from '../../src/utils';
 
 describe('subdomains.setOwner', () => {
   const TLD = 'rsk';
@@ -27,7 +28,7 @@ describe('subdomains.setOwner', () => {
 
     registry = await Registry.new();
 
-    await registry.setSubnodeOwner('0x00', web3.utils.sha3(TLD), defaultSender);
+    await registry.setSubnodeOwner('0x00', labelhash(TLD), defaultSender);
 
     options = {
       contractAddresses: {
@@ -40,8 +41,8 @@ describe('subdomains.setOwner', () => {
 
   describe('validations', () => {
     it('should not fail when sending a subdomain', async () => {
-      await registry.setSubnodeOwner(namehash(TLD), web3.utils.sha3('alice'), defaultSender);
-      await registry.setSubnodeOwner(namehash('alice.rsk'), web3.utils.sha3('subdomain'), defaultSender);
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+      await registry.setSubnodeOwner(namehash('alice.rsk'), labelhash('subdomain'), defaultSender);
       await rns.subdomains.setOwner('subdomain.alice.rsk', 'check', owner);
     });
 
@@ -87,7 +88,7 @@ describe('subdomains.setOwner', () => {
   });
 
   it('should create a subdomain if is available', async () => {
-    await registry.setSubnodeOwner(namehash('rsk'), web3.utils.sha3('alice'), defaultSender);
+    await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
     let isAvailable = await rns.subdomains.available('alice.rsk', 'test');
     expect(isAvailable).toBe(true);
@@ -98,7 +99,7 @@ describe('subdomains.setOwner', () => {
   });
 
   it('should not create a subdomain if is not available', async () => {
-    await registry.setSubnodeOwner(namehash('rsk'), web3.utils.sha3('alice'), defaultSender);
+    await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
     await rns.subdomains.setOwner('alice.rsk', 'test', owner);
 
     // create it again should fail
@@ -106,7 +107,7 @@ describe('subdomains.setOwner', () => {
   });
 
   it('should revert if creating a subdomain under a domain that the current address does not own', async () => {
-    await registry.setSubnodeOwner(namehash('rsk'), web3.utils.sha3('alice'), owner);
+    await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), owner);
 
     expectRevert(rns.subdomains.setOwner('alice.rsk', 'test', owner));
   });

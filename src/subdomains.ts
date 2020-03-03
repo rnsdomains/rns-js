@@ -8,7 +8,7 @@ import {
 import { ZERO_ADDRESS } from './constants';
 import Composer from './composer';
 import {
-  isValidDomain, isValidTld, isValidLabel, namehash, hasAccounts, sha3,
+  isValidDomain, isValidTld, isValidLabel, namehash, hasAccounts, labelhash,
 } from './utils';
 
 /**
@@ -70,6 +70,8 @@ export default class extends Composer implements Subdomains {
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
    * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
    * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
+   * @throws SUBDOMAIN_NOT_AVAILABLE if the given domain is already owned - KB016
+   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
    *
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice
@@ -110,7 +112,7 @@ export default class extends Composer implements Subdomains {
       .methods
       .setSubnodeOwner(
         node,
-        sha3(label),
+        labelhash(label),
         owner,
       ).send({ from: accounts[0] });
   }

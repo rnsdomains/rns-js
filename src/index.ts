@@ -102,7 +102,7 @@ export = class extends Composer implements RNS {
       isValidDomain: utils.isValidDomain,
       isValidTld: utils.isValidTld,
       namehash: utils.namehash,
-      sha3: utils.sha3,
+      labelhash: utils.labelhash,
     };
   }
 };

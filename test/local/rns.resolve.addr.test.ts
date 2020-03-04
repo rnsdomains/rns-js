@@ -8,7 +8,7 @@ import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import { NO_ADDR_RESOLUTION_SET, NO_RESOLVER, NO_ADDR_RESOLUTION } from '../../src/errors';
 import { ZERO_ADDRESS } from '../../src/constants';
-import { asyncExpectThrowError } from '../utils';
+import { asyncExpectThrowRNSError } from '../utils';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
@@ -55,7 +55,7 @@ describe('addr resolution', () => {
     await registry.setSubnodeOwner(namehash(TLD), labelhash('noresolver'), defaultSender);
     await registry.setResolver(namehash('noresolver.rsk'), ZERO_ADDRESS);
 
-    await asyncExpectThrowError(async () => rns.addr('noresolver.rsk'), NO_RESOLVER);
+    await asyncExpectThrowRNSError(async () => rns.addr('noresolver.rsk'), NO_RESOLVER);
   });
 
   describe('should throw an error when resolver does not support addr interface', () => {
@@ -66,24 +66,24 @@ describe('addr resolution', () => {
 
       await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
       await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
-      await asyncExpectThrowError(async () => rns.addr('anothererc165.rsk'), NO_ADDR_RESOLUTION);
+      await asyncExpectThrowRNSError(async () => rns.addr('anothererc165.rsk'), NO_ADDR_RESOLUTION);
     });
 
     it('account address as a resolver', async () => {
       await registry.setSubnodeOwner(namehash(TLD), labelhash('accountasresolver'), defaultSender);
       await registry.setResolver(namehash('accountasresolver.rsk'), anotherAccount);
 
-      await asyncExpectThrowError(async () => rns.addr('accountasresolver.rsk'), NO_ADDR_RESOLUTION);
+      await asyncExpectThrowRNSError(async () => rns.addr('accountasresolver.rsk'), NO_ADDR_RESOLUTION);
     });
   });
 
   it('should throw an error when no resolution set', async () => {
     await registry.setSubnodeOwner(namehash(TLD), labelhash('noresolution'), defaultSender);
 
-    await asyncExpectThrowError(async () => rns.addr('noresolution.rsk'), NO_ADDR_RESOLUTION_SET);
+    await asyncExpectThrowRNSError(async () => rns.addr('noresolution.rsk'), NO_ADDR_RESOLUTION_SET);
   });
 
   it('should throw an error when domain do not exist', async () => {
-    await asyncExpectThrowError(async () => rns.addr('noexists.rsk'), NO_RESOLVER);
+    await asyncExpectThrowRNSError(async () => rns.addr('noexists.rsk'), NO_RESOLVER);
   });
 });

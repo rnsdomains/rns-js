@@ -1,4 +1,5 @@
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+export const DEVPORTAL_ERRORS_URL = 'https://developers.rsk.co/rif/rns/libs/javascript/Errors/';
 
 // contracts interfaces
 export const ADDR_INTERFACE = '0x3b3b57de';

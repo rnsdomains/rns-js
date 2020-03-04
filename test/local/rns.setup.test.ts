@@ -2,7 +2,7 @@ import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import { contract, web3 } from '@openzeppelin/test-environment';
 import Web3 from 'web3';
 import { LIBRARY_NOT_COMPOSED, NO_ADDRESSES_PROVIDED } from '../../src/errors';
-import { asyncExpectThrowError, expectThrowError } from '../utils';
+import { asyncExpectThrowRNSError, expectThrowRNSError } from '../utils';
 import RNS from '../../src/index';
 
 describe('library setup', () => {
@@ -24,17 +24,17 @@ describe('library setup', () => {
 
   it('should fail when getting contracts if library not composed', () => {
     const rns = new RNS(web3Instance);
-    expectThrowError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
+    expectThrowRNSError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
   });
 
   it('should fail when compose if invalid network', async () => {
     const invalidWeb3 = new Web3('https://invalid.rsk.co');
     const rns = new RNS(invalidWeb3);
-    await asyncExpectThrowError(async () => rns.compose());
+    await asyncExpectThrowRNSError(async () => rns.compose());
   });
 
   it('should fail when compose if custom network and no addresses provided', async () => {
     const rns = new RNS(web3Instance);
-    await asyncExpectThrowError(async () => rns.compose(), NO_ADDRESSES_PROVIDED);
+    await asyncExpectThrowRNSError(async () => rns.compose(), NO_ADDRESSES_PROVIDED);
   });
 });

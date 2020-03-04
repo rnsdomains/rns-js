@@ -7,6 +7,7 @@ import Resolutions from './resolutions';
 import Subdomains from './subdomains';
 import Composer from './composer';
 import * as utils from './utils';
+import RNSError from './error';
 
 /**
  * RNS JavaScript library.
@@ -40,7 +41,7 @@ export = class extends Composer implements RNS {
    */
   get contracts(): Contracts {
     if (!this._contracts) {
-      throw new Error(LIBRARY_NOT_COMPOSED);
+      throw new RNSError(LIBRARY_NOT_COMPOSED);
     }
     return this._contracts;
   }

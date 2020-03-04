@@ -7,7 +7,7 @@ import { expectRevert } from '@openzeppelin/test-helpers';
 import Web3 from 'web3';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
-import { asyncExpectThrowError } from '../utils';
+import { asyncExpectThrowRNSError } from '../utils';
 import {
   INVALID_DOMAIN, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS,
   DOMAIN_NOT_EXISTS, INVALID_LABEL, SUBDOMAIN_NOT_AVAILABLE,
@@ -51,39 +51,39 @@ describe('subdomains.setOwner', () => {
     });
 
     it('should fail when sending an empty domain', async () => {
-      await asyncExpectThrowError(async () => rns.subdomains.setOwner('', 'willfail', owner), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(async () => rns.subdomains.setOwner('', 'willfail', owner), INVALID_DOMAIN);
     });
 
     it('should fail when sending an just a dot with no labels', async () => {
-      await asyncExpectThrowError(async () => rns.subdomains.setOwner('.', 'willfail', owner), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(async () => rns.subdomains.setOwner('.', 'willfail', owner), INVALID_DOMAIN);
     });
 
     it('should fail when not sending an .rsk domain', async () => {
-      await asyncExpectThrowError(async () => rns.subdomains.setOwner('domain.notrsk', 'willfail', owner), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      await asyncExpectThrowRNSError(async () => rns.subdomains.setOwner('domain.notrsk', 'willfail', owner), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     });
 
     it('should fail when sending upper case domain', async () => {
-      await asyncExpectThrowError(async () => rns.subdomains.setOwner('DOMAIN.rsk', 'willfail', owner), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(async () => rns.subdomains.setOwner('DOMAIN.rsk', 'willfail', owner), INVALID_DOMAIN);
     });
 
     it('should fail when sending invalid characters', async () => {
-      await asyncExpectThrowError(async () => rns.subdomains.setOwner('DOM-AIN.rsk', 'willfail', owner), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(async () => rns.subdomains.setOwner('DOM-AIN.rsk', 'willfail', owner), INVALID_DOMAIN);
     });
 
     it('should fail when given domain does not exist', async () => {
-      await asyncExpectThrowError(async () => rns.subdomains.setOwner('noexist.rsk', 'willfail', owner), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowRNSError(async () => rns.subdomains.setOwner('noexist.rsk', 'willfail', owner), DOMAIN_NOT_EXISTS);
     });
 
     it('should fail when sending empty label', async () => {
-      await asyncExpectThrowError(async () => rns.subdomains.setOwner('domain.rsk', '', owner), INVALID_LABEL);
+      await asyncExpectThrowRNSError(async () => rns.subdomains.setOwner('domain.rsk', '', owner), INVALID_LABEL);
     });
 
     it('should fail when sending label with upper case characters', async () => {
-      await asyncExpectThrowError(async () => rns.subdomains.setOwner('domain.rsk', 'iNVAlid', owner), INVALID_LABEL);
+      await asyncExpectThrowRNSError(async () => rns.subdomains.setOwner('domain.rsk', 'iNVAlid', owner), INVALID_LABEL);
     });
 
     it('should fail when sending label with invalid characters', async () => {
-      await asyncExpectThrowError(async () => rns.subdomains.setOwner('domain.rsk', 'iNVA-lid', owner), INVALID_LABEL);
+      await asyncExpectThrowRNSError(async () => rns.subdomains.setOwner('domain.rsk', 'iNVA-lid', owner), INVALID_LABEL);
     });
   });
 
@@ -103,7 +103,7 @@ describe('subdomains.setOwner', () => {
     await rns.subdomains.setOwner('alice.rsk', 'test', owner);
 
     // create it again should fail
-    await asyncExpectThrowError(async () => rns.subdomains.setOwner('alice.rsk', 'test', owner), SUBDOMAIN_NOT_AVAILABLE);
+    await asyncExpectThrowRNSError(async () => rns.subdomains.setOwner('alice.rsk', 'test', owner), SUBDOMAIN_NOT_AVAILABLE);
   });
 
   it('should revert if creating a subdomain under a domain that the current address does not own', async () => {

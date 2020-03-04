@@ -1,14 +1,21 @@
-export const asyncExpectThrowError = async (prom: any, expectedError?: string) => {
-  await expect(prom()).rejects.toThrow(expectedError);
+export const asyncExpectThrowRNSError = async (prom: any, expectedError?: string) => {
+  let error;
+  try {
+    await prom();
+  } catch (_error) {
+    error = _error;
+  } finally {
+    expect(error.id).toBe(expectedError);
+  }
 };
 
-export const expectThrowError = (fn: any, expectedError?: string) => {
+export const expectThrowRNSError = (fn: any, expectedError?: string) => {
   let error;
   try {
     fn();
   } catch (_error) {
-    error = _error.message;
+    error = _error;
   } finally {
-    expect(error).toBe(expectedError);
+    expect(error.id).toBe(expectedError);
   }
 };

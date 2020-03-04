@@ -13,6 +13,7 @@ import {
 import { ChainId, Resolutions, Options } from './types';
 import Composer from './composer';
 import { hasMethod, namehash } from './utils';
+import RNSError from './error';
 
 /**
  * Standard resolution protocols.
@@ -49,12 +50,12 @@ export default class extends Composer implements Resolutions {
     const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
 
     if (resolverAddress === ZERO_ADDRESS) {
-      throw new Error(noResolverError || NO_RESOLVER);
+      throw new RNSError(noResolverError || NO_RESOLVER);
     }
 
     const isErc165Contract = await hasMethod(this.web3, resolverAddress, ERC165_INTERFACE);
     if (!isErc165Contract) {
-      throw new Error(errorMessage);
+      throw new RNSError(errorMessage);
     }
 
     const resolver: Contract = contractFactory(this.web3, resolverAddress);
@@ -64,7 +65,7 @@ export default class extends Composer implements Resolutions {
     ).call();
 
     if (!supportsInterface) {
-      throw new Error(errorMessage);
+      throw new RNSError(errorMessage);
     }
 
     return resolver;
@@ -96,7 +97,7 @@ export default class extends Composer implements Resolutions {
     const addr: string = await resolver.methods.addr(node).call();
 
     if (addr === ZERO_ADDRESS) {
-      throw new Error(NO_ADDR_RESOLUTION_SET);
+      throw new RNSError(NO_ADDR_RESOLUTION_SET);
     }
 
     return addr;
@@ -128,7 +129,7 @@ export default class extends Composer implements Resolutions {
 
     const addr: string = await resolver.methods.chainAddr(node, chainId).call();
     if (!addr || addr === ZERO_ADDRESS) {
-      throw new Error(NO_CHAIN_ADDR_RESOLUTION_SET);
+      throw new RNSError(NO_CHAIN_ADDR_RESOLUTION_SET);
     }
 
     return addr;
@@ -161,7 +162,7 @@ export default class extends Composer implements Resolutions {
 
     const name: string = await resolver.methods.name(node).call();
     if (!name) {
-      throw new Error(NO_REVERSE_RESOLUTION_SET);
+      throw new RNSError(NO_REVERSE_RESOLUTION_SET);
     }
 
     return name;

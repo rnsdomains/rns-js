@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import RNS from '../../src/index';
 import { LIBRARY_NOT_COMPOSED } from '../../src/errors';
-import { asyncExpectThrowError, expectThrowError } from '../utils';
+import { asyncExpectThrowRNSError, expectThrowRNSError } from '../utils';
 
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
@@ -51,13 +51,13 @@ describe('library setup', () => {
     test('mainnet', () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      expectThrowError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
+      expectThrowRNSError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
     });
 
     test('testnet', () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      expectThrowError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
+      expectThrowRNSError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
     });
   });
 
@@ -65,7 +65,7 @@ describe('library setup', () => {
     it('', async () => {
       const web3 = new Web3('https://invalid.rsk.co');
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => rns.compose());
+      await asyncExpectThrowRNSError(async () => rns.compose());
     });
   });
 });

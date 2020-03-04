@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import RNS from '../../src/index';
 import { LIBRARY_NOT_COMPOSED } from '../../src/errors';
-import { asyncExpectThrowRNSError, expectThrowRNSError, asyncExpectThrowError } from '../utils';
+import { expectThrowRNSError, asyncExpectThrowError } from '../utils';
 
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';

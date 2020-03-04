@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import { Subdomains, Options } from './types';
-import {
+import RNSError, {
   SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN,
   INVALID_LABEL, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN,
   SUBDOMAIN_NOT_AVAILABLE,
@@ -10,7 +10,6 @@ import Composer from './composer';
 import {
   isValidDomain, isValidTld, isValidLabel, namehash, hasAccounts, labelhash,
 } from './utils';
-import RNSError from './error';
 
 /**
  * Set of subdomains related methods

@@ -1,0 +1,18 @@
+{
+  "NO_ADDR_RESOLUTION_SET": { "id": "KB001", "message": "No addr resolution set" },
+  "NO_ADDR_RESOLUTION": { "id": "KB002", "message": "No addr resolution" },
+  "NO_RESOLVER": { "id": "KB003", "message": "No resolver" },
+  "LIBRARY_NOT_COMPOSED": { "id": "KB004", "message": "Library not composed" },
+  "NO_ADDRESSES_PROVIDED": { "id": "KB005", "message": "No contract addresses provided" },
+  "NO_CHAIN_ADDR_RESOLUTION": { "id": "KB006", "message": "No chain address resolution" },
+  "NO_CHAIN_ADDR_RESOLUTION_SET": { "id": "KB007", "message": "No chain address resolution set" },
+  "SEARCH_ONLY_SIMPLE_DOMAINS": { "id": "KB008", "message": "Search only domains" },
+  "SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS": { "id": "KB009", "message": "Search only .rsk domains" },
+  "INVALID_DOMAIN": { "id": "KB010", "message": "Invalid domain, must be alphanumeric and lower case" },
+  "INVALID_LABEL": { "id": "KB011", "message": "Invalid label, must be alphanumeric and lower case" },
+  "DOMAIN_NOT_EXISTS": { "id": "KB012", "message": "The given domain does not exist" },
+  "NO_NAME_RESOLUTION": { "id": "KB013", "message": "No name resolution" },
+  "NO_REVERSE_RESOLUTION_SET": { "id": "KB014", "message": "No reverse resolution set" },
+  "NO_ACCOUNTS_TO_SIGN": { "id": "KB015", "message": "There are no accounts to sign the transaction" },
+  "SUBDOMAIN_NOT_AVAILABLE": { "id": "KB016", "message": "The subdomain is not available" }
+}

@@ -1,4 +1,4 @@
-import RNSError from '../../src/error';
+import RNSError from '../../src/errors';
 
 describe('RNSError', () => {
   it('should be an instance of Error', () => {

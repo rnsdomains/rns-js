@@ -2,12 +2,12 @@ import Web3 from 'web3';
 import {
   RNS, Contracts, Options, ChainId, Utils,
 } from './types';
-import { LIBRARY_NOT_COMPOSED } from './errors';
+import RNSError, { LIBRARY_NOT_COMPOSED } from './errors';
 import Resolutions from './resolutions';
 import Subdomains from './subdomains';
 import Composer from './composer';
 import * as utils from './utils';
-import RNSError from './error';
+
 
 /**
  * RNS JavaScript library.

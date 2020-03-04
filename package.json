@@ -25,7 +25,7 @@
     "test": "npm run test:local && npm run test:public && npm run lint",
     "test:local": "npx jest --coverage test/local/",
     "test:public": "npx jest --coverage test/public-nodes/",
-    "lint": "npx eslint 'src/**' 'test/**'",
+    "lint": "npx eslint 'src/**.ts' 'src/**/**.ts' 'test/**'",
     "prepublishOnly": "npm run test && npm run build"
   },
   "dependencies": {

@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 import { createAddrResolver, createChainAddrResolver, createNameResolver } from './factories';
-import {
+import RNSError, {
   NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_RESOLVER,
   NO_CHAIN_ADDR_RESOLUTION, NO_CHAIN_ADDR_RESOLUTION_SET,
   NO_NAME_RESOLUTION, NO_REVERSE_RESOLUTION_SET,
@@ -13,7 +13,6 @@ import {
 import { ChainId, Resolutions, Options } from './types';
 import Composer from './composer';
 import { hasMethod, namehash } from './utils';
-import RNSError from './error';
 
 /**
  * Standard resolution protocols.

@@ -5,8 +5,8 @@ import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { NetworkId } from '../types';
-import { NO_ADDRESSES_PROVIDED } from '../errors';
-import RNSError from '../error';
+import RNSError, { NO_ADDRESSES_PROVIDED } from '../errors';
+
 
 export const createContractAddresses = (networkId: NetworkId) => {
   switch (networkId) {

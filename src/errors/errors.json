@@ -14,5 +14,9 @@
   "NO_NAME_RESOLUTION": { "id": "KB013", "message": "No name resolution" },
   "NO_REVERSE_RESOLUTION_SET": { "id": "KB014", "message": "No reverse resolution set" },
   "NO_ACCOUNTS_TO_SIGN": { "id": "KB015", "message": "There are no accounts to sign the transaction" },
-  "SUBDOMAIN_NOT_AVAILABLE": { "id": "KB016", "message": "The subdomain is not available" }
+  "SUBDOMAIN_NOT_AVAILABLE": { "id": "KB016", "message": "The subdomain is not available" },
+  "INVALID_ADDRESS": { "id": "KB017", "message": "The given address is invalid" },
+  "NO_SET_ADDR": { "id": "KB018", "message": "The resolver does not implements setAddr method" },
+  "NO_SET_CHAIN_ADDR": { "id": "KB019", "message": "The resolver does not implements setChainAddr method" },
+  "INVALID_CHECKSUM_ADDRESS": { "id": "KB020", "message": "The given address checksum is invalid" }
 }

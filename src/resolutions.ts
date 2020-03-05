@@ -1,18 +1,20 @@
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 import { createAddrResolver, createChainAddrResolver, createNameResolver } from './factories';
-import RNSError, {
-  NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_RESOLVER,
-  NO_CHAIN_ADDR_RESOLUTION, NO_CHAIN_ADDR_RESOLUTION_SET,
-  NO_NAME_RESOLUTION, NO_REVERSE_RESOLUTION_SET,
-} from './errors';
 import {
   ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE,
-  CHAIN_ADDR_INTERFACE, NAME_INTERFACE,
+  CHAIN_ADDR_INTERFACE, NAME_INTERFACE, SET_ADDR_INTERFACE, SET_CHAIN_ADDR_INTERFACE,
 } from './constants';
 import { ChainId, Resolutions, Options } from './types';
 import Composer from './composer';
-import { hasMethod, namehash } from './utils';
+import {
+  hasMethod, namehash, hasAccounts, isValidAddress, isValidChecksumAddress,
+} from './utils';
+import RNSError, {
+  NO_RESOLVER, NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_CHAIN_ADDR_RESOLUTION,
+  NO_CHAIN_ADDR_RESOLUTION_SET, NO_NAME_RESOLUTION, NO_REVERSE_RESOLUTION_SET,
+  NO_ACCOUNTS_TO_SIGN, NO_SET_CHAIN_ADDR, NO_SET_ADDR, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
+} from './errors';
 
 /**
  * Standard resolution protocols.
@@ -132,6 +134,74 @@ export default class extends Composer implements Resolutions {
     }
 
     return addr;
+  }
+
+  /**
+   * Sets addr for the given domain using the AbstractAddrResolver interface.
+   *
+   * @param domain - Domain to set resolution
+   * @param addr - Address to be set as the resolution of the given domain
+   */
+  async setAddr(domain: string, addr: string): Promise<void> {
+    await this.compose();
+
+    if (!await hasAccounts(this.web3)) {
+      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+    }
+
+    if (!isValidAddress(addr)) {
+      throw new RNSError(INVALID_ADDRESS);
+    }
+
+    if (!isValidChecksumAddress(addr)) {
+      throw new RNSError(INVALID_CHECKSUM_ADDRESS);
+    }
+
+    const node: string = namehash(domain);
+
+    const resolver = await this._createResolver(
+      node,
+      SET_ADDR_INTERFACE,
+      NO_SET_ADDR,
+      createAddrResolver,
+    );
+
+    const accounts = await this.web3.eth.getAccounts();
+
+    await resolver
+      .methods
+      .setAddr(
+        node,
+        addr,
+      ).send({ from: accounts[0] });
+  }
+
+  /**
+   * Sets addr for the given domain in the given chainId using the AbstractMultiChainResolver interface
+   *
+   * @param domain - Domain to set resolution
+   * @param addr - Address to be set as the resolution of the given domain
+   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   */
+  async setChainAddr(domain: string, addr: string, chainId: ChainId): Promise<void> {
+    await this.compose();
+
+    if (!await hasAccounts(this.web3)) {
+      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+    }
+
+    const node: string = namehash(domain);
+
+    const resolver = await this._createResolver(
+      node,
+      SET_CHAIN_ADDR_INTERFACE,
+      NO_SET_CHAIN_ADDR,
+      createChainAddrResolver,
+    );
+
+    const accounts = await this.web3.eth.getAccounts();
+
+    await resolver.methods.setChainAddr(node, chainId, addr).send({ from: accounts[0] });
   }
 
   /**

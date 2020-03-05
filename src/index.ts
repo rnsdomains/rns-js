@@ -66,6 +66,21 @@ export = class extends Composer implements RNS {
   }
 
   /**
+   * Set address resolution of a given domain and chain.
+   * If chainId is not provided, it sets the address in the current blockchain.
+   *
+   * @param domain - Domain to set resolution
+   * @param addr - Address to be set as the resolution of the given domain
+   * @param chain - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   */
+  setAddr(domain: string, addr: string, chain?: ChainId | undefined): Promise<void> {
+    if (!chain) {
+      return this._resolutions.setAddr(domain, addr);
+    }
+    return this._resolutions.setChainAddr(domain, addr, chain);
+  }
+
+  /**
    * Reverse lookup: get name of a given address.
    *
    * @throws NO_REVERSE_RESOLUTION_SET when the domain has not set the reverse resolution yet - KB014.

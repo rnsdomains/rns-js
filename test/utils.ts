@@ -1,5 +1,4 @@
-import { ErrorDictionary } from '../src/types';
-import * as errors from '../src/errors/errors.json';
+import RNSError from '../src/errors';
 
 export const asyncExpectThrowRNSError = async (prom: any, expectedError: string) => {
   let error;
@@ -8,8 +7,7 @@ export const asyncExpectThrowRNSError = async (prom: any, expectedError: string)
   } catch (_error) {
     error = _error;
   } finally {
-    const expectedErrorId = (errors as ErrorDictionary)[expectedError].id;
-    expect(error.id).toBe(expectedErrorId);
+    expect(error).toEqual(new RNSError(expectedError));
   }
 };
 
@@ -31,7 +29,6 @@ export const expectThrowRNSError = (fn: any, expectedError: string) => {
   } catch (_error) {
     error = _error;
   } finally {
-    const expectedErrorId = (errors as ErrorDictionary)[expectedError].id;
-    expect(error.id).toBe(expectedErrorId);
+    expect(error).toEqual(new RNSError(expectedError));
   }
 };

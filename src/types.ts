@@ -239,3 +239,10 @@ export interface Utils {
    */
   labelhash(label:string): string;
 }
+
+export interface ErrorDictionary {
+  [id: string]: {
+    id: string;
+    message: string;
+  };
+}

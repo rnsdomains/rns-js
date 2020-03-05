@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import RNS from '../../src/index';
 import { NO_ACCOUNTS_TO_SIGN } from '../../src/errors';
-import { asyncExpectThrowError } from '../utils';
+import { asyncExpectThrowRNSError } from '../utils';
 
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
@@ -11,7 +11,7 @@ describe('subdomains.setOwner', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(
+      await asyncExpectThrowRNSError(
         async () => rns.subdomains.setOwner('multichain.testing.rsk', 'check', '0x0000000000000000000000000000000000000001'),
         NO_ACCOUNTS_TO_SIGN,
       );
@@ -20,7 +20,7 @@ describe('subdomains.setOwner', () => {
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(
+      await asyncExpectThrowRNSError(
         async () => rns.subdomains.setOwner('multichain.testing.rsk', 'check', '0x0000000000000000000000000000000000000001'),
         NO_ACCOUNTS_TO_SIGN,
       );

@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import { Subdomains, Options } from './types';
-import {
+import RNSError, {
   SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN,
   INVALID_LABEL, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN,
   SUBDOMAIN_NOT_AVAILABLE,
@@ -41,20 +41,20 @@ export default class extends Composer implements Subdomains {
   async available(domain: string, label: string): Promise<boolean> {
     await this.compose();
     if (!isValidDomain(domain)) {
-      throw new Error(INVALID_DOMAIN);
+      throw new RNSError(INVALID_DOMAIN);
     }
 
     if (!isValidTld(domain)) {
-      throw new Error(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      throw new RNSError(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     }
 
     if (!isValidLabel(label)) {
-      throw new Error(INVALID_LABEL);
+      throw new RNSError(INVALID_LABEL);
     }
 
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
-      throw new Error(DOMAIN_NOT_EXISTS);
+      throw new RNSError(DOMAIN_NOT_EXISTS);
     }
 
     const node: string = namehash(`${label}.${domain}`);
@@ -81,28 +81,28 @@ export default class extends Composer implements Subdomains {
     await this.compose();
 
     if (!await hasAccounts(this.web3)) {
-      throw new Error(NO_ACCOUNTS_TO_SIGN);
+      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
     }
 
     if (!isValidDomain(domain)) {
-      throw new Error(INVALID_DOMAIN);
+      throw new RNSError(INVALID_DOMAIN);
     }
 
     if (!isValidTld(domain)) {
-      throw new Error(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      throw new RNSError(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     }
 
     if (!isValidLabel(label)) {
-      throw new Error(INVALID_LABEL);
+      throw new RNSError(INVALID_LABEL);
     }
 
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
-      throw new Error(DOMAIN_NOT_EXISTS);
+      throw new RNSError(DOMAIN_NOT_EXISTS);
     }
 
     if (!await this.available(domain, label)) {
-      throw new Error(SUBDOMAIN_NOT_AVAILABLE);
+      throw new RNSError(SUBDOMAIN_NOT_AVAILABLE);
     }
 
     const node: string = namehash(`${domain}`);

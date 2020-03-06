@@ -237,6 +237,26 @@ export interface Utils {
   isValidTld(domain:string): boolean;
 
   /**
+   * Validates the given address syntax
+   *
+   * @param address
+   *
+   * @returns
+   * true if valid, false if not
+   */
+  isValidAddress(address: string): boolean;
+
+  /**
+   * Validates the given checksum address for RSK
+   *
+   * @param address
+   *
+   * @returns
+   * true if valid, false if not
+   */
+  isValidChecksumAddress(address: string): boolean;
+
+  /**
    * Returns namehash of the given domain
    *
    * @param domain - domain to apply namehash function

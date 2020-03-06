@@ -226,4 +226,36 @@ describe('rns.utils', () => {
       expect(hasMethod).toEqual(true);
     });
   });
+
+  describe('.isValidAddress', () => {
+    it('should return false when sending an invalid address', async () => {
+      expect(rns.utils.isValidAddress('invalid')).toEqual(false);
+    });
+
+    it('should return true when sending a valid address', async () => {
+      expect(rns.utils.isValidAddress('0x0000000000000000000000000000000000000001')).toEqual(true);
+    });
+
+    it('should return true when sending an RSK address with an invalid checksum', async () => {
+      expect(rns.utils.isValidAddress('0x000000000000000000000000000000000000ABC1')).toEqual(true);
+    });
+  });
+
+  describe('.isValidChecksumAddress', () => {
+    it('should return false when sending an invalid address', async () => {
+      expect(rns.utils.isValidChecksumAddress('invalid')).toEqual(false);
+    });
+
+    it('should return true when sending a valid address', async () => {
+      expect(rns.utils.isValidChecksumAddress('0x0000000000000000000000000000000000000001')).toEqual(true);
+    });
+
+    it('should return false when sending an RSK address with an invalid checksum', async () => {
+      expect(rns.utils.isValidChecksumAddress('0x000000000000000000000000000000000000ABC1')).toEqual(false);
+    });
+
+    it('should return true when sending an RSK address with a valid checksum', async () => {
+      expect(rns.utils.isValidChecksumAddress('0x000000000000000000000000000000000000abc1')).toEqual(false);
+    });
+  });
 });

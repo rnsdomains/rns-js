@@ -114,6 +114,8 @@ export = class extends Composer implements RNS {
       isValidTld: utils.isValidTld,
       namehash: utils.namehash,
       labelhash: utils.labelhash,
+      isValidAddress: utils.isValidAddress,
+      isValidChecksumAddress: utils.isValidChecksumAddress,
     };
   }
 };

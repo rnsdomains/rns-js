@@ -17,6 +17,5 @@
   "SUBDOMAIN_NOT_AVAILABLE": { "id": "KB016", "message": "The subdomain is not available" },
   "INVALID_ADDRESS": { "id": "KB017", "message": "The given address is invalid" },
   "NO_SET_ADDR": { "id": "KB018", "message": "The resolver does not implements setAddr method" },
-  "NO_SET_CHAIN_ADDR": { "id": "KB019", "message": "The resolver does not implements setChainAddr method" },
-  "INVALID_CHECKSUM_ADDRESS": { "id": "KB020", "message": "The given address checksum is invalid" }
+  "INVALID_CHECKSUM_ADDRESS": { "id": "KB019", "message": "The given address checksum is invalid" }
 }

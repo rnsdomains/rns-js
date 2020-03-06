@@ -2,7 +2,6 @@ import Web3 from 'web3';
 import RNS from '../../src/index';
 import { NO_ACCOUNTS_TO_SIGN } from '../../src/errors';
 import { asyncExpectThrowRNSError } from '../utils';
-import { ChainId } from '../../src/types';
 
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
@@ -23,13 +22,6 @@ describe('rns.setAddr', () => {
           NO_ACCOUNTS_TO_SIGN,
         );
       });
-
-      test('setChainAddr', async () => {
-        await asyncExpectThrowRNSError(
-          async () => rns.setAddr('multichain.testing.rsk', '1Ftu4C8VW18RkB8PZxXwwHocMLyEynLcrG', ChainId.BITCOIN_MAINNET),
-          NO_ACCOUNTS_TO_SIGN,
-        );
-      });
     });
 
     describe('testnet', () => {
@@ -41,13 +33,6 @@ describe('rns.setAddr', () => {
       test('setAddr', async () => {
         await asyncExpectThrowRNSError(
           async () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
-          NO_ACCOUNTS_TO_SIGN,
-        );
-      });
-
-      test('setChainAddr', async () => {
-        await asyncExpectThrowRNSError(
-          async () => rns.setAddr('multichain.testing.rsk', '1Ftu4C8VW18RkB8PZxXwwHocMLyEynLcrG', ChainId.BITCOIN_MAINNET),
           NO_ACCOUNTS_TO_SIGN,
         );
       });

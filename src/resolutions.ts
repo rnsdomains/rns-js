@@ -3,7 +3,7 @@ import { Contract } from 'web3-eth-contract';
 import { createAddrResolver, createChainAddrResolver, createNameResolver } from './factories';
 import {
   ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE,
-  CHAIN_ADDR_INTERFACE, NAME_INTERFACE, SET_ADDR_INTERFACE, SET_CHAIN_ADDR_INTERFACE,
+  CHAIN_ADDR_INTERFACE, NAME_INTERFACE,
 } from './constants';
 import { ChainId, Resolutions, Options } from './types';
 import Composer from './composer';
@@ -13,7 +13,7 @@ import {
 import RNSError, {
   NO_RESOLVER, NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_CHAIN_ADDR_RESOLUTION,
   NO_CHAIN_ADDR_RESOLUTION_SET, NO_NAME_RESOLUTION, NO_REVERSE_RESOLUTION_SET,
-  NO_ACCOUNTS_TO_SIGN, NO_SET_CHAIN_ADDR, NO_SET_ADDR, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
+  NO_ACCOUNTS_TO_SIGN, NO_SET_ADDR, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
 } from './errors';
 
 /**
@@ -161,7 +161,7 @@ export default class extends Composer implements Resolutions {
 
     const resolver = await this._createResolver(
       node,
-      SET_ADDR_INTERFACE,
+      ADDR_INTERFACE,
       NO_SET_ADDR,
       createAddrResolver,
     );
@@ -174,34 +174,6 @@ export default class extends Composer implements Resolutions {
         node,
         addr,
       ).send({ from: accounts[0] });
-  }
-
-  /**
-   * Sets addr for the given domain in the given chainId using the AbstractMultiChainResolver interface
-   *
-   * @param domain - Domain to set resolution
-   * @param addr - Address to be set as the resolution of the given domain
-   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
-   */
-  async setChainAddr(domain: string, addr: string, chainId: ChainId): Promise<void> {
-    await this.compose();
-
-    if (!await hasAccounts(this.web3)) {
-      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
-    }
-
-    const node: string = namehash(domain);
-
-    const resolver = await this._createResolver(
-      node,
-      SET_CHAIN_ADDR_INTERFACE,
-      NO_SET_CHAIN_ADDR,
-      createChainAddrResolver,
-    );
-
-    const accounts = await this.web3.eth.getAccounts();
-
-    await resolver.methods.setChainAddr(node, chainId, addr).send({ from: accounts[0] });
   }
 
   /**

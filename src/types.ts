@@ -75,14 +75,12 @@ export interface RNS {
   addr(domain: string, chainId?: ChainId): Promise<string>;
 
   /**
-   * Set address resolution of a given domain and chain.
-   * If chainId is not provided, it sets the address in the current blockchain.
+   * Set address resolution of a given domain.
    *
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
-   * @param chain - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    */
-  setAddr(domain: string, addr: string, chain?: ChainId): Promise<void>;
+  setAddr(domain: string, addr: string): Promise<void>;
 
   /**
    * Reverse lookup: get name of a given address.
@@ -145,15 +143,6 @@ export interface Resolutions {
    * @param addr - Address to be set as the resolution of the given domain
    */
   setAddr(domain: string, addr: string): Promise<void>;
-
-  /**
-   * Sets addr for the given domain in the given chainId using the AbstractMultiChainResolver interface
-   *
-   * @param domain - Domain to set resolution
-   * @param addr - Address to be set as the resolution of the given domain
-   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
-   */
-  setChainAddr(domain: string, addr: string, chainId: ChainId): Promise<void>;
 
   /**
    * Reverse lookup: get name of a given address.

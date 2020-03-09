@@ -66,6 +66,16 @@ export = class extends Composer implements RNS {
   }
 
   /**
+   * Set address resolution of a given domain.
+   *
+   * @param domain - Domain to set resolution
+   * @param addr - Address to be set as the resolution of the given domain
+   */
+  setAddr(domain: string, addr: string): Promise<void> {
+    return this._resolutions.setAddr(domain, addr);
+  }
+
+  /**
    * Reverse lookup: get name of a given address.
    *
    * @throws NO_REVERSE_RESOLUTION_SET when the domain has not set the reverse resolution yet - KB014.
@@ -104,6 +114,8 @@ export = class extends Composer implements RNS {
       isValidTld: utils.isValidTld,
       namehash: utils.namehash,
       labelhash: utils.labelhash,
+      isValidAddress: utils.isValidAddress,
+      isValidChecksumAddress: utils.isValidChecksumAddress,
     };
   }
 };

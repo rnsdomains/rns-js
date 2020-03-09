@@ -3,11 +3,14 @@ import {
   Composable, Options, ContractAddresses, Contracts,
 } from './types';
 import { createRegistry, createContractAddresses } from './factories';
+import RNSError, { LIBRARY_NOT_COMPOSED } from './errors';
 
 export default abstract class implements Composable {
   private _contractAddresses!: ContractAddresses;
 
   private _composed!: boolean;
+
+  private _currentNetworkId!: number;
 
   protected _contracts!: Contracts;
 
@@ -24,6 +27,10 @@ export default abstract class implements Composable {
     if (options && options.contractAddresses) {
       this._contractAddresses = options.contractAddresses;
     }
+
+    if (options && options.networkId) {
+      this._currentNetworkId = options.networkId;
+    }
   }
 
   /**
@@ -32,8 +39,9 @@ export default abstract class implements Composable {
    * @throws NO_ADDRESSES_PROVIDED if the network is not RSK Mainnet or RSK Testnet and the options parameter was not provided in the constructor - KB005.
    */
   private async _detectNetwork() {
+    const networkId = await this.web3.eth.net.getId();
+
     if (!this._contractAddresses) {
-      const networkId = await this.web3.eth.net.getId();
       this._contractAddresses = createContractAddresses(networkId);
     }
 
@@ -41,6 +49,10 @@ export default abstract class implements Composable {
       this._contracts = {
         registry: createRegistry(this.web3, this._contractAddresses.registry),
       };
+    }
+
+    if (!this._currentNetworkId) {
+      this._currentNetworkId = networkId;
     }
   }
 
@@ -54,5 +66,18 @@ export default abstract class implements Composable {
       await this._detectNetwork();
       this._composed = true;
     }
+  }
+
+  /**
+   * Returns the current networkId
+   *
+   * @throws LIBRARY_NOT_COMPOSED if the library was not previously composed with compose method - KB004.
+   */
+  get currentNetworkId(): number {
+    if (!this._composed) {
+      throw new RNSError(LIBRARY_NOT_COMPOSED);
+    }
+
+    return this._currentNetworkId;
   }
 }

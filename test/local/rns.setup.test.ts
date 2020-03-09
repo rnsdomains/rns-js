@@ -27,6 +27,11 @@ describe('library setup', () => {
     expectThrowRNSError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
   });
 
+  it('should fail when getting currentNetworkId if library not composed', () => {
+    const rns = new RNS(web3Instance);
+    expectThrowRNSError(() => rns.currentNetworkId, LIBRARY_NOT_COMPOSED);
+  });
+
   it('should fail when compose if invalid network', async () => {
     const invalidWeb3 = new Web3('https://invalid.rsk.co');
     const rns = new RNS(invalidWeb3);

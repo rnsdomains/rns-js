@@ -1,7 +1,9 @@
 import Web3 from 'web3';
 import { hash as namehashFn } from 'eth-ens-namehash';
 import { keccak256 } from 'js-sha3';
+import * as rskjutils from 'rskjs-util';
 import { AVAILABLE_TLDS } from './constants';
+import { NetworkId } from './types';
 
 /**
  * Checks if the contract in the given address has the given method
@@ -35,6 +37,29 @@ export const hasAccounts = async (web3: Web3) => {
   }
   return accounts.length > 0;
 };
+
+/**
+ * Validates the given address
+ *
+ * @param address
+ *
+ * @returns
+ * true if valid, false if not
+ */
+export const isValidAddress = (address: string) => rskjutils.isValidAddress(address);
+
+/**
+ * Validates the given checksum address for the given networkId
+ *
+ * @param address
+ * @param networkId - chanetworkIdnId where checksummed address should be valid
+ *
+ * @returns
+ * true if valid, false if not
+ */
+export const isValidChecksumAddress = (
+  address: string, networkId: NetworkId,
+) => rskjutils.isValidChecksumAddress(address, networkId);
 
 /**
  * Validates the given label

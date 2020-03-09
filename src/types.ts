@@ -13,9 +13,9 @@ export enum NetworkId {
  * Represents some of the chain ids listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
  */
 export enum ChainId {
-  RSK_MAINNET = '0x80000089',
-  BITCOIN_MAINNET = '0x80000000',
-  ETHEREUM_MAINNET = '0x8000003c',
+  RSK = '0x80000089',
+  BITCOIN = '0x80000000',
+  ETHEREUM = '0x8000003c',
   LITECOIN = '0x80000002'
 }
 
@@ -33,7 +33,8 @@ export interface ContractAddresses {
  * Configuration object used to run the lib if the current network is not RSK Mainnet or RSK Testnet
  */
 export interface Options {
-  contractAddresses?: ContractAddresses
+  contractAddresses?: ContractAddresses,
+  networkId?: number
 }
 
 /**
@@ -73,6 +74,14 @@ export interface RNS {
    * Address resolution for the given domain in the given chain (if provided)
    */
   addr(domain: string, chainId?: ChainId): Promise<string>;
+
+  /**
+   * Set address resolution of a given domain.
+   *
+   * @param domain - Domain to set resolution
+   * @param addr - Address to be set as the resolution of the given domain
+   */
+  setAddr(domain: string, addr: string): Promise<void>;
 
   /**
    * Reverse lookup: get name of a given address.
@@ -119,6 +128,7 @@ export interface Resolutions {
    * Address resolution for the given domain
    */
   addr(domain: string): Promise<string>;
+
   /**
    * Resolves the given domain using the AbstractMultiChainResolver interface
    *
@@ -126,6 +136,14 @@ export interface Resolutions {
    * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    */
   chainAddr(domain: string, chainId: ChainId): Promise<string>;
+
+  /**
+   * Sets addr for the given domain using the AbstractAddrResolver interface.
+   *
+   * @param domain - Domain to set resolution
+   * @param addr - Address to be set as the resolution of the given domain
+   */
+  setAddr(domain: string, addr: string): Promise<void>;
 
   /**
    * Reverse lookup: get name of a given address.
@@ -218,6 +236,27 @@ export interface Utils {
    * true if valid, false if not
    */
   isValidTld(domain:string): boolean;
+
+  /**
+   * Validates the given address syntax
+   *
+   * @param address
+   *
+   * @returns
+   * true if valid, false if not
+   */
+  isValidAddress(address: string): boolean;
+
+  /**
+   * Validates the given checksum address for the given networkId
+   *
+   * @param address
+   * @param networkId - chanetworkIdnId where checksummed address should be valid
+   *
+   * @returns
+   * true if valid, false if not
+   */
+  isValidChecksumAddress(address: string, networkId: NetworkId): boolean;
 
   /**
    * Returns namehash of the given domain

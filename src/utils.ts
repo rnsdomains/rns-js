@@ -3,7 +3,7 @@ import { hash as namehashFn } from 'eth-ens-namehash';
 import { keccak256 } from 'js-sha3';
 import * as rskjutils from 'rskjs-util';
 import { AVAILABLE_TLDS } from './constants';
-import { ChainId, NetworkId } from './types';
+import { NetworkId } from './types';
 
 /**
  * Checks if the contract in the given address has the given method
@@ -58,7 +58,7 @@ export const isValidAddress = (address: string) => rskjutils.isValidAddress(addr
  * true if valid, false if not
  */
 export const isValidChecksumAddress = (
-  address: string, networkId: NetworkId
+  address: string, networkId: NetworkId,
 ) => rskjutils.isValidChecksumAddress(address, networkId);
 
 /**

@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import {
-  Composable, Options, ContractAddresses, Contracts, ChainId, NetworkId,
+  Composable, Options, ContractAddresses, Contracts, NetworkId,
 } from './types';
 import { createRegistry, createContractAddresses } from './factories';
 import RNSError, { LIBRARY_NOT_COMPOSED } from './errors';
@@ -47,7 +47,7 @@ export default abstract class implements Composable {
       };
     }
 
-    if (networkId == NetworkId.RSK_MAINNET) {
+    if (networkId === NetworkId.RSK_MAINNET) {
       this._currentNetworkId = NetworkId.RSK_MAINNET;
     } else {
       this._currentNetworkId = NetworkId.RSK_TESTNET;

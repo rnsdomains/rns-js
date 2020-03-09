@@ -4,11 +4,10 @@ import {
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
-import { expectRevert } from '@openzeppelin/test-helpers';
 import {
   INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS, DOMAIN_NOT_EXISTS,
 } from '../../src/errors';
-import { asyncExpectThrowRNSError } from '../utils';
+import { asyncExpectThrowRNSError, asyncExpectThrowVMRevert } from '../utils';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
@@ -64,6 +63,6 @@ describe('setResolver', () => {
     const [account] = accounts;
     await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), account);
 
-    expectRevert(rns.setResolver('noexists.rsk', '0x0000000000000000000000000000000001000006'));
+    await asyncExpectThrowVMRevert(async () => rns.setResolver('alice.rsk', '0x0000000000000000000000000000000001000006'));
   });
 });

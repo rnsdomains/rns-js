@@ -12,7 +12,6 @@ import {
 import { ZERO_ADDRESS } from '../../src/constants';
 import { asyncExpectThrowRNSError } from '../utils';
 import RNS from '../../src/index';
-import { NetworkId } from '../../src/types';
 import { labelhash } from '../../src/utils';
 
 describe('setAddr', () => {

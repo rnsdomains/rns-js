@@ -12,7 +12,7 @@ import {
 import { ZERO_ADDRESS } from '../../src/constants';
 import { asyncExpectThrowRNSError } from '../utils';
 import RNS from '../../src/index';
-import { Options } from '../../src/types';
+import { NetworkId } from '../../src/types';
 import { labelhash } from '../../src/utils';
 
 describe('setAddr', () => {
@@ -22,7 +22,6 @@ describe('setAddr', () => {
   let registry: any;
   let publicResolver: any;
   let rns: RNS;
-  let options: Options;
   const web3Instance = web3 as unknown as Web3;
 
   beforeEach(async () => {
@@ -35,7 +34,7 @@ describe('setAddr', () => {
 
     await registry.setSubnodeOwner('0x00', labelhash(TLD), defaultSender);
 
-    options = {
+    const options = {
       contractAddresses: {
         registry: registry.address,
       },

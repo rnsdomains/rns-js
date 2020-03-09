@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import {
-  Composable, Options, ContractAddresses, Contracts, NetworkId,
+  Composable, Options, ContractAddresses, Contracts,
 } from './types';
 import { createRegistry, createContractAddresses } from './factories';
 import RNSError, { LIBRARY_NOT_COMPOSED } from './errors';
@@ -10,7 +10,7 @@ export default abstract class implements Composable {
 
   private _composed!: boolean;
 
-  private _currentNetworkId!: NetworkId;
+  private _currentNetworkId!: number;
 
   protected _contracts!: Contracts;
 
@@ -26,6 +26,10 @@ export default abstract class implements Composable {
   constructor(public web3: Web3, options?: Options) {
     if (options && options.contractAddresses) {
       this._contractAddresses = options.contractAddresses;
+    }
+
+    if (options && options.networkId) {
+      this._currentNetworkId = options.networkId;
     }
   }
 
@@ -47,10 +51,8 @@ export default abstract class implements Composable {
       };
     }
 
-    if (networkId === NetworkId.RSK_MAINNET) {
-      this._currentNetworkId = NetworkId.RSK_MAINNET;
-    } else {
-      this._currentNetworkId = NetworkId.RSK_TESTNET;
+    if (!this._currentNetworkId) {
+      this._currentNetworkId = networkId;
     }
   }
 
@@ -71,10 +73,11 @@ export default abstract class implements Composable {
    *
    * @throws LIBRARY_NOT_COMPOSED if the library was not previously composed with compose method - KB004.
    */
-  get currentNetworkId(): NetworkId {
+  get currentNetworkId(): number {
     if (!this._composed) {
       throw new RNSError(LIBRARY_NOT_COMPOSED);
     }
+
     return this._currentNetworkId;
   }
 }

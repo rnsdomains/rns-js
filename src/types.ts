@@ -13,9 +13,9 @@ export enum NetworkId {
  * Represents some of the chain ids listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
  */
 export enum ChainId {
-  RSK_MAINNET = '0x80000089',
-  BITCOIN_MAINNET = '0x80000000',
-  ETHEREUM_MAINNET = '0x8000003c',
+  RSK = '0x80000089',
+  BITCOIN = '0x80000000',
+  ETHEREUM = '0x8000003c',
   LITECOIN = '0x80000002'
 }
 
@@ -33,7 +33,8 @@ export interface ContractAddresses {
  * Configuration object used to run the lib if the current network is not RSK Mainnet or RSK Testnet
  */
 export interface Options {
-  contractAddresses?: ContractAddresses
+  contractAddresses?: ContractAddresses,
+  networkId?: number
 }
 
 /**

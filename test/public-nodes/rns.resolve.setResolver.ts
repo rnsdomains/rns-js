@@ -22,7 +22,6 @@ describe('setResolver', () => {
       const rns = new RNS(web3);
       await asyncExpectThrowRNSError(
         async () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
-
         NO_ACCOUNTS_TO_SIGN,
       );
     });

@@ -4,11 +4,11 @@ import {
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
+import { expectRevert } from '@openzeppelin/test-helpers';
 import {
   INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS, DOMAIN_NOT_EXISTS,
 } from '../../src/errors';
 import { asyncExpectThrowRNSError } from '../utils';
-import { expectRevert } from '@openzeppelin/test-helpers';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
@@ -23,7 +23,7 @@ describe('setResolver', () => {
 
   beforeEach(async () => {
     const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
-    
+
     registry = await Registry.new();
 
     await registry.setSubnodeOwner('0x00', labelhash(TLD), defaultSender);

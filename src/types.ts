@@ -84,6 +84,14 @@ export interface RNS {
   setAddr(domain: string, addr: string): Promise<void>;
 
   /**
+   * Set resolver of a given domain.
+   *
+   * @param domain - Domain to set resolver
+   * @param resolver - Address to be set as the resolver of the given domain
+   */
+  setResolver(domain: string, resolver: string): Promise<void>;
+
+  /**
    * Reverse lookup: get name of a given address.
    *
    * @param address - address to be resolved
@@ -144,6 +152,14 @@ export interface Resolutions {
    * @param addr - Address to be set as the resolution of the given domain
    */
   setAddr(domain: string, addr: string): Promise<void>;
+
+  /**
+   * Set resolver of a given domain.
+   *
+   * @param domain - Domain to set resolver
+   * @param resolver - Address to be set as the resolver of the given domain
+   */
+  setResolver(domain: string, resolver: string): Promise<void>;
 
   /**
    * Reverse lookup: get name of a given address.

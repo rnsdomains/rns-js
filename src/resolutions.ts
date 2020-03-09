@@ -153,7 +153,7 @@ export default class extends Composer implements Resolutions {
       throw new RNSError(INVALID_ADDRESS);
     }
 
-    if (!isValidChecksumAddress(addr)) {
+    if (!isValidChecksumAddress(addr, this.currentNetworkId)) {
       throw new RNSError(INVALID_CHECKSUM_ADDRESS);
     }
 

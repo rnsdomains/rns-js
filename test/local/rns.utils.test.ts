@@ -5,7 +5,7 @@ import Web3 from 'web3';
 import { hash as namehash } from 'eth-ens-namehash';
 import { keccak256 } from 'js-sha3';
 import RNS from '../../src/index';
-import { Options } from '../../src/types';
+import { Options, NetworkId } from '../../src/types';
 import { ERC165_INTERFACE } from '../../src/constants';
 
 describe('rns.utils', () => {
@@ -242,20 +242,40 @@ describe('rns.utils', () => {
   });
 
   describe('.isValidChecksumAddress', () => {
-    it('should return false when sending an invalid address', async () => {
-      expect(rns.utils.isValidChecksumAddress('invalid')).toEqual(false);
+    describe('mainnet', () => {
+      it('should return false when sending an invalid address', async () => {
+        expect(rns.utils.isValidChecksumAddress('invalid', NetworkId.RSK_MAINNET)).toEqual(false);
+      });
+
+      it('should return false when sending an RSK address with an invalid checksum', async () => {
+        expect(rns.utils.isValidChecksumAddress('0x000000000000000000000000000000000000ABC1', NetworkId.RSK_MAINNET)).toEqual(false);
+      });
+
+      it('should return true when sending an RSK address with a valid checksum', async () => {
+        expect(rns.utils.isValidChecksumAddress('0x000000000000000000000000000000000000abc1', NetworkId.RSK_MAINNET)).toEqual(false);
+      });
+
+      it('should return true when sending a valid address', async () => {
+        expect(rns.utils.isValidChecksumAddress('0x0000000000000000000000000000000000000001', NetworkId.RSK_MAINNET)).toEqual(true);
+      });
     });
 
-    it('should return true when sending a valid address', async () => {
-      expect(rns.utils.isValidChecksumAddress('0x0000000000000000000000000000000000000001')).toEqual(true);
-    });
+    describe('testnet', () => {
+      it('should return false when sending an invalid address', async () => {
+        expect(rns.utils.isValidChecksumAddress('invalid', NetworkId.RSK_TESTNET)).toEqual(false);
+      });
 
-    it('should return false when sending an RSK address with an invalid checksum', async () => {
-      expect(rns.utils.isValidChecksumAddress('0x000000000000000000000000000000000000ABC1')).toEqual(false);
-    });
+      it('should return false when sending an RSK address with an invalid checksum', async () => {
+        expect(rns.utils.isValidChecksumAddress('0x000000000000000000000000000000000000ABC1', NetworkId.RSK_TESTNET)).toEqual(false);
+      });
 
-    it('should return true when sending an RSK address with a valid checksum', async () => {
-      expect(rns.utils.isValidChecksumAddress('0x000000000000000000000000000000000000abc1')).toEqual(false);
+      it('should return true when sending an RSK address with a valid checksum', async () => {
+        expect(rns.utils.isValidChecksumAddress('0x000000000000000000000000000000000000abc1', NetworkId.RSK_TESTNET)).toEqual(false);
+      });
+
+      it('should return true when sending a valid address', async () => {
+        expect(rns.utils.isValidChecksumAddress('0x0000000000000000000000000000000000000001', NetworkId.RSK_TESTNET)).toEqual(true);
+      });
     });
   });
 });

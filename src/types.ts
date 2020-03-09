@@ -247,14 +247,15 @@ export interface Utils {
   isValidAddress(address: string): boolean;
 
   /**
-   * Validates the given checksum address for RSK
+   * Validates the given checksum address for the given networkId
    *
    * @param address
+   * @param networkId - chanetworkIdnId where checksummed address should be valid
    *
    * @returns
    * true if valid, false if not
    */
-  isValidChecksumAddress(address: string): boolean;
+  isValidChecksumAddress(address: string, networkId: NetworkId): boolean;
 
   /**
    * Returns namehash of the given domain

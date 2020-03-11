@@ -60,7 +60,7 @@ describe('setAddr', () => {
     };
 
     rns = new RNS(web3Instance, options);
-    
+
     await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
 
     await rns.setAddr('alice.rsk', addr);

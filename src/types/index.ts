@@ -1,4 +1,3 @@
-
 import { ChainId, NetworkId } from './enums';
 import RNS, { ContractAddresses, Options, Contracts } from './rns';
 import { Resolutions } from './resolutions';

@@ -28,8 +28,8 @@ export = class extends Composer implements RNS {
    */
   constructor(public web3: Web3, options?: Options) {
     super(web3, options);
-    this._subdomains = new Subdomains(this.web3, options);
     this._resolutions = new Resolutions(this.web3, options);
+    this._subdomains = new Subdomains(this.web3, this._resolutions, options);
   }
 
   /**
@@ -68,6 +68,12 @@ export = class extends Composer implements RNS {
   /**
    * Set address resolution of a given domain.
    *
+   * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
+   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws INVALID_ADDRESS if the given addr is invalid - KB017
+   * @throws INVALID_CHECKSUM_ADDRESS if the given addr has an invalid checksum - KB019
+   *
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
    */
@@ -77,6 +83,11 @@ export = class extends Composer implements RNS {
 
   /**
    * Set resolver of a given domain.
+   *
+   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws INVALID_ADDRESS if the given resolver address is invalid - KB017
+   * @throws INVALID_CHECKSUM_ADDRESS if the given resolver address has an invalid checksum - KB019
+   * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
    *
    * @param domain - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain

@@ -1,5 +1,5 @@
 import Web3 from 'web3';
-import { Subdomains, Options } from './types';
+import { Subdomains, Options, Resolutions } from './types';
 import RNSError, {
   SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN,
   INVALID_LABEL, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN,
@@ -20,8 +20,35 @@ export default class extends Composer implements Subdomains {
    * @param web3 - current Web3 instance
    * @param registry - RNS registry used to look for given domains
    */
-  constructor(public web3: Web3, options?: Options) {
+  constructor(public web3: Web3, private _resolutions: Resolutions, options?: Options) {
     super(web3, options);
+  }
+
+  private _setSubnodeOwner(
+    node: string,
+    label: string,
+    owner: string,
+    sender?: string,
+  ): Promise<void> {
+    return this._contracts.registry
+      .methods
+      .setSubnodeOwner(
+        node,
+        labelhash(label),
+        owner,
+      ).send({ from: sender || owner });
+  }
+
+  private _validateDomainAndLabel(domain: string, label: string): void {
+    if (!isValidDomain(domain)) {
+      throw new RNSError(INVALID_DOMAIN);
+    }
+    if (!isValidTld(domain)) {
+      throw new RNSError(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+    }
+    if (!isValidLabel(label)) {
+      throw new RNSError(INVALID_LABEL);
+    }
   }
 
   /**
@@ -40,17 +67,8 @@ export default class extends Composer implements Subdomains {
    */
   async available(domain: string, label: string): Promise<boolean> {
     await this.compose();
-    if (!isValidDomain(domain)) {
-      throw new RNSError(INVALID_DOMAIN);
-    }
 
-    if (!isValidTld(domain)) {
-      throw new RNSError(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
-    }
-
-    if (!isValidLabel(label)) {
-      throw new RNSError(INVALID_LABEL);
-    }
+    this._validateDomainAndLabel(domain, label);
 
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
@@ -84,17 +102,7 @@ export default class extends Composer implements Subdomains {
       throw new RNSError(NO_ACCOUNTS_TO_SIGN);
     }
 
-    if (!isValidDomain(domain)) {
-      throw new RNSError(INVALID_DOMAIN);
-    }
-
-    if (!isValidTld(domain)) {
-      throw new RNSError(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
-    }
-
-    if (!isValidLabel(label)) {
-      throw new RNSError(INVALID_LABEL);
-    }
+    this._validateDomainAndLabel(domain, label);
 
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
@@ -115,5 +123,60 @@ export default class extends Composer implements Subdomains {
         labelhash(label),
         owner,
       ).send({ from: accounts[0] });
+  }
+
+  /**
+   * Creates a new subdomain under the given domain tree and sets addr if provided
+   *
+   *
+   * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is not a domain under valid TLDs - KB009
+   * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
+   * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
+   * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
+   * @throws SUBDOMAIN_NOT_AVAILABLE if the given domain is already owned - KB016
+   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   *
+   * @param domain - Parent .rsk domain. ie: wallet.rsk
+   * @param label - Subdomain to register. ie: alice
+   * @param owner - The owner of the new subdomain. If not provided, the address who executes the tx will be the owner
+   * @param addr - The address to be set as resolution of the new subdomain
+   */
+  async create(domain: string, label: string, owner?: string, addr?: string): Promise<void> {
+    await this.compose();
+
+    if (!await hasAccounts(this.web3)) {
+      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+    }
+
+    this._validateDomainAndLabel(domain, label);
+
+    const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
+    if (domainOwner === ZERO_ADDRESS) {
+      throw new RNSError(DOMAIN_NOT_EXISTS);
+    }
+
+    if (!await this.available(domain, label)) {
+      throw new RNSError(SUBDOMAIN_NOT_AVAILABLE);
+    }
+
+    const node: string = namehash(`${domain}`);
+    const accounts = await this.web3.eth.getAccounts();
+    const sender = accounts[0];
+
+    if (!addr) {
+      await this._setSubnodeOwner(node, label, owner || sender, sender);
+    } else if (!owner || owner === sender) {
+      // submits just two transactions
+      await this._setSubnodeOwner(node, label, sender);
+
+      await this._resolutions.setAddr(`${label}.${domain}`, addr);
+    } else {
+      // needs to submit three txs
+      await this._setSubnodeOwner(node, label, sender, sender);
+
+      await this._resolutions.setAddr(`${label}.${domain}`, addr);
+
+      this._setSubnodeOwner(node, label, owner, sender);
+    }
   }
 }

@@ -76,6 +76,16 @@ export = class extends Composer implements RNS {
   }
 
   /**
+   * Set resolver of a given domain.
+   *
+   * @param domain - Domain to set resolver
+   * @param resolver - Address to be set as the resolver of the given domain
+   */
+  setResolver(domain: string, resolver: string): Promise<void> {
+    return this._resolutions.setResolver(domain, resolver);
+  }
+
+  /**
    * Reverse lookup: get name of a given address.
    *
    * @throws NO_REVERSE_RESOLUTION_SET when the domain has not set the reverse resolution yet - KB014.

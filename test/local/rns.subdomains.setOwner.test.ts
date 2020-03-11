@@ -3,11 +3,10 @@ import {
   accounts, contract, web3, defaultSender,
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
-import { expectRevert } from '@openzeppelin/test-helpers';
 import Web3 from 'web3';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
-import { asyncExpectThrowRNSError } from '../utils';
+import { asyncExpectThrowRNSError, asyncExpectThrowVMRevert } from '../utils';
 import {
   INVALID_DOMAIN, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS,
   DOMAIN_NOT_EXISTS, INVALID_LABEL, SUBDOMAIN_NOT_AVAILABLE,
@@ -109,6 +108,6 @@ describe('subdomains.setOwner', () => {
   it('should revert if creating a subdomain under a domain that the current address does not own', async () => {
     await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), owner);
 
-    expectRevert(rns.subdomains.setOwner('alice.rsk', 'test', owner));
+    await asyncExpectThrowVMRevert(async () => rns.subdomains.setOwner('alice.rsk', 'test', owner));
   });
 });

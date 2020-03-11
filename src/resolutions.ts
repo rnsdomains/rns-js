@@ -13,7 +13,7 @@ import {
 import RNSError, {
   NO_RESOLVER, NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_CHAIN_ADDR_RESOLUTION,
   NO_CHAIN_ADDR_RESOLUTION_SET, NO_NAME_RESOLUTION, NO_REVERSE_RESOLUTION_SET,
-  NO_ACCOUNTS_TO_SIGN, NO_SET_ADDR, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
+  NO_ACCOUNTS_TO_SIGN, NO_SET_ADDR, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS, DOMAIN_NOT_EXISTS,
 } from './errors';
 
 /**
@@ -70,6 +70,15 @@ export default class extends Composer implements Resolutions {
     }
 
     return resolver;
+  }
+
+  private _validateAddress(addr: string) {
+    if (!isValidAddress(addr)) {
+      throw new RNSError(INVALID_ADDRESS);
+    }
+    if (!isValidChecksumAddress(addr, this.currentNetworkId)) {
+      throw new RNSError(INVALID_CHECKSUM_ADDRESS);
+    }
   }
 
   /**
@@ -149,13 +158,7 @@ export default class extends Composer implements Resolutions {
       throw new RNSError(NO_ACCOUNTS_TO_SIGN);
     }
 
-    if (!isValidAddress(addr)) {
-      throw new RNSError(INVALID_ADDRESS);
-    }
-
-    if (!isValidChecksumAddress(addr, this.currentNetworkId)) {
-      throw new RNSError(INVALID_CHECKSUM_ADDRESS);
-    }
+    this._validateAddress(addr);
 
     const node: string = namehash(domain);
 
@@ -174,6 +177,36 @@ export default class extends Composer implements Resolutions {
         node,
         addr,
       ).send({ from: accounts[0] });
+  }
+
+  /**
+   * Set resolver of a given domain.
+   *
+   * @param domain - Domain to set resolver
+   * @param resolver - Address to be set as the resolver of the given domain
+   */
+  async setResolver(domain: string, resolver: string): Promise<void> {
+    await this.compose();
+
+    if (!await hasAccounts(this.web3)) {
+      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+    }
+
+    this._validateAddress(resolver);
+
+    const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
+    if (domainOwner === ZERO_ADDRESS) {
+      throw new RNSError(DOMAIN_NOT_EXISTS);
+    }
+
+    const node: string = namehash(domain);
+
+    const accounts = await this.web3.eth.getAccounts();
+
+    await this._contracts.registry
+      .methods
+      .setResolver(node, resolver)
+      .send({ from: accounts[0] });
   }
 
   /**

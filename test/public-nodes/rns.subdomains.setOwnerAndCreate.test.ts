@@ -7,7 +7,7 @@ const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
 
 describe('subdomains.setOwner', () => {
-  describe('should fail when web3 instance does not contain accounts to sing the tx', () => {
+  describe('should fail when web3 instance does not contain accounts to sign the tx', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
@@ -22,6 +22,28 @@ describe('subdomains.setOwner', () => {
       const rns = new RNS(web3);
       await asyncExpectThrowRNSError(
         async () => rns.subdomains.setOwner('multichain.testing.rsk', 'check', '0x0000000000000000000000000000000000000001'),
+        NO_ACCOUNTS_TO_SIGN,
+      );
+    });
+  });
+});
+
+describe('subdomains.create', () => {
+  describe('should fail when web3 instance does not contain accounts to sign the tx', () => {
+    test('mainnet', async () => {
+      const web3 = new Web3(PUBLIC_NODE_MAINNET);
+      const rns = new RNS(web3);
+      await asyncExpectThrowRNSError(
+        async () => rns.subdomains.create('multichain.testing.rsk', 'check'),
+        NO_ACCOUNTS_TO_SIGN,
+      );
+    });
+
+    test('testnet', async () => {
+      const web3 = new Web3(PUBLIC_NODE_TESTNET);
+      const rns = new RNS(web3);
+      await asyncExpectThrowRNSError(
+        async () => rns.subdomains.create('multichain.testing.rsk', 'check'),
         NO_ACCOUNTS_TO_SIGN,
       );
     });

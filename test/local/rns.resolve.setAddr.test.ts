@@ -51,6 +51,24 @@ describe('setAddr', () => {
     expect(actualAddr).toBe(addr);
   });
 
+  it('should set an address when the library is instantiated with a different networkId', async () => {
+    const options = {
+      contractAddresses: {
+        registry: registry.address,
+      },
+      networkId: 18,
+    };
+
+    rns = new RNS(web3Instance, options);
+
+    await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+
+    await rns.setAddr('alice.rsk', addr);
+
+    const actualAddr = await rns.addr('alice.rsk');
+    expect(actualAddr).toBe(addr);
+  });
+
   it('should throw an error when address is invalid', async () => {
     await asyncExpectThrowRNSError(async () => rns.setAddr('alice.rsk', 'invalidaddress'), INVALID_ADDRESS);
   });

@@ -8,9 +8,10 @@ import {
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import { NO_REVERSE_RESOLUTION_SET, NO_NAME_RESOLUTION } from '../../src/errors';
-import { asyncExpectThrowError } from '../utils';
+import { asyncExpectThrowRNSError } from '../utils';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
+import { labelhash } from '../../src/utils';
 
 describe('name resolution', () => {
   let registry: any;
@@ -33,9 +34,9 @@ describe('name resolution', () => {
     nameResolver = await NameResolver.new(registry.address);
     reverseRegistrar = await ReverseRegistrar.new(registry.address);
 
-    await registry.setSubnodeOwner('0x00', web3.utils.sha3('reverse'), defaultSender);
+    await registry.setSubnodeOwner('0x00', labelhash('reverse'), defaultSender);
     await registry.setResolver(namehash('reverse'), nameResolver.address);
-    await registry.setSubnodeOwner(namehash('reverse'), web3.utils.sha3('addr'), reverseRegistrar.address);
+    await registry.setSubnodeOwner(namehash('reverse'), labelhash('addr'), reverseRegistrar.address);
 
     options = {
       contractAddresses: {
@@ -59,7 +60,7 @@ describe('name resolution', () => {
     const [alice, accountAsResolver] = accounts;
 
     await reverseRegistrar.claimWithResolver(alice, accountAsResolver, { from: alice });
-    await asyncExpectThrowError(async () => rns.reverse(alice), NO_NAME_RESOLUTION);
+    await asyncExpectThrowRNSError(async () => rns.reverse(alice), NO_NAME_RESOLUTION);
   });
 
   it('should throw an error when ERC165 that not support name interface (public resolver) as reverse resolver', async () => {
@@ -68,17 +69,17 @@ describe('name resolution', () => {
     const publicResolver = await PublicResolver.new(registry.address);
 
     await reverseRegistrar.claimWithResolver(alice, publicResolver.address, { from: alice });
-    await asyncExpectThrowError(async () => rns.reverse(alice), NO_NAME_RESOLUTION);
+    await asyncExpectThrowRNSError(async () => rns.reverse(alice), NO_NAME_RESOLUTION);
   });
 
   it('should throw an error when the address has a resolver but no resolution set', async () => {
     const [alice] = accounts;
 
     await reverseRegistrar.claim(alice, { from: alice });
-    await asyncExpectThrowError(async () => rns.reverse(alice), NO_REVERSE_RESOLUTION_SET);
+    await asyncExpectThrowRNSError(async () => rns.reverse(alice), NO_REVERSE_RESOLUTION_SET);
   });
 
   it('should throw an error when reverse resolution has not been set', async () => {
-    await asyncExpectThrowError(async () => rns.reverse('0x0000000000000000000000000000000000000001'), NO_REVERSE_RESOLUTION_SET);
+    await asyncExpectThrowRNSError(async () => rns.reverse('0x0000000000000000000000000000000000000001'), NO_REVERSE_RESOLUTION_SET);
   });
 });

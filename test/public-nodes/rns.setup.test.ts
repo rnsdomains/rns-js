@@ -2,7 +2,8 @@ import Web3 from 'web3';
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import RNS from '../../src/index';
 import { LIBRARY_NOT_COMPOSED } from '../../src/errors';
-import { asyncExpectThrowError, expectThrowError } from '../utils';
+import { expectThrowRNSError, asyncExpectThrowError } from '../utils';
+import { NetworkId } from '../../src/types';
 
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
@@ -47,17 +48,33 @@ describe('library setup', () => {
     });
   });
 
+  describe('should return networkId after compose', () => {
+    test('mainnet', async () => {
+      const web3 = new Web3(PUBLIC_NODE_MAINNET);
+      const rns = new RNS(web3);
+      await rns.compose();
+      expect(rns.currentNetworkId).toBe(NetworkId.RSK_MAINNET);
+    });
+
+    test('testnet', async () => {
+      const web3 = new Web3(PUBLIC_NODE_TESTNET);
+      const rns = new RNS(web3);
+      await rns.compose();
+      expect(rns.currentNetworkId).toBe(NetworkId.RSK_TESTNET);
+    });
+  });
+
   describe('should fail when getting contracts if library not composed', () => {
     test('mainnet', () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      expectThrowError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
+      expectThrowRNSError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
     });
 
     test('testnet', () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      expectThrowError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
+      expectThrowRNSError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
     });
   });
 

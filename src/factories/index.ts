@@ -5,7 +5,8 @@ import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { NetworkId } from '../types';
-import { NO_ADDRESSES_PROVIDED } from '../errors';
+import RNSError, { NO_ADDRESSES_PROVIDED } from '../errors';
+
 
 export const createContractAddresses = (networkId: NetworkId) => {
   switch (networkId) {
@@ -17,7 +18,7 @@ export const createContractAddresses = (networkId: NetworkId) => {
       return {
         registry: RNSRegistryData.address.rskTestnet,
       };
-    default: throw new Error(NO_ADDRESSES_PROVIDED);
+    default: throw new RNSError(NO_ADDRESSES_PROVIDED);
   }
 };
 

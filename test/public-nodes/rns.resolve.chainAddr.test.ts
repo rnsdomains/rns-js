@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import RNS from '../../src/index';
 import { NO_CHAIN_ADDR_RESOLUTION, NO_RESOLVER, NO_CHAIN_ADDR_RESOLUTION_SET } from '../../src/errors';
-import { asyncExpectThrowError } from '../utils';
+import { asyncExpectThrowRNSError } from '../utils';
 import { ChainId } from '../../src/types';
 
 const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
@@ -12,14 +12,14 @@ describe('chainAddr resolution', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      const addr = await rns.addr('multichain.testing.rsk', ChainId.BITCOIN_MAINNET);
+      const addr = await rns.addr('multichain.testing.rsk', ChainId.BITCOIN);
       expect(addr).toBe('1Ftu4C8VW18RkB8PZxXwwHocMLyEynLcrG');
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      const addr = await rns.addr('multichain.testing.rsk', ChainId.BITCOIN_MAINNET);
+      const addr = await rns.addr('multichain.testing.rsk', ChainId.BITCOIN);
       expect(addr).toBe('1Ftu4C8VW18RkB8PZxXwwHocMLyEynLcrG');
     });
   });
@@ -28,14 +28,14 @@ describe('chainAddr resolution', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      const addr = await rns.addr('multichain.testing.rsk', ChainId.ETHEREUM_MAINNET);
+      const addr = await rns.addr('multichain.testing.rsk', ChainId.ETHEREUM);
       expect(addr).toBe('0x0000000000000000000000000000000001000006');
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      const addr = await rns.addr('multichain.testing.rsk', ChainId.ETHEREUM_MAINNET);
+      const addr = await rns.addr('multichain.testing.rsk', ChainId.ETHEREUM);
       expect(addr).toBe('0x0000000000000000000000000000000001000006');
     });
   });
@@ -44,13 +44,13 @@ describe('chainAddr resolution', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => rns.addr('noresolver.multichain.testing.rsk', ChainId.BITCOIN_MAINNET), NO_RESOLVER);
+      await asyncExpectThrowRNSError(async () => rns.addr('noresolver.multichain.testing.rsk', ChainId.BITCOIN), NO_RESOLVER);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => rns.addr('noresolver.multichain.testing.rsk', ChainId.BITCOIN_MAINNET), NO_RESOLVER);
+      await asyncExpectThrowRNSError(async () => rns.addr('noresolver.multichain.testing.rsk', ChainId.BITCOIN), NO_RESOLVER);
     });
   });
 
@@ -60,13 +60,13 @@ describe('chainAddr resolution', () => {
       test('mainnet', async () => {
         const web3 = new Web3(PUBLIC_NODE_MAINNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowError(async () => rns.addr('nochainaddrresolver.multichain.testing.rsk', ChainId.BITCOIN_MAINNET), NO_CHAIN_ADDR_RESOLUTION);
+        await asyncExpectThrowRNSError(async () => rns.addr('nochainaddrresolver.multichain.testing.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION);
       });
 
       test('testnet with another ERC165  as resolver', async () => {
         const web3 = new Web3(PUBLIC_NODE_TESTNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowError(async () => rns.addr('nochainaddrresolver.multichain.testing.rsk', ChainId.BITCOIN_MAINNET), NO_CHAIN_ADDR_RESOLUTION);
+        await asyncExpectThrowRNSError(async () => rns.addr('nochainaddrresolver.multichain.testing.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION);
       });
     });
 
@@ -74,13 +74,13 @@ describe('chainAddr resolution', () => {
       test('mainnet', async () => {
         const web3 = new Web3(PUBLIC_NODE_MAINNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowError(async () => rns.addr('accountasresolver.multichain.testing.rsk', ChainId.BITCOIN_MAINNET), NO_CHAIN_ADDR_RESOLUTION);
+        await asyncExpectThrowRNSError(async () => rns.addr('accountasresolver.multichain.testing.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION);
       });
 
       test('testnet', async () => {
         const web3 = new Web3(PUBLIC_NODE_TESTNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowError(async () => rns.addr('accountasresolver.multichain.testing.rsk', ChainId.BITCOIN_MAINNET), NO_CHAIN_ADDR_RESOLUTION);
+        await asyncExpectThrowRNSError(async () => rns.addr('accountasresolver.multichain.testing.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION);
       });
     });
   });
@@ -89,13 +89,13 @@ describe('chainAddr resolution', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => rns.addr('noresolution.multichain.testing.rsk', ChainId.BITCOIN_MAINNET), NO_CHAIN_ADDR_RESOLUTION_SET);
+      await asyncExpectThrowRNSError(async () => rns.addr('noresolution.multichain.testing.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION_SET);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => rns.addr('noresolution.multichain.testing.rsk', ChainId.BITCOIN_MAINNET), NO_CHAIN_ADDR_RESOLUTION_SET);
+      await asyncExpectThrowRNSError(async () => rns.addr('noresolution.multichain.testing.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION_SET);
     });
   });
 
@@ -103,13 +103,13 @@ describe('chainAddr resolution', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => rns.addr('noexist.multichain.testing.rsk', ChainId.BITCOIN_MAINNET), NO_RESOLVER);
+      await asyncExpectThrowRNSError(async () => rns.addr('noexist.multichain.testing.rsk', ChainId.BITCOIN), NO_RESOLVER);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => rns.addr('noexist.multichain.testing.rsk', ChainId.BITCOIN_MAINNET), NO_RESOLVER);
+      await asyncExpectThrowRNSError(async () => rns.addr('noexist.multichain.testing.rsk', ChainId.BITCOIN), NO_RESOLVER);
     });
   });
 });

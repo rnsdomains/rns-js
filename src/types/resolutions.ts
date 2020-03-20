@@ -1,3 +1,4 @@
+import { TransactionReceipt } from 'web3-eth';
 import { ChainId } from './enums';
 
 /**
@@ -28,7 +29,7 @@ export interface Resolutions {
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
    */
-  setAddr(domain: string, addr: string): Promise<void>;
+  setAddr(domain: string, addr: string): Promise<TransactionReceipt>;
 
   /**
    * Set resolver of a given domain.
@@ -36,7 +37,7 @@ export interface Resolutions {
    * @param domain - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain
    */
-  setResolver(domain: string, resolver: string): Promise<void>;
+  setResolver(domain: string, resolver: string): Promise<TransactionReceipt>;
 
   /**
    * Reverse lookup: get name of a given address.

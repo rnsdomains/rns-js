@@ -47,6 +47,16 @@ describe('setResolver', () => {
     expect(actualResolver).toBe(addr);
   });
 
+  it('should return a tx receipt', async () => {
+    const addr = '0x0000000000000000000000000000000001000006';
+
+    await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+
+    const tx = await rns.setResolver('alice.rsk', addr);
+
+    expect(tx.transactionHash).toBeTruthy();
+  });
+
   it('should throw an error when address is invalid', async () => {
     await asyncExpectThrowRNSError(async () => rns.setResolver('alice.rsk', 'invalidaddress'), INVALID_ADDRESS);
   });

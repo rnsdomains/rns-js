@@ -9,7 +9,7 @@ import { Options } from '../../src/types';
 import { asyncExpectThrowRNSError, asyncExpectThrowVMRevert } from '../utils';
 import {
   INVALID_DOMAIN, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS,
-  DOMAIN_NOT_EXISTS, INVALID_LABEL, SUBDOMAIN_NOT_AVAILABLE,
+  DOMAIN_NOT_EXISTS, INVALID_LABEL,
 } from '../../src/errors';
 import { labelhash } from '../../src/utils';
 
@@ -89,20 +89,30 @@ describe('subdomains.setOwner', () => {
   it('should create a subdomain if is available', async () => {
     await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-    let isAvailable = await rns.subdomains.available('alice.rsk', 'test');
-    expect(isAvailable).toBe(true);
-
     await rns.subdomains.setOwner('alice.rsk', 'test', owner);
-    isAvailable = await rns.subdomains.available('alice.rsk', 'test');
-    expect(isAvailable).toBe(false);
+
+    const actualOwner = await registry.owner(namehash('test.alice.rsk'));
+    expect(actualOwner).toEqual(owner);
   });
 
-  it('should not create a subdomain if is not available', async () => {
+  it('should return a tx receipt', async () => {
     await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
-    await rns.subdomains.setOwner('alice.rsk', 'test', owner);
 
-    // create it again should fail
-    await asyncExpectThrowRNSError(async () => rns.subdomains.setOwner('alice.rsk', 'test', owner), SUBDOMAIN_NOT_AVAILABLE);
+    const tx = await rns.subdomains.setOwner('alice.rsk', 'test', owner);
+
+    expect(tx.transactionHash).toBeTruthy();
+  });
+
+  it('should create a subdomain even if is not available', async () => {
+    await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
+    await rns.subdomains.setOwner('alice.rsk', 'test', defaultSender);
+
+    let actualOwner = await registry.owner(namehash('test.alice.rsk'));
+    expect(actualOwner).toEqual(defaultSender);
+
+    await rns.subdomains.setOwner('alice.rsk', 'test', owner);
+    actualOwner = await registry.owner(namehash('test.alice.rsk'));
+    expect(actualOwner).toEqual(owner);
   });
 
   it('should revert if creating a subdomain under a domain that the current address does not own', async () => {

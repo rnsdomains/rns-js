@@ -51,6 +51,14 @@ describe('setAddr', () => {
     expect(actualAddr).toBe(addr);
   });
 
+  it('should return a tx receipt when setting an address', async () => {
+    await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+
+    const tx = await rns.setAddr('alice.rsk', addr);
+
+    expect(tx.transactionHash).toBeTruthy();
+  });
+
   it('should set an address when the library is instantiated with a different networkId', async () => {
     const options = {
       contractAddresses: {

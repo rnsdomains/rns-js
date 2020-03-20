@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+import { TransactionReceipt } from 'web3-eth';
 import {
   RNS, Contracts, Options, ChainId, Utils,
 } from './types';
@@ -77,7 +78,7 @@ export = class extends Composer implements RNS {
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
    */
-  setAddr(domain: string, addr: string): Promise<void> {
+  setAddr(domain: string, addr: string): Promise<TransactionReceipt> {
     return this._resolutions.setAddr(domain, addr);
   }
 
@@ -92,7 +93,7 @@ export = class extends Composer implements RNS {
    * @param domain - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain
    */
-  setResolver(domain: string, resolver: string): Promise<void> {
+  setResolver(domain: string, resolver: string): Promise<TransactionReceipt> {
     return this._resolutions.setResolver(domain, resolver);
   }
 

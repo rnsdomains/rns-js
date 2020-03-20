@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
+import { TransactionReceipt } from 'web3-eth';
 import { createAddrResolver, createChainAddrResolver, createNameResolver } from './factories';
 import {
   ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE,
@@ -157,7 +158,7 @@ export default class extends Composer implements Resolutions {
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
    */
-  async setAddr(domain: string, addr: string): Promise<void> {
+  async setAddr(domain: string, addr: string): Promise<TransactionReceipt> {
     await this.compose();
 
     if (!await hasAccounts(this.web3)) {
@@ -177,7 +178,7 @@ export default class extends Composer implements Resolutions {
 
     const accounts = await this.web3.eth.getAccounts();
 
-    await resolver
+    return resolver
       .methods
       .setAddr(
         node,
@@ -196,7 +197,7 @@ export default class extends Composer implements Resolutions {
    * @param domain - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain
    */
-  async setResolver(domain: string, resolver: string): Promise<void> {
+  async setResolver(domain: string, resolver: string): Promise<TransactionReceipt> {
     await this.compose();
 
     if (!await hasAccounts(this.web3)) {
@@ -214,7 +215,7 @@ export default class extends Composer implements Resolutions {
 
     const accounts = await this.web3.eth.getAccounts();
 
-    await this._contracts.registry
+    return this._contracts.registry
       .methods
       .setResolver(node, resolver)
       .send({ from: accounts[0] });

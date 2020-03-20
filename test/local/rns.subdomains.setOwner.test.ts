@@ -95,6 +95,14 @@ describe('subdomains.setOwner', () => {
     expect(actualOwner).toEqual(owner);
   });
 
+  it('should return a tx receipt', async () => {
+    await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
+
+    const tx = await rns.subdomains.setOwner('alice.rsk', 'test', owner);
+
+    expect(tx.transactionHash).toBeTruthy();
+  });
+
   it('should create a subdomain even if is not available', async () => {
     await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
     await rns.subdomains.setOwner('alice.rsk', 'test', defaultSender);

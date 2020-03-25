@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+import { TransactionReceipt } from 'web3-eth';
 import { Subdomains, Options, Resolutions } from './types';
 import RNSError, {
   SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN,
@@ -29,7 +30,7 @@ export default class extends Composer implements Subdomains {
     label: string,
     owner: string,
     sender?: string,
-  ): Promise<void> {
+  ): Promise<TransactionReceipt> {
     return this._contracts.registry
       .methods
       .setSubnodeOwner(
@@ -88,14 +89,13 @@ export default class extends Composer implements Subdomains {
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
    * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
    * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
-   * @throws SUBDOMAIN_NOT_AVAILABLE if the given domain is already owned - KB016
    * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
    *
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice
    * @param owner - The owner of the new subdomain
    */
-  async setOwner(domain: string, label: string, owner: string): Promise<void> {
+  async setOwner(domain: string, label: string, owner: string): Promise<TransactionReceipt> {
     await this.compose();
 
     if (!await hasAccounts(this.web3)) {
@@ -109,20 +109,10 @@ export default class extends Composer implements Subdomains {
       throw new RNSError(DOMAIN_NOT_EXISTS);
     }
 
-    if (!await this.available(domain, label)) {
-      throw new RNSError(SUBDOMAIN_NOT_AVAILABLE);
-    }
-
     const node: string = namehash(`${domain}`);
     const accounts = await this.web3.eth.getAccounts();
 
-    await this._contracts.registry
-      .methods
-      .setSubnodeOwner(
-        node,
-        labelhash(label),
-        owner,
-      ).send({ from: accounts[0] });
+    return this._setSubnodeOwner(node, label, owner, accounts[0]);
   }
 
   /**
@@ -140,8 +130,15 @@ export default class extends Composer implements Subdomains {
    * @param label - Subdomain to register. ie: alice
    * @param owner - The owner of the new subdomain. If not provided, the address who executes the tx will be the owner
    * @param addr - The address to be set as resolution of the new subdomain
+   *
+   * @returns Transaction receipt
    */
-  async create(domain: string, label: string, owner?: string, addr?: string): Promise<void> {
+  async create(
+    domain: string,
+    label: string,
+    owner?: string,
+    addr?: string,
+  ): Promise<TransactionReceipt> {
     await this.compose();
 
     if (!await hasAccounts(this.web3)) {
@@ -164,19 +161,18 @@ export default class extends Composer implements Subdomains {
     const sender = accounts[0];
 
     if (!addr) {
-      await this._setSubnodeOwner(node, label, owner || sender, sender);
-    } else if (!owner || owner === sender) {
+      return this._setSubnodeOwner(node, label, owner || sender, sender);
+    } if (!owner || owner === sender) {
       // submits just two transactions
       await this._setSubnodeOwner(node, label, sender);
 
-      await this._resolutions.setAddr(`${label}.${domain}`, addr);
-    } else {
-      // needs to submit three txs
-      await this._setSubnodeOwner(node, label, sender, sender);
-
-      await this._resolutions.setAddr(`${label}.${domain}`, addr);
-
-      this._setSubnodeOwner(node, label, owner, sender);
+      return this._resolutions.setAddr(`${label}.${domain}`, addr);
     }
+    // needs to submit three txs
+    await this._setSubnodeOwner(node, label, sender, sender);
+
+    await this._resolutions.setAddr(`${label}.${domain}`, addr);
+
+    return this._setSubnodeOwner(node, label, owner, sender);
   }
 }

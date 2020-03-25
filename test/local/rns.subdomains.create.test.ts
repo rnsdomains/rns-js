@@ -5,6 +5,7 @@ import {
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
+import { TransactionReceipt } from 'web3-eth';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
 import { asyncExpectThrowRNSError, asyncExpectThrowVMRevert } from '../utils';
@@ -108,43 +109,44 @@ describe('subdomains.create', () => {
 
   describe('happy paths', () => {
     const addr = '0x0000000000000000000000000000000001000006';
-    let expectedAddr: string; let
-      expectedOwner: string;
+    let expectedAddr: string;
+    let expectedOwner: string;
+    let tx: TransactionReceipt | null;
 
     beforeEach(async () => {
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
     });
 
     it('no owner and no addr provided', async () => {
-      await rns.subdomains.create('alice.rsk', 'test');
+      tx = await rns.subdomains.create('alice.rsk', 'test');
 
       expectedOwner = defaultSender;
       expectedAddr = ZERO_ADDRESS;
     });
 
     it('owner provided, no addr', async () => {
-      await rns.subdomains.create('alice.rsk', 'test', owner);
+      tx = await rns.subdomains.create('alice.rsk', 'test', owner);
 
       expectedOwner = owner;
       expectedAddr = ZERO_ADDRESS;
     });
 
     it('owner and addr provided, owner equals sender', async () => {
-      await rns.subdomains.create('alice.rsk', 'test', defaultSender, addr);
+      tx = await rns.subdomains.create('alice.rsk', 'test', defaultSender, addr);
 
       expectedOwner = defaultSender;
       expectedAddr = addr;
     });
 
     it('owner and addr provided, owner is not the sender', async () => {
-      await rns.subdomains.create('alice.rsk', 'test', owner, addr);
+      tx = await rns.subdomains.create('alice.rsk', 'test', owner, addr);
 
       expectedOwner = owner;
       expectedAddr = addr;
     });
 
     it('owner empty and addr provided', async () => {
-      await rns.subdomains.create('alice.rsk', 'test', '', addr);
+      tx = await rns.subdomains.create('alice.rsk', 'test', '', addr);
 
       expectedOwner = defaultSender;
       expectedAddr = addr;
@@ -157,6 +159,10 @@ describe('subdomains.create', () => {
       const actualAddr = await publicResolver.addr(namehash('test.alice.rsk'));
       expect(actualAddr).toEqual(expectedAddr);
 
+      expect(tx).toBeTruthy();
+      expect(tx?.transactionHash).toBeTruthy();
+
+      tx = null;
       expectedAddr = '';
       expectedOwner = '';
     });

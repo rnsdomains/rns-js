@@ -88,6 +88,16 @@ export default interface RNS {
   reverse(address: string): Promise<string>;
 
   /**
+   * Check if given domain is available or if there are any availability for the given label.
+   *
+   * @param domain - Domain or label to check availability
+   *
+   * @returns
+   * True if the domain is available, false if not, or an array of available domains under possible TLDs if the parameter is a label
+   */
+  available(domain: string): Promise<boolean | string[]>
+
+  /**
    * Set of subdomains related methods
    *
    * @returns Object with subdomains related methods ready to use.

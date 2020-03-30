@@ -53,40 +53,40 @@ describe('subdomains.available', () => {
     });
 
     it('should fail when sending an empty string', async () => {
-      await asyncExpectThrowRNSError(async () => rns.available(''), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.available(''), INVALID_LABEL);
     });
 
     it('should fail when sending an just a dot with no labels', async () => {
-      await asyncExpectThrowRNSError(async () => rns.available('.'), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.available('.'), INVALID_DOMAIN);
     });
 
     it('should fail when not sending an .rsk domain', async () => {
-      await asyncExpectThrowRNSError(async () => rns.available('domain.notrsk'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      await asyncExpectThrowRNSError(() => rns.available('domain.notrsk'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     });
 
     it('should fail when sending upper case domain', async () => {
-      await asyncExpectThrowRNSError(async () => rns.available('DOMAIN.rsk'), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.available('DOMAIN.rsk'), INVALID_DOMAIN);
     });
 
     it('should fail when sending upper case label', async () => {
-      await asyncExpectThrowRNSError(async () => rns.available('DOMAIN'), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.available('DOMAIN'), INVALID_LABEL);
     });
 
     it('should fail when sending invalid characters for label', async () => {
-      await asyncExpectThrowRNSError(async () => rns.available('dom-ain'), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.available('dom-ain'), INVALID_LABEL);
     });
 
     it('should fail when sending invalid characters', async () => {
-      await asyncExpectThrowRNSError(async () => rns.available('dom-ain.rsk'), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.available('dom-ain.rsk'), INVALID_DOMAIN);
     });
 
     it('should fail when tld does not implement available method', async () => {
-      await asyncExpectThrowRNSError(async () => rns.available('domain.rsk'), NO_AVAILABLE_METHOD);
+      await asyncExpectThrowRNSError(() => rns.available('domain.rsk'), NO_AVAILABLE_METHOD);
     });
 
     it('should fail when tld node does not have owner', async () => {
       await registry.setOwner(namehash(TLD), ZERO_ADDRESS);
-      await asyncExpectThrowRNSError(async () => rns.available('domain.rsk'), NO_TLD_OWNER);
+      await asyncExpectThrowRNSError(() => rns.available('domain.rsk'), NO_TLD_OWNER);
     });
   });
 

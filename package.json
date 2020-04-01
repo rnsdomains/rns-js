@@ -26,6 +26,7 @@
     "test:local": "npx jest --coverage --runInBand test/local/",
     "test:public": "npx jest --coverage --runInBand test/public-nodes/",
     "lint": "npx eslint 'src/**.ts' 'src/**/**.ts' 'test/**'",
+    "lint:fix": "npx eslint 'src/**.ts' 'src/**/**.ts' 'test/**' --fix",
     "prepublishOnly": "npm run test && npm run build"
   },
   "dependencies": {

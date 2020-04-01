@@ -123,7 +123,7 @@ export = class extends Composer implements RNS {
    * Check if given domain is available or if there are any availability for the given label.
    *
    * @param domain - Domain or label to check availability
-   * 
+   *
    * SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is under an invalid tld
    * INVALID_DOMAIN if the given parameter is a domain and is not alphanumeric
    * INVALID_LABEL if the given parameter is a label and is not alphanumeric

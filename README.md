@@ -31,15 +31,22 @@ Get Bitcoin address:
 rns.addr('testing.rsk', '0x80000000').then(console.log)
 ```
 
+Check if `testing.rsk` domain is available:
+```javascript
+rns.available('testing.rsk').then(console.log)
+```
+
 Check if `example.testing.rsk` subdomain is available:
 ```javascript
-rns.isSubdomainAvailable('testing.rsk', 'example').then(console.log)
+rns.subdomains.available('testing.rsk', 'example').then(console.log)
 ```
 
 Reverse lookup: get name of a given address:
 ```javascript
 rns.reverse('0x0000000000000000000000000000000123456789').then(console.log)
 ```
+
+Check out more operations details in the [RSK Developers Portal](https://developers.rsk.co/rif/rns/libs/javascript/Operations/).
 
 ## Advanced usage
 

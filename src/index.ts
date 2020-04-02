@@ -2,9 +2,13 @@ import Web3 from 'web3';
 import { TransactionReceipt } from 'web3-eth';
 import {
   RNS, Contracts, Options, ChainId, Utils,
+  Resolutions as IResolutions,
+  Subdomains as ISubdomains,
+  Registrations as IRegistrations,
 } from './types';
 import RNSError, { LIBRARY_NOT_COMPOSED } from './errors';
 import Resolutions from './resolutions';
+import Registrations from './registrations';
 import Subdomains from './subdomains';
 import Composer from './composer';
 import * as utils from './utils';
@@ -14,9 +18,11 @@ import * as utils from './utils';
  * RNS JavaScript library.
  */
 export = class extends Composer implements RNS {
-  private _resolutions!: Resolutions;
+  private _resolutions!: IResolutions;
 
-  private _subdomains!: Subdomains;
+  private _subdomains!: ISubdomains;
+
+  private _registrations!: IRegistrations;
 
   /**
    * Create RNS library.
@@ -31,6 +37,7 @@ export = class extends Composer implements RNS {
     super(web3, options);
     this._resolutions = new Resolutions(this.web3, options);
     this._subdomains = new Subdomains(this.web3, this._resolutions, options);
+    this._registrations = new Registrations(this.web3, options);
   }
 
   /**
@@ -113,11 +120,29 @@ export = class extends Composer implements RNS {
   }
 
   /**
+   * Check if given domain is available or if there are any availability for the given label.
+   *
+   * @param domain - Domain or label to check availability
+   *
+   * SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is under an invalid tld
+   * INVALID_DOMAIN if the given parameter is a domain and is not alphanumeric
+   * INVALID_LABEL if the given parameter is a label and is not alphanumeric
+   * NO_AVAILABLE_METHOD when the TLD owner does not implement the available method
+   * NO_TLD_OWNER when the TLD does not has an owner
+   *
+   * @returns
+   * True if the domain is available, false if not, or an array of available domains under possible TLDs if the parameter is a label
+   */
+  async available(domain: string): Promise<boolean | string[]> {
+    return this._registrations.available(domain);
+  }
+
+  /**
    * Set of subdomains related methods
    *
    * @returns Object with subdomains related methods ready to use.
    */
-  get subdomains(): Subdomains {
+  get subdomains(): ISubdomains {
     return this._subdomains;
   }
 

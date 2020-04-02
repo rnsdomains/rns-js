@@ -1,6 +1,6 @@
 {
   "name": "@rsksmart/rns",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "RIF Name Service library.",
   "keywords": [
     "rsk",
@@ -23,15 +23,17 @@
   "scripts": {
     "build": "npx tsc -p tsconfig.build.json",
     "test": "npm run test:local && npm run test:public && npm run lint",
-    "test:local": "npx jest --coverage test/local/",
+    "test:local": "npx jest --coverage --runInBand test/local/",
     "test:public": "npx jest --coverage --runInBand test/public-nodes/",
     "lint": "npx eslint 'src/**.ts' 'src/**/**.ts' 'test/**'",
+    "lint:fix": "npx eslint 'src/**.ts' 'src/**/**.ts' 'test/**' --fix",
     "prepublishOnly": "npm run test && npm run build"
   },
   "dependencies": {
     "@rsksmart/rns-registry": "^1.0.2",
     "@rsksmart/rns-resolver": "^1.0.2",
     "@rsksmart/rns-reverse": "^1.0.2",
+    "@rsksmart/rns-rskregistrar": "^1.2.1",
     "bignumber.js": "^9.0.0",
     "eth-ens-namehash": "^2.0.8",
     "js-sha3": "^0.8.0",
@@ -46,6 +48,9 @@
     "@babel/preset-env": "^7.8.3",
     "@babel/preset-typescript": "^7.8.3",
     "@openzeppelin/test-environment": "^0.1.3",
+    "@openzeppelin/test-helpers": "^0.5.5",
+    "@rsksmart/erc677": "^1.0.2",
+    "@rsksmart/rns-auction-registrar": "^1.0.2",
     "@types/jest": "^25.1.0",
     "@typescript-eslint/eslint-plugin": "^2.21.0",
     "@typescript-eslint/parser": "^2.18.0",
@@ -58,9 +63,11 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
     "ganache-core": "^2.10.2",
     "jest": "^25.1.0",
-    "ts-jest": "^25.2.0",
+    "ts-jest": "^25.3.0",
     "typescript": "^3.7.5"
   },
   "types": "./lib/index.d.ts"

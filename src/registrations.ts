@@ -74,8 +74,7 @@ export default class extends Composer implements Registrations {
       throw new RNSError(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     }
 
-    const label = domain.split('.')[0];
-    const tld = domain.split('.')[1];
+    const [label, tld] = domain.split('.');
 
     const nodeOwner = await this._createTldOwner(tld, NO_AVAILABLE_METHOD, createRskOwner);
 

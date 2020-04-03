@@ -3,9 +3,11 @@
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
-    "outDir": "lib",
     "rootDir": "src",
+    "outDir": "lib",
+    "lib": [ "ES6" ],
     "strict": true,
+    "noEmit": false,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true

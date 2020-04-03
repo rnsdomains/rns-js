@@ -1,5 +1,5 @@
 import { DEVPORTAL_ERRORS_URL } from '../constants';
-import * as errors from './errors.json';
+import errors from './errors.json';
 import { ErrorDictionary } from '../types';
 
 export default class extends Error {

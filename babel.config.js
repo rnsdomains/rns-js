@@ -1,15 +1,18 @@
 module.exports = {
   presets: [
     [
-      '@babel/preset-env',
+      '@babel/env',
       {
-        targets: {
-          node: 'current',
-        },
         modules: false,
-      },
+        targets: {
+          node: '8',
+          browsers: 'last 2 versions'
+        }
+      }
     ],
-    '@babel/preset-typescript',
+    '@babel/preset-typescript'
   ],
-  plugins: ["add-module-exports"]
+  plugins: [
+    '@babel/plugin-transform-typescript'
+  ]
 };

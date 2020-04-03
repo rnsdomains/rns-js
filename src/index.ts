@@ -17,7 +17,7 @@ import * as utils from './utils';
 /**
  * RNS JavaScript library.
  */
-export = class extends Composer implements RNS {
+export default class extends Composer implements RNS {
   private _resolutions!: IResolutions;
 
   private _subdomains!: ISubdomains;
@@ -165,4 +165,4 @@ export = class extends Composer implements RNS {
       isValidChecksumAddress: utils.isValidChecksumAddress,
     };
   }
-};
+}

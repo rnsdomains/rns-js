@@ -1,6 +1,6 @@
 {
-  "name": "elpackagedejavi",
-  "version": "1.5.15",
+  "name": "@rsksmart/rns",
+  "version": "1.5.1",
   "description": "RIF Name Service library.",
   "keywords": [
     "rsk",

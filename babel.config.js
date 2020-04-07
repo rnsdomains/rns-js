@@ -7,8 +7,8 @@ module.exports = {
         targets: {
           esmodules: true,
           node: '8',
-        }
-      }
+        },
+      },
     ],
     '@babel/preset-typescript'
   ],

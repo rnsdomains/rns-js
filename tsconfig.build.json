@@ -10,7 +10,8 @@
     "noEmit": false,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
   },
   "include": [
     "src"

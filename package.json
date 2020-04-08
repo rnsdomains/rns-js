@@ -23,10 +23,11 @@
   },
   "scripts": {
     "tsc-build": "npx tsc -p tsconfig.build.json",
-    "build": "npm run tsc-build && babel src --out-dir lib --extensions '.ts' --copy-files",
+    "build": "npm run tsc-build && babel src --out-dir lib --extensions '.ts' --copy-files && npx webpack",
     "test": "npm run test:local && npm run test:public && npm run lint",
     "test:local": "npx jest --coverage --runInBand test/local/",
     "test:public": "npx jest --coverage --runInBand test/public-nodes/",
+    "test:bundle": "npx webpack && npx jest --coverage --runInBand test/bundle/",
     "lint": "npx eslint 'src/**.ts' 'src/**/**.ts' 'test/**'",
     "lint:fix": "npx eslint 'src/**.ts' 'src/**/**.ts' 'test/**' --fix",
     "prepublishOnly": "npm run test && npm run build"

@@ -24,5 +24,7 @@ module.exports = {
   output: {
     filename: 'lib/bundle.js',
     path: path.resolve(__dirname),
+    library: 'RNS',
+    libraryExport: 'default',
   },
 };

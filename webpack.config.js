@@ -22,7 +22,7 @@ module.exports = {
     extensions: [ '.ts', '.js' ],
   },
   output: {
-    filename: 'lib/bundle.js',
+    filename: 'lib/rns.min.js',
     path: path.resolve(__dirname),
     library: 'RNS',
     libraryExport: 'default',

@@ -4,10 +4,12 @@
     "module": "commonjs",
     "declaration": true,
     "outDir": "lib",
+    "lib": [ "ES6" ],
     "strict": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
   },
   "include": [
     "src",

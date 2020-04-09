@@ -14,6 +14,8 @@ export default abstract class implements Composable {
 
   protected _contracts!: Contracts;
 
+  public web3: Web3;
+
   /**
    * Create RNS library.
    *
@@ -23,7 +25,8 @@ export default abstract class implements Composable {
    * @param web3 - Web3 instance
    * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
    */
-  constructor(public web3: Web3, options?: Options) {
+  constructor(web3Instance: Web3, options?: Options) {
+    this.web3 = new Web3(web3Instance.currentProvider);
     if (options && options.contractAddresses) {
       this._contractAddresses = options.contractAddresses;
     }

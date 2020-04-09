@@ -3,13 +3,17 @@ module.exports = {
     [
       '@babel/preset-env',
       {
+        modules: 'cjs',
         targets: {
-          node: 'current',
+          esmodules: true,
+          node: '8',
         },
-        modules: false,
       },
     ],
-    '@babel/preset-typescript',
+    '@babel/preset-typescript'
   ],
-  plugins: ["add-module-exports"]
+  plugins: [
+    '@babel/plugin-transform-typescript',
+    'add-module-exports'
+  ]
 };

@@ -6,10 +6,12 @@ import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
-import { asyncExpectThrowRNSError, asyncExpectThrowVMRevert } from '../utils';
+import {
+  asyncExpectThrowRNSError, asyncExpectThrowVMRevert, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET,
+} from '../utils';
 import {
   INVALID_DOMAIN, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS,
-  DOMAIN_NOT_EXISTS, INVALID_LABEL,
+  DOMAIN_NOT_EXISTS, INVALID_LABEL, NO_ACCOUNTS_TO_SIGN,
 } from '../../src/errors';
 import { labelhash } from '../../src/utils';
 
@@ -119,5 +121,27 @@ describe('subdomains.setOwner', () => {
     await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), owner);
 
     await asyncExpectThrowVMRevert(async () => rns.subdomains.setOwner('alice.rsk', 'test', owner));
+  });
+
+  describe('public nodes', () => {
+    describe('should fail when web3 instance does not contain accounts to sign the tx', () => {
+      test('mainnet', async () => {
+        const publicWeb3 = new Web3(PUBLIC_NODE_MAINNET);
+        rns = new RNS(publicWeb3);
+        await asyncExpectThrowRNSError(
+          async () => rns.subdomains.setOwner('multichain.testing.rsk', 'check', '0x0000000000000000000000000000000000000001'),
+          NO_ACCOUNTS_TO_SIGN,
+        );
+      });
+
+      test('testnet', async () => {
+        const publicWeb3 = new Web3(PUBLIC_NODE_TESTNET);
+        rns = new RNS(publicWeb3);
+        await asyncExpectThrowRNSError(
+          async () => rns.subdomains.setOwner('multichain.testing.rsk', 'check', '0x0000000000000000000000000000000000000001'),
+          NO_ACCOUNTS_TO_SIGN,
+        );
+      });
+    });
   });
 });

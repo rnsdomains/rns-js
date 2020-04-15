@@ -7,10 +7,10 @@ import {
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import {
-  NO_RESOLVER, INVALID_ADDRESS, NO_SET_ADDR, INVALID_CHECKSUM_ADDRESS,
+  NO_RESOLVER, INVALID_ADDRESS, NO_SET_ADDR, INVALID_CHECKSUM_ADDRESS, NO_ACCOUNTS_TO_SIGN,
 } from '../../src/errors';
 import { ZERO_ADDRESS } from '../../src/constants';
-import { asyncExpectThrowRNSError } from '../utils';
+import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 import RNS from '../../src/index';
 import { labelhash } from '../../src/utils';
 
@@ -114,5 +114,37 @@ describe('setAddr', () => {
 
   it('should throw an error when domain do not exist', async () => {
     await asyncExpectThrowRNSError(async () => rns.setAddr('noexists.rsk', addr), NO_RESOLVER);
+  });
+
+  describe('public nodes', () => {
+    describe('should fail when web3 instance does not contain accounts to sing the tx', () => {
+      describe('mainnet', () => {
+        beforeEach(() => {
+          const publicWeb3 = new Web3(PUBLIC_NODE_MAINNET);
+          rns = new RNS(publicWeb3);
+        });
+
+        test('setAddr', async () => {
+          await asyncExpectThrowRNSError(
+            async () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
+            NO_ACCOUNTS_TO_SIGN,
+          );
+        });
+      });
+
+      describe('testnet', () => {
+        beforeEach(() => {
+          const publicWeb3 = new Web3(PUBLIC_NODE_TESTNET);
+          rns = new RNS(publicWeb3);
+        });
+
+        test('setAddr', async () => {
+          await asyncExpectThrowRNSError(
+            async () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
+            NO_ACCOUNTS_TO_SIGN,
+          );
+        });
+      });
+    });
   });
 });

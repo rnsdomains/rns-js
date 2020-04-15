@@ -1,5 +1,8 @@
 import RNSError from '../src/errors';
 
+export const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
+export const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
+
 const asyncTryCatchAssert = async (prom: any, assertion: (error: any) => void) => {
   let error;
   try {

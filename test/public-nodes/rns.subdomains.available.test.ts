@@ -3,10 +3,7 @@ import RNS from '../../src/index';
 import {
   SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN, INVALID_LABEL, DOMAIN_NOT_EXISTS,
 } from '../../src/errors';
-import { asyncExpectThrowRNSError } from '../utils';
-
-const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
-const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
+import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 
 describe('subdomains.available validations', () => {
   describe('should not fail when sending a subdomain', () => {

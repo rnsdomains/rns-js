@@ -1,10 +1,7 @@
 import Web3 from 'web3';
 import RNS from '../../src/index';
 import { NO_ADDR_RESOLUTION_SET, NO_RESOLVER, NO_ADDR_RESOLUTION } from '../../src/errors';
-import { asyncExpectThrowRNSError } from '../utils';
-
-const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
-const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
+import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 
 describe('addr resolution', () => {
   describe('should resolve a name', () => {

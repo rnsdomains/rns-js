@@ -1,12 +1,13 @@
 import Web3 from 'web3';
 import RNS from '../../src/index';
+import { PUBLIC_NODE_MAINNET } from '../utils';
 
 describe('subdomains.available', () => {
   let rns: RNS;
 
   describe('happy paths testnet', () => {
     beforeEach(async () => {
-      const web3 = new Web3('https://public-node.testnet.rsk.co');
+      const web3 = new Web3(PUBLIC_NODE_MAINNET);
       rns = new RNS(web3);
     });
 

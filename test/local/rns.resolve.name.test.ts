@@ -60,7 +60,7 @@ describe('name resolution', () => {
     const [alice, accountAsResolver] = accounts;
 
     await reverseRegistrar.claimWithResolver(alice, accountAsResolver, { from: alice });
-    await asyncExpectThrowRNSError(async () => rns.reverse(alice), NO_NAME_RESOLUTION);
+    await asyncExpectThrowRNSError(() => rns.reverse(alice), NO_NAME_RESOLUTION);
   });
 
   it('should throw an error when ERC165 that not support name interface (public resolver) as reverse resolver', async () => {
@@ -69,17 +69,17 @@ describe('name resolution', () => {
     const publicResolver = await PublicResolver.new(registry.address);
 
     await reverseRegistrar.claimWithResolver(alice, publicResolver.address, { from: alice });
-    await asyncExpectThrowRNSError(async () => rns.reverse(alice), NO_NAME_RESOLUTION);
+    await asyncExpectThrowRNSError(() => rns.reverse(alice), NO_NAME_RESOLUTION);
   });
 
   it('should throw an error when the address has a resolver but no resolution set', async () => {
     const [alice] = accounts;
 
     await reverseRegistrar.claim(alice, { from: alice });
-    await asyncExpectThrowRNSError(async () => rns.reverse(alice), NO_REVERSE_RESOLUTION_SET);
+    await asyncExpectThrowRNSError(() => rns.reverse(alice), NO_REVERSE_RESOLUTION_SET);
   });
 
   it('should throw an error when reverse resolution has not been set', async () => {
-    await asyncExpectThrowRNSError(async () => rns.reverse('0x0000000000000000000000000000000000000001'), NO_REVERSE_RESOLUTION_SET);
+    await asyncExpectThrowRNSError(() => rns.reverse('0x0000000000000000000000000000000000000001'), NO_REVERSE_RESOLUTION_SET);
   });
 });

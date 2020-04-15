@@ -7,10 +7,10 @@ import {
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import {
-  NO_RESOLVER, INVALID_ADDRESS, NO_SET_ADDR, INVALID_CHECKSUM_ADDRESS,
+  NO_RESOLVER, INVALID_ADDRESS, NO_SET_ADDR, INVALID_CHECKSUM_ADDRESS, NO_ACCOUNTS_TO_SIGN,
 } from '../../src/errors';
 import { ZERO_ADDRESS } from '../../src/constants';
-import { asyncExpectThrowRNSError } from '../utils';
+import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 import RNS from '../../src/index';
 import { labelhash } from '../../src/utils';
 
@@ -78,18 +78,18 @@ describe('setAddr', () => {
   });
 
   it('should throw an error when address is invalid', async () => {
-    await asyncExpectThrowRNSError(async () => rns.setAddr('alice.rsk', 'invalidaddress'), INVALID_ADDRESS);
+    await asyncExpectThrowRNSError(() => rns.setAddr('alice.rsk', 'invalidaddress'), INVALID_ADDRESS);
   });
 
   it('should throw an error when address has invalid checksum', async () => {
-    await asyncExpectThrowRNSError(async () => rns.setAddr('alice.rsk', '0x0000000000000000000000000000000001ABcdEF'), INVALID_CHECKSUM_ADDRESS);
+    await asyncExpectThrowRNSError(() => rns.setAddr('alice.rsk', '0x0000000000000000000000000000000001ABcdEF'), INVALID_CHECKSUM_ADDRESS);
   });
 
   it('should throw an error when resolver has not been set', async () => {
     await registry.setSubnodeOwner(namehash(TLD), labelhash('noresolver'), defaultSender);
     await registry.setResolver(namehash('noresolver.rsk'), ZERO_ADDRESS);
 
-    await asyncExpectThrowRNSError(async () => rns.setAddr('noresolver.rsk', addr), NO_RESOLVER);
+    await asyncExpectThrowRNSError(() => rns.setAddr('noresolver.rsk', addr), NO_RESOLVER);
   });
 
   describe('should throw an error when resolver does not support setAddr interface', () => {
@@ -101,18 +101,50 @@ describe('setAddr', () => {
       await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
       await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
 
-      await asyncExpectThrowRNSError(async () => rns.setAddr('anothererc165.rsk', addr), NO_SET_ADDR);
+      await asyncExpectThrowRNSError(() => rns.setAddr('anothererc165.rsk', addr), NO_SET_ADDR);
     });
 
     it('account address as a resolver', async () => {
       await registry.setSubnodeOwner(namehash(TLD), labelhash('accountasresolver'), defaultSender);
       await registry.setResolver(namehash('accountasresolver.rsk'), defaultSender);
 
-      await asyncExpectThrowRNSError(async () => rns.setAddr('accountasresolver.rsk', addr), NO_SET_ADDR);
+      await asyncExpectThrowRNSError(() => rns.setAddr('accountasresolver.rsk', addr), NO_SET_ADDR);
     });
   });
 
   it('should throw an error when domain do not exist', async () => {
-    await asyncExpectThrowRNSError(async () => rns.setAddr('noexists.rsk', addr), NO_RESOLVER);
+    await asyncExpectThrowRNSError(() => rns.setAddr('noexists.rsk', addr), NO_RESOLVER);
+  });
+
+  describe('public nodes', () => {
+    describe('should fail when web3 instance does not contain accounts to sing the tx', () => {
+      describe('mainnet', () => {
+        beforeEach(() => {
+          const publicWeb3 = new Web3(PUBLIC_NODE_MAINNET);
+          rns = new RNS(publicWeb3);
+        });
+
+        test('setAddr', async () => {
+          await asyncExpectThrowRNSError(
+            () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
+            NO_ACCOUNTS_TO_SIGN,
+          );
+        });
+      });
+
+      describe('testnet', () => {
+        beforeEach(() => {
+          const publicWeb3 = new Web3(PUBLIC_NODE_TESTNET);
+          rns = new RNS(publicWeb3);
+        });
+
+        test('setAddr', async () => {
+          await asyncExpectThrowRNSError(
+            () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
+            NO_ACCOUNTS_TO_SIGN,
+          );
+        });
+      });
+    });
   });
 });

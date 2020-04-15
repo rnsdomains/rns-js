@@ -3,10 +3,7 @@ import RNS from '../../src/index';
 import {
   SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN, INVALID_LABEL, DOMAIN_NOT_EXISTS,
 } from '../../src/errors';
-import { asyncExpectThrowRNSError } from '../utils';
-
-const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
-const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
+import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 
 describe('subdomains.available validations', () => {
   describe('should not fail when sending a subdomain', () => {
@@ -45,13 +42,13 @@ describe('subdomains.available validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('', 'willfail'), INVALID_DOMAIN);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('', 'willfail'), INVALID_DOMAIN);
     });
   });
 
@@ -59,13 +56,13 @@ describe('subdomains.available validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('.', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('.', 'willfail'), INVALID_DOMAIN);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('.', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('.', 'willfail'), INVALID_DOMAIN);
     });
   });
 
@@ -73,13 +70,13 @@ describe('subdomains.available validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     });
   });
 
@@ -87,13 +84,13 @@ describe('subdomains.available validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
   });
 
@@ -101,13 +98,13 @@ describe('subdomains.available validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
   });
 
@@ -115,13 +112,13 @@ describe('subdomains.available validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
     });
   });
 
@@ -129,13 +126,13 @@ describe('subdomains.available validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('domain.rsk', ''), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', ''), INVALID_LABEL);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('domain.rsk', ''), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', ''), INVALID_LABEL);
     });
   });
 
@@ -143,13 +140,13 @@ describe('subdomains.available validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('domain.rsk', 'iNVAlid'), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', 'iNVAlid'), INVALID_LABEL);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('domain.rsk', 'iNVAlid'), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', 'iNVAlid'), INVALID_LABEL);
     });
   });
 
@@ -157,13 +154,13 @@ describe('subdomains.available validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.subdomains.available('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
     });
   });
 });

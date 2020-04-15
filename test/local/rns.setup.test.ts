@@ -6,7 +6,8 @@ import {
   asyncExpectThrowRNSError, expectThrowRNSError, asyncExpectThrowError,
   PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET,
 } from '../utils';
-import RNS, { NetworkId } from '../../src/index';
+import RNS from '../../src/index';
+import { NetworkId } from '../../src/types';
 
 describe('library setup', () => {
   const web3Instance = web3 as unknown as Web3;

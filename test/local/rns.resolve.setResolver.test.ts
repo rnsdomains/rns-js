@@ -60,22 +60,22 @@ describe('setResolver', () => {
   });
 
   it('should throw an error when address is invalid', async () => {
-    await asyncExpectThrowRNSError(async () => rns.setResolver('alice.rsk', 'invalidaddress'), INVALID_ADDRESS);
+    await asyncExpectThrowRNSError(() => rns.setResolver('alice.rsk', 'invalidaddress'), INVALID_ADDRESS);
   });
 
   it('should throw an error when address has invalid checksum', async () => {
-    await asyncExpectThrowRNSError(async () => rns.setResolver('alice.rsk', '0x0000000000000000000000000000000001ABcdEF'), INVALID_CHECKSUM_ADDRESS);
+    await asyncExpectThrowRNSError(() => rns.setResolver('alice.rsk', '0x0000000000000000000000000000000001ABcdEF'), INVALID_CHECKSUM_ADDRESS);
   });
 
   it('should throw an error when domain does not exists has invalid checksum', async () => {
-    await asyncExpectThrowRNSError(async () => rns.setResolver('noexists.rsk', '0x0000000000000000000000000000000001000006'), DOMAIN_NOT_EXISTS);
+    await asyncExpectThrowRNSError(() => rns.setResolver('noexists.rsk', '0x0000000000000000000000000000000001000006'), DOMAIN_NOT_EXISTS);
   });
 
   it('should VM revert when domain is not owned by the sender', async () => {
     const [account] = accounts;
     await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), account);
 
-    await asyncExpectThrowVMRevert(async () => rns.setResolver('alice.rsk', '0x0000000000000000000000000000000001000006'));
+    await asyncExpectThrowVMRevert(() => rns.setResolver('alice.rsk', '0x0000000000000000000000000000000001000006'));
   });
 
   describe('public nodes', () => {
@@ -84,7 +84,7 @@ describe('setResolver', () => {
         const publicWeb3 = new Web3(PUBLIC_NODE_MAINNET);
         rns = new RNS(publicWeb3);
         await asyncExpectThrowRNSError(
-          async () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
+          () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
           NO_ACCOUNTS_TO_SIGN,
         );
       });
@@ -93,7 +93,7 @@ describe('setResolver', () => {
         const publicWeb3 = new Web3(PUBLIC_NODE_TESTNET);
         rns = new RNS(publicWeb3);
         await asyncExpectThrowRNSError(
-          async () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
+          () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
           NO_ACCOUNTS_TO_SIGN,
         );
       });

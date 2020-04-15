@@ -38,12 +38,12 @@ describe('library setup', () => {
   it('should fail when compose if invalid network', async () => {
     const invalidWeb3 = new Web3('https://invalid.rsk.co');
     const rns = new RNS(invalidWeb3);
-    await asyncExpectThrowError(async () => rns.compose());
+    await asyncExpectThrowError(() => rns.compose());
   });
 
   it('should fail when compose if custom network and no addresses provided', async () => {
     const rns = new RNS(web3Instance);
-    await asyncExpectThrowRNSError(async () => rns.compose(), NO_ADDRESSES_PROVIDED);
+    await asyncExpectThrowRNSError(() => rns.compose(), NO_ADDRESSES_PROVIDED);
   });
 
   describe('public nodes', () => {

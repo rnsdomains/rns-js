@@ -81,7 +81,7 @@ describe('library setup', () => {
     it('', async () => {
       const web3 = new Web3('https://invalid.rsk.co');
       const rns = new RNS(web3);
-      await asyncExpectThrowError(async () => rns.compose());
+      await asyncExpectThrowError(() => rns.compose());
     });
   });
 });

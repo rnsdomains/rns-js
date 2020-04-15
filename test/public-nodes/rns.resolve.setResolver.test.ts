@@ -9,7 +9,7 @@ describe('setResolver', () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
       await asyncExpectThrowRNSError(
-        async () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
+        () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
         NO_ACCOUNTS_TO_SIGN,
       );
     });
@@ -18,7 +18,7 @@ describe('setResolver', () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
       await asyncExpectThrowRNSError(
-        async () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
+        () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
         NO_ACCOUNTS_TO_SIGN,
       );
     });

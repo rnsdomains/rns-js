@@ -24,13 +24,13 @@ describe('addr resolution', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.addr('noresolver.testing.rsk'), NO_RESOLVER);
+      await asyncExpectThrowRNSError(() => rns.addr('noresolver.testing.rsk'), NO_RESOLVER);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.addr('noresolver.testing.rsk'), NO_RESOLVER);
+      await asyncExpectThrowRNSError(() => rns.addr('noresolver.testing.rsk'), NO_RESOLVER);
     });
   });
 
@@ -40,13 +40,13 @@ describe('addr resolution', () => {
       test('mainnet', async () => {
         const web3 = new Web3(PUBLIC_NODE_MAINNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowRNSError(async () => rns.addr('noaddrresolver.testing.rsk'), NO_ADDR_RESOLUTION);
+        await asyncExpectThrowRNSError(() => rns.addr('noaddrresolver.testing.rsk'), NO_ADDR_RESOLUTION);
       });
 
       test('testnet with another ERC165  as resolver', async () => {
         const web3 = new Web3(PUBLIC_NODE_TESTNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowRNSError(async () => rns.addr('noaddrresolver.testing.rsk'), NO_ADDR_RESOLUTION);
+        await asyncExpectThrowRNSError(() => rns.addr('noaddrresolver.testing.rsk'), NO_ADDR_RESOLUTION);
       });
     });
 
@@ -54,13 +54,13 @@ describe('addr resolution', () => {
       test('mainnet', async () => {
         const web3 = new Web3(PUBLIC_NODE_MAINNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowRNSError(async () => rns.addr('accountasresolver.testing.rsk'), NO_ADDR_RESOLUTION);
+        await asyncExpectThrowRNSError(() => rns.addr('accountasresolver.testing.rsk'), NO_ADDR_RESOLUTION);
       });
 
       test('testnet', async () => {
         const web3 = new Web3(PUBLIC_NODE_TESTNET);
         const rns = new RNS(web3);
-        await asyncExpectThrowRNSError(async () => rns.addr('accountasresolver.testing.rsk'), NO_ADDR_RESOLUTION);
+        await asyncExpectThrowRNSError(() => rns.addr('accountasresolver.testing.rsk'), NO_ADDR_RESOLUTION);
       });
     });
   });
@@ -69,13 +69,13 @@ describe('addr resolution', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.addr('noresolution.testing.rsk'), NO_ADDR_RESOLUTION_SET);
+      await asyncExpectThrowRNSError(() => rns.addr('noresolution.testing.rsk'), NO_ADDR_RESOLUTION_SET);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.addr('noresolution.testing.rsk'), NO_ADDR_RESOLUTION_SET);
+      await asyncExpectThrowRNSError(() => rns.addr('noresolution.testing.rsk'), NO_ADDR_RESOLUTION_SET);
     });
   });
 
@@ -83,13 +83,13 @@ describe('addr resolution', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.addr('noexist.testing.rsk'), NO_RESOLVER);
+      await asyncExpectThrowRNSError(() => rns.addr('noexist.testing.rsk'), NO_RESOLVER);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(async () => rns.addr('noexist.testing.rsk'), NO_RESOLVER);
+      await asyncExpectThrowRNSError(() => rns.addr('noexist.testing.rsk'), NO_RESOLVER);
     });
   });
 });

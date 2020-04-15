@@ -15,7 +15,7 @@ describe('rns.setAddr', () => {
 
       test('setAddr', async () => {
         await asyncExpectThrowRNSError(
-          async () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
+          () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
           NO_ACCOUNTS_TO_SIGN,
         );
       });
@@ -29,7 +29,7 @@ describe('rns.setAddr', () => {
 
       test('setAddr', async () => {
         await asyncExpectThrowRNSError(
-          async () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
+          () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
           NO_ACCOUNTS_TO_SIGN,
         );
       });

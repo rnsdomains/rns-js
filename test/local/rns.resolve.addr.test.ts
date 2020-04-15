@@ -55,7 +55,7 @@ describe('addr resolution', () => {
     await registry.setSubnodeOwner(namehash(TLD), labelhash('noresolver'), defaultSender);
     await registry.setResolver(namehash('noresolver.rsk'), ZERO_ADDRESS);
 
-    await asyncExpectThrowRNSError(async () => rns.addr('noresolver.rsk'), NO_RESOLVER);
+    await asyncExpectThrowRNSError(() => rns.addr('noresolver.rsk'), NO_RESOLVER);
   });
 
   describe('should throw an error when resolver does not support addr interface', () => {
@@ -66,24 +66,24 @@ describe('addr resolution', () => {
 
       await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
       await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
-      await asyncExpectThrowRNSError(async () => rns.addr('anothererc165.rsk'), NO_ADDR_RESOLUTION);
+      await asyncExpectThrowRNSError(() => rns.addr('anothererc165.rsk'), NO_ADDR_RESOLUTION);
     });
 
     it('account address as a resolver', async () => {
       await registry.setSubnodeOwner(namehash(TLD), labelhash('accountasresolver'), defaultSender);
       await registry.setResolver(namehash('accountasresolver.rsk'), anotherAccount);
 
-      await asyncExpectThrowRNSError(async () => rns.addr('accountasresolver.rsk'), NO_ADDR_RESOLUTION);
+      await asyncExpectThrowRNSError(() => rns.addr('accountasresolver.rsk'), NO_ADDR_RESOLUTION);
     });
   });
 
   it('should throw an error when no resolution set', async () => {
     await registry.setSubnodeOwner(namehash(TLD), labelhash('noresolution'), defaultSender);
 
-    await asyncExpectThrowRNSError(async () => rns.addr('noresolution.rsk'), NO_ADDR_RESOLUTION_SET);
+    await asyncExpectThrowRNSError(() => rns.addr('noresolution.rsk'), NO_ADDR_RESOLUTION_SET);
   });
 
   it('should throw an error when domain do not exist', async () => {
-    await asyncExpectThrowRNSError(async () => rns.addr('noexists.rsk'), NO_RESOLVER);
+    await asyncExpectThrowRNSError(() => rns.addr('noexists.rsk'), NO_RESOLVER);
   });
 });

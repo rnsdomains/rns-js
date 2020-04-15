@@ -7,5 +7,6 @@ export const ERC165_INTERFACE = '0x01ffc9a7';
 export const CHAIN_ADDR_INTERFACE = '0x8be4b5f6';
 export const NAME_INTERFACE = '0x691f3431';
 export const SET_ADDR_INTERFACE = '0xd8389dc5';
+export const AVAILABLE_INTERFACE = '0x96e494e8';
 
 export const AVAILABLE_TLDS = ['rsk'];

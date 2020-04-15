@@ -8,10 +8,12 @@ import Web3 from 'web3';
 import { TransactionReceipt } from 'web3-eth';
 import RNS from '../../src/index';
 import { Options } from '../../src/types';
-import { asyncExpectThrowRNSError, asyncExpectThrowVMRevert } from '../utils';
+import {
+  asyncExpectThrowRNSError, asyncExpectThrowVMRevert, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET,
+} from '../utils';
 import {
   INVALID_DOMAIN, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS,
-  DOMAIN_NOT_EXISTS, INVALID_LABEL, SUBDOMAIN_NOT_AVAILABLE,
+  DOMAIN_NOT_EXISTS, INVALID_LABEL, SUBDOMAIN_NOT_AVAILABLE, NO_ACCOUNTS_TO_SIGN,
 } from '../../src/errors';
 import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
@@ -57,45 +59,45 @@ describe('subdomains.create', () => {
     });
 
     it('should fail when sending an empty domain', async () => {
-      await asyncExpectThrowRNSError(async () => rns.subdomains.create('', 'willfail', owner), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('', 'willfail', owner), INVALID_DOMAIN);
     });
 
     it('should fail when sending an just a dot with no labels', async () => {
-      await asyncExpectThrowRNSError(async () => rns.subdomains.create('.', 'willfail', owner), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('.', 'willfail', owner), INVALID_DOMAIN);
     });
 
     it('should fail when not sending an .rsk domain', async () => {
-      await asyncExpectThrowRNSError(async () => rns.subdomains.create('domain.notrsk', 'willfail', owner), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('domain.notrsk', 'willfail', owner), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     });
 
     it('should fail when sending upper case domain', async () => {
-      await asyncExpectThrowRNSError(async () => rns.subdomains.create('DOMAIN.rsk', 'willfail', owner), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('DOMAIN.rsk', 'willfail', owner), INVALID_DOMAIN);
     });
 
     it('should fail when sending invalid characters', async () => {
-      await asyncExpectThrowRNSError(async () => rns.subdomains.create('DOM-AIN.rsk', 'willfail', owner), INVALID_DOMAIN);
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('DOM-AIN.rsk', 'willfail', owner), INVALID_DOMAIN);
     });
 
     it('should fail when given domain does not exist', async () => {
-      await asyncExpectThrowRNSError(async () => rns.subdomains.create('noexist.rsk', 'willfail', owner), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('noexist.rsk', 'willfail', owner), DOMAIN_NOT_EXISTS);
     });
 
     it('should fail when sending empty label', async () => {
-      await asyncExpectThrowRNSError(async () => rns.subdomains.create('domain.rsk', '', owner), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('domain.rsk', '', owner), INVALID_LABEL);
     });
 
     it('should fail when sending label with upper case characters', async () => {
-      await asyncExpectThrowRNSError(async () => rns.subdomains.create('domain.rsk', 'iNVAlid', owner), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('domain.rsk', 'iNVAlid', owner), INVALID_LABEL);
     });
 
     it('should fail when sending label with invalid characters', async () => {
-      await asyncExpectThrowRNSError(async () => rns.subdomains.create('domain.rsk', 'iNVA-lid', owner), INVALID_LABEL);
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('domain.rsk', 'iNVA-lid', owner), INVALID_LABEL);
     });
 
     it('should revert if creating a subdomain under a domain that the current address does not own', async () => {
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), owner);
 
-      await asyncExpectThrowVMRevert(async () => rns.subdomains.create('alice.rsk', 'test', owner));
+      await asyncExpectThrowVMRevert(() => rns.subdomains.create('alice.rsk', 'test', owner));
     });
 
     it('should not create a subdomain if is not available', async () => {
@@ -103,7 +105,7 @@ describe('subdomains.create', () => {
       await rns.subdomains.create('alice.rsk', 'test', owner);
 
       // create it again should fail
-      await asyncExpectThrowRNSError(async () => rns.subdomains.create('alice.rsk', 'test', owner), SUBDOMAIN_NOT_AVAILABLE);
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'test', owner), SUBDOMAIN_NOT_AVAILABLE);
     });
   });
 
@@ -165,6 +167,28 @@ describe('subdomains.create', () => {
       tx = null;
       expectedAddr = '';
       expectedOwner = '';
+    });
+  });
+
+  describe('public nodes', () => {
+    describe('should fail when web3 instance does not contain accounts to sign the tx', () => {
+      test('mainnet', async () => {
+        const publicWeb3 = new Web3(PUBLIC_NODE_MAINNET);
+        rns = new RNS(publicWeb3);
+        await asyncExpectThrowRNSError(
+          () => rns.subdomains.create('multichain.testing.rsk', 'check'),
+          NO_ACCOUNTS_TO_SIGN,
+        );
+      });
+
+      test('testnet', async () => {
+        const publicWeb3 = new Web3(PUBLIC_NODE_TESTNET);
+        rns = new RNS(publicWeb3);
+        await asyncExpectThrowRNSError(
+          () => rns.subdomains.create('multichain.testing.rsk', 'check'),
+          NO_ACCOUNTS_TO_SIGN,
+        );
+      });
     });
   });
 });

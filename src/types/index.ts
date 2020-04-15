@@ -4,6 +4,7 @@ import { Resolutions } from './resolutions';
 import { Subdomains } from './subdomains';
 import { Composable } from './composable';
 import { Utils } from './utils';
+import { Registrations } from './registrations';
 import { ErrorDictionary } from './error-dictionary';
 
 export {
@@ -18,4 +19,5 @@ export {
   Options,
   NetworkId,
   Contracts,
+  Registrations,
 };

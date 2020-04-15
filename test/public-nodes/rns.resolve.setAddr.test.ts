@@ -1,10 +1,7 @@
 import Web3 from 'web3';
 import RNS from '../../src/index';
 import { NO_ACCOUNTS_TO_SIGN } from '../../src/errors';
-import { asyncExpectThrowRNSError } from '../utils';
-
-const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
-const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
+import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 
 let rns: RNS;
 
@@ -18,7 +15,7 @@ describe('rns.setAddr', () => {
 
       test('setAddr', async () => {
         await asyncExpectThrowRNSError(
-          async () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
+          () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
           NO_ACCOUNTS_TO_SIGN,
         );
       });
@@ -32,7 +29,7 @@ describe('rns.setAddr', () => {
 
       test('setAddr', async () => {
         await asyncExpectThrowRNSError(
-          async () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
+          () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001'),
           NO_ACCOUNTS_TO_SIGN,
         );
       });

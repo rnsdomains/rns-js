@@ -9,7 +9,7 @@ import RNSError, {
 import { ZERO_ADDRESS } from './constants';
 import Composer from './composer';
 import {
-  isValidDomain, isValidTld, isValidLabel, namehash, hasAccounts, labelhash,
+  isValidDomain, isValidTld, isValidLabel, namehash, hasAccounts, labelhash, getCurrentAddress,
 } from './utils';
 
 /**
@@ -110,9 +110,9 @@ export default class extends Composer implements Subdomains {
     }
 
     const node: string = namehash(`${domain}`);
-    const accounts = await this.web3.eth.getAccounts();
+    const currentAddress = await getCurrentAddress(this.web3);
 
-    return this._setSubnodeOwner(node, label, owner, accounts[0]);
+    return this._setSubnodeOwner(node, label, owner, currentAddress);
   }
 
   /**
@@ -157,8 +157,7 @@ export default class extends Composer implements Subdomains {
     }
 
     const node: string = namehash(`${domain}`);
-    const accounts = await this.web3.eth.getAccounts();
-    const sender = accounts[0];
+    const sender = await getCurrentAddress(this.web3);
 
     if (!addr) {
       return this._setSubnodeOwner(node, label, owner || sender, sender);

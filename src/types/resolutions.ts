@@ -40,6 +40,13 @@ export interface Resolutions {
   setResolver(domain: string, resolver: string): Promise<TransactionReceipt>;
 
   /**
+   * Set reverse resolution with the given name for the current address.
+   *
+   * @param name - Name to be set as the reverse resolution of the current address
+   */
+  setName(name: string): Promise<TransactionReceipt>;
+
+  /**
    * Reverse lookup: get name of a given address.
    *
    * @param address - address to be resolved

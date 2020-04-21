@@ -67,6 +67,8 @@ export default class extends Composer implements RNS {
    *
    * @param domain - Domain to be resolved
    * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   *
+   * @returns address resolution of the given domain and chainId (if provided)
    */
   async addr(domain: string, chainId?: ChainId): Promise<string> {
     if (!chainId) {
@@ -86,6 +88,8 @@ export default class extends Composer implements RNS {
    *
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
+   *
+   * @returns TransactionReceipt of the submitted tx
    */
   setAddr(domain: string, addr: string): Promise<TransactionReceipt> {
     return this._resolutions.setAddr(domain, addr);
@@ -101,6 +105,8 @@ export default class extends Composer implements RNS {
    *
    * @param domain - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain
+   *
+   * @returns TransactionReceipt of the submitted tx
    */
   setResolver(domain: string, resolver: string): Promise<TransactionReceipt> {
     return this._resolutions.setResolver(domain, resolver);
@@ -114,11 +120,21 @@ export default class extends Composer implements RNS {
    *
    * @param address - address to be resolved
    *
-   * @returns
-   * Domain or subdomain associated to the given address.
+   * @returns Domain or subdomain associated to the given address.
    */
   async reverse(address: string): Promise<string> {
     return this._resolutions.name(address);
+  }
+
+  /**
+   * Set reverse resolution with the given name for the current address.
+   *
+   * @param name - Name to be set as the reverse resolution of the current address
+   *
+   * @returns TransactionReceipt of the submitted tx
+   */
+  setReverse(name: string): Promise<TransactionReceipt> {
+    return this._resolutions.setName(name);
   }
 
   /**

@@ -12,7 +12,7 @@ export interface ContractAddresses {
   /**
    * RNS.sol address
    */
-  registry: string
+  registry: string;
 }
 
 /**
@@ -76,6 +76,13 @@ export default interface RNS {
    * @param resolver - Address to be set as the resolver of the given domain
    */
   setResolver(domain: string, resolver: string): Promise<TransactionReceipt>;
+
+  /**
+   * Set reverse resolution with the given name for the current address.
+   *
+   * @param name - Name to be set as the reverse resolution of the current address
+   */
+  setReverse(name: string): Promise<TransactionReceipt>;
 
   /**
    * Reverse lookup: get name of a given address.

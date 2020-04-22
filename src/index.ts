@@ -136,7 +136,7 @@ export default class extends Composer implements RNS {
    * Set reverse resolution with the given name for the current address.
    *
    * @param name - Name to be set as the reverse resolution of the current address
-   * 
+   *
    * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
    * @throws NO_REVERSE_REGISTRAR if there is no owner for `addr.reverse` node - KB022

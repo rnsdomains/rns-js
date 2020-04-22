@@ -66,7 +66,9 @@ export default abstract class implements Composable {
   ): Promise<TransactionReceipt> {
     const sender = await getCurrentAddress(this.web3);
 
-    const gas = await contractMethod().estimateGas();
+    const estimated = await contractMethod().estimateGas();
+
+    const gas = Math.floor(estimated * 1.1);
 
     return contractMethod().send({ from: sender, gas });
   }

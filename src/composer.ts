@@ -1,9 +1,11 @@
 import Web3 from 'web3';
+import { TransactionReceipt } from 'web3-eth';
 import {
   Composable, Options, ContractAddresses, Contracts,
 } from './types';
 import { createRegistry, createContractAddresses } from './factories';
 import RNSError, { LIBRARY_NOT_COMPOSED } from './errors';
+import { getCurrentAddress } from './utils';
 
 export default abstract class implements Composable {
   private _contractAddresses!: ContractAddresses;
@@ -57,6 +59,16 @@ export default abstract class implements Composable {
     if (!this._currentNetworkId) {
       this._currentNetworkId = networkId;
     }
+  }
+
+  protected async estimateGasAndSendTransaction(
+    contractMethod: () => any,
+  ): Promise<TransactionReceipt> {
+    const sender = await getCurrentAddress(this.web3);
+
+    const gas = await contractMethod().estimateGas();
+
+    return contractMethod().send({ from: sender, gas });
   }
 
   /**

@@ -12,8 +12,7 @@ import {
 import { ChainId, Resolutions, Options } from './types';
 import Composer from './composer';
 import {
-  hasMethod, namehash, hasAccounts, isValidAddress, isValidChecksumAddress,
-  isValidDomain, getCurrentAddress,
+  hasMethod, namehash, hasAccounts, isValidAddress, isValidChecksumAddress, isValidDomain,
 } from './utils';
 import RNSError, {
   NO_RESOLVER, NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_CHAIN_ADDR_RESOLUTION,
@@ -181,14 +180,9 @@ export default class extends Composer implements Resolutions {
       createAddrResolver,
     );
 
-    const sender = await getCurrentAddress(this.web3);
+    const contractMethod = () => resolver.methods.setAddr(node, addr);
 
-    return resolver
-      .methods
-      .setAddr(
-        node,
-        addr,
-      ).send({ from: sender });
+    return this.estimateGasAndSendTransaction(contractMethod);
   }
 
   /**
@@ -219,9 +213,7 @@ export default class extends Composer implements Resolutions {
       createChainAddrResolver,
     );
 
-    const sender = await getCurrentAddress(this.web3);
-
-    const contractMethod = (node: string, chainId: ChainId, addr: string) => resolver
+    const contractMethod = () => resolver
       .methods
       .setChainAddr(
         node,
@@ -229,9 +221,7 @@ export default class extends Composer implements Resolutions {
         addr,
       );
 
-    const gas = await contractMethod(node, chainId, addr).estimateGas();
-      
-    return contractMethod(node, chainId, addr).send({ from: sender, gas });
+    return this.estimateGasAndSendTransaction(contractMethod);
   }
 
   /**
@@ -261,12 +251,9 @@ export default class extends Composer implements Resolutions {
 
     const node: string = namehash(domain);
 
-    const sender = await getCurrentAddress(this.web3);
+    const contractMethod = () => this._contracts.registry.methods.setResolver(node, resolver);
 
-    return this._contracts.registry
-      .methods
-      .setResolver(node, resolver)
-      .send({ from: sender });
+    return this.estimateGasAndSendTransaction(contractMethod);
   }
 
   /**
@@ -307,13 +294,9 @@ export default class extends Composer implements Resolutions {
 
     const reverseRegistrar = createReverseRegistrar(this.web3, reverseRegistrarOwner);
 
-    const sender = await getCurrentAddress(this.web3);
+    const contractMethod = () => reverseRegistrar.methods.setName(name);
 
-    const contractMethod = (name: string) => reverseRegistrar.methods.setName(name);
-
-    const gas = await contractMethod(name).estimateGas();
-    
-    return contractMethod(name).send({ from: sender, gas });
+    return this.estimateGasAndSendTransaction(contractMethod);
   }
 
   /**

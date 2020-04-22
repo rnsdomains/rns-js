@@ -29,15 +29,16 @@ export default class extends Composer implements Subdomains {
     node: string,
     label: string,
     owner: string,
-    sender?: string,
   ): Promise<TransactionReceipt> {
-    return this._contracts.registry
+    const contractMethod = () => this._contracts.registry
       .methods
       .setSubnodeOwner(
         node,
         labelhash(label),
         owner,
-      ).send({ from: sender || owner });
+      );
+
+    return this.estimateGasAndSendTransaction(contractMethod);
   }
 
   private _validateDomainAndLabel(domain: string, label: string): void {
@@ -110,9 +111,8 @@ export default class extends Composer implements Subdomains {
     }
 
     const node: string = namehash(`${domain}`);
-    const currentAddress = await getCurrentAddress(this.web3);
 
-    return this._setSubnodeOwner(node, label, owner, currentAddress);
+    return this._setSubnodeOwner(node, label, owner);
   }
 
   /**
@@ -160,7 +160,7 @@ export default class extends Composer implements Subdomains {
     const sender = await getCurrentAddress(this.web3);
 
     if (!addr) {
-      return this._setSubnodeOwner(node, label, owner || sender, sender);
+      return this._setSubnodeOwner(node, label, owner || sender);
     } if (!owner || owner === sender) {
       // submits just two transactions
       await this._setSubnodeOwner(node, label, sender);
@@ -168,10 +168,10 @@ export default class extends Composer implements Subdomains {
       return this._resolutions.setAddr(`${label}.${domain}`, addr);
     }
     // needs to submit three txs
-    await this._setSubnodeOwner(node, label, sender, sender);
+    await this._setSubnodeOwner(node, label, sender);
 
     await this._resolutions.setAddr(`${label}.${domain}`, addr);
 
-    return this._setSubnodeOwner(node, label, owner, sender);
+    return this._setSubnodeOwner(node, label, owner);
   }
 }

@@ -194,11 +194,9 @@ export default class extends Composer implements Resolutions {
   /**
    * Sets addr for the given domain using the AbstractAddrResolver interface.
    *
-   * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
+   * @throws NO_SET_CHAIN_ADDR if it has an invalid resolver - KB024.
    * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
    * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
-   * @throws INVALID_ADDRESS if the given addr is invalid - KB017
-   * @throws INVALID_CHECKSUM_ADDRESS if the given addr has an invalid checksum - KB019
    *
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain

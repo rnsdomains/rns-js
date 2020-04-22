@@ -20,5 +20,6 @@
   "NO_TLD_OWNER": { "id": "KB020", "message": "The given TLD does not exists" },
   "NO_AVAILABLE_METHOD": { "id": "KB021", "message": "The owner of the TLD does not implement the available method" },
   "NO_REVERSE_REGISTRAR": { "id": "KB022", "message": "ReverseRegistrar contract address has not been provided in the constructor of the library" },
-  "NO_SET_NAME_METHOD": { "id": "KB023", "message": "The reverse registrar does not implement setName method" }
+  "NO_SET_NAME_METHOD": { "id": "KB023", "message": "The reverse registrar does not implement setName method" },
+  "NO_SET_CHAIN_ADDR": { "id": "KB024", "message": "The resolver does not implement setChainAddr method" }
 }

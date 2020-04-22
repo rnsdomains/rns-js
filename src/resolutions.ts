@@ -6,7 +6,8 @@ import {
 } from './factories';
 import {
   ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE,
-  CHAIN_ADDR_INTERFACE, NAME_INTERFACE, ADDR_REVERSE_NAMEHASH, SET_NAME_INTERFACE,
+  CHAIN_ADDR_INTERFACE, NAME_INTERFACE, ADDR_REVERSE_NAMEHASH,
+  SET_NAME_INTERFACE, SET_ADDR_INTERFACE,
 } from './constants';
 import { ChainId, Resolutions, Options } from './types';
 import Composer from './composer';
@@ -18,7 +19,7 @@ import RNSError, {
   NO_RESOLVER, NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_CHAIN_ADDR_RESOLUTION,
   NO_CHAIN_ADDR_RESOLUTION_SET, NO_NAME_RESOLUTION, NO_REVERSE_RESOLUTION_SET,
   NO_ACCOUNTS_TO_SIGN, NO_SET_ADDR, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
-  DOMAIN_NOT_EXISTS, INVALID_DOMAIN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD,
+  DOMAIN_NOT_EXISTS, INVALID_DOMAIN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD, NO_SET_CHAIN_ADDR,
 } from './errors';
 
 /**
@@ -175,7 +176,7 @@ export default class extends Composer implements Resolutions {
 
     const resolver = await this._createResolver(
       node,
-      ADDR_INTERFACE,
+      SET_ADDR_INTERFACE,
       NO_SET_ADDR,
       createAddrResolver,
     );
@@ -188,6 +189,51 @@ export default class extends Composer implements Resolutions {
         node,
         addr,
       ).send({ from: sender });
+  }
+
+  /**
+   * Sets addr for the given domain using the AbstractAddrResolver interface.
+   *
+   * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
+   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws INVALID_ADDRESS if the given addr is invalid - KB017
+   * @throws INVALID_CHECKSUM_ADDRESS if the given addr has an invalid checksum - KB019
+   *
+   * @param domain - Domain to set resolution
+   * @param addr - Address to be set as the resolution of the given domain
+   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   *
+   */
+  async setChainAddr(domain: string, addr: string, chainId: ChainId): Promise<TransactionReceipt> {
+    await this.compose();
+
+    if (!await hasAccounts(this.web3)) {
+      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+    }
+
+    const node: string = namehash(domain);
+
+    const resolver = await this._createResolver(
+      node,
+      CHAIN_ADDR_INTERFACE,
+      NO_SET_CHAIN_ADDR,
+      createChainAddrResolver,
+    );
+
+    const sender = await getCurrentAddress(this.web3);
+
+    const contractMethod = (node: string, chainId: ChainId, addr: string) => resolver
+      .methods
+      .setChainAddr(
+        node,
+        chainId,
+        addr,
+      );
+
+    const gas = await contractMethod(node, chainId, addr).estimateGas();
+      
+    return contractMethod(node, chainId, addr).send({ from: sender, gas });
   }
 
   /**
@@ -263,12 +309,13 @@ export default class extends Composer implements Resolutions {
 
     const reverseRegistrar = createReverseRegistrar(this.web3, reverseRegistrarOwner);
 
-    const currentAddress = await getCurrentAddress(this.web3);
+    const sender = await getCurrentAddress(this.web3);
 
-    return reverseRegistrar
-      .methods
-      .setName(name)
-      .send({ from: currentAddress });
+    const contractMethod = (name: string) => reverseRegistrar.methods.setName(name);
+
+    const gas = await contractMethod(name).estimateGas();
+    
+    return contractMethod(name).send({ from: sender, gas });
   }
 
   /**

@@ -32,6 +32,15 @@ export interface Resolutions {
   setAddr(domain: string, addr: string): Promise<TransactionReceipt>;
 
   /**
+   * Sets addr for the given domain using the AbstractMultiChainResolver interface.
+   *
+   * @param domain - Domain to set resolution
+   * @param addr - Address to be set as the resolution of the given domain
+   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   */
+  setChainAddr(domain: string, addr: string, chainId: ChainId): Promise<TransactionReceipt>;
+
+  /**
    * Set resolver of a given domain.
    *
    * @param domain - Domain to set resolver

@@ -78,7 +78,7 @@ export default class extends Composer implements RNS {
   }
 
   /**
-   * Set address resolution of a given domain.
+   * Set address resolution of a given domain in a given chain.
    *
    * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
    * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
@@ -88,11 +88,16 @@ export default class extends Composer implements RNS {
    *
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
+   * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    *
    * @returns TransactionReceipt of the submitted tx
    */
-  setAddr(domain: string, addr: string): Promise<TransactionReceipt> {
-    return this._resolutions.setAddr(domain, addr);
+  setAddr(domain: string, addr: string, chainId?: ChainId): Promise<TransactionReceipt> {
+    if (!chainId) {
+      return this._resolutions.setAddr(domain, addr);
+    }
+
+    return this._resolutions.setChainAddr(domain, addr, chainId);
   }
 
   /**

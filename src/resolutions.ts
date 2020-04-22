@@ -257,14 +257,14 @@ export default class extends Composer implements Resolutions {
   }
 
   /**
-   * Set resolver of a given domain.
+   * Set reverse resolution with the given name for the current address
    *
    * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
-   * @throws INVALID_CHECKSUM_ADDRESS if the given resolver address has an invalid checksum - KB019
-   * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
+   * @throws NO_REVERSE_REGISTRAR if there is no owner for `addr.reverse` node - KB022
+   * @throws NO_SET_NAME_METHOD if reverse registrar does not implement `setName` method - KB023
    *
-   * @param domain - Domain to set resolver
+   * @param name - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain
    *
     * @returns TransactionReceipt of the submitted tx

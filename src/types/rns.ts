@@ -62,12 +62,14 @@ export default interface RNS {
   addr(domain: string, chainId?: ChainId): Promise<string>;
 
   /**
-   * Set address resolution of a given domain.
+   * Set address resolution of a given domain in a given chain.
    *
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
+   * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   *
    */
-  setAddr(domain: string, addr: string): Promise<TransactionReceipt>;
+  setAddr(domain: string, addr: string, chainId?: ChainId): Promise<TransactionReceipt>;
 
   /**
    * Set resolver of a given domain.

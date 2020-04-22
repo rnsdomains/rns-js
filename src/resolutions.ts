@@ -6,19 +6,19 @@ import {
 } from './factories';
 import {
   ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE,
-  CHAIN_ADDR_INTERFACE, NAME_INTERFACE, ADDR_REVERSE_NAMEHASH, SET_NAME_INTERFACE,
+  CHAIN_ADDR_INTERFACE, NAME_INTERFACE, ADDR_REVERSE_NAMEHASH,
+  SET_NAME_INTERFACE, SET_ADDR_INTERFACE,
 } from './constants';
 import { ChainId, Resolutions, Options } from './types';
 import Composer from './composer';
 import {
-  hasMethod, namehash, hasAccounts, isValidAddress, isValidChecksumAddress,
-  isValidDomain, getCurrentAddress,
+  hasMethod, namehash, hasAccounts, isValidAddress, isValidChecksumAddress, isValidDomain,
 } from './utils';
 import RNSError, {
   NO_RESOLVER, NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_CHAIN_ADDR_RESOLUTION,
   NO_CHAIN_ADDR_RESOLUTION_SET, NO_NAME_RESOLUTION, NO_REVERSE_RESOLUTION_SET,
   NO_ACCOUNTS_TO_SIGN, NO_SET_ADDR, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
-  DOMAIN_NOT_EXISTS, INVALID_DOMAIN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD,
+  DOMAIN_NOT_EXISTS, INVALID_DOMAIN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD, NO_SET_CHAIN_ADDR,
 } from './errors';
 
 /**
@@ -175,19 +175,53 @@ export default class extends Composer implements Resolutions {
 
     const resolver = await this._createResolver(
       node,
-      ADDR_INTERFACE,
+      SET_ADDR_INTERFACE,
       NO_SET_ADDR,
       createAddrResolver,
     );
 
-    const sender = await getCurrentAddress(this.web3);
+    const contractMethod = () => resolver.methods.setAddr(node, addr);
 
-    return resolver
+    return this.estimateGasAndSendTransaction(contractMethod);
+  }
+
+  /**
+   * Sets addr for the given domain using the AbstractAddrResolver interface.
+   *
+   * @throws NO_SET_CHAIN_ADDR if it has an invalid resolver - KB024.
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
+   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   *
+   * @param domain - Domain to set resolution
+   * @param addr - Address to be set as the resolution of the given domain
+   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   *
+   */
+  async setChainAddr(domain: string, addr: string, chainId: ChainId): Promise<TransactionReceipt> {
+    await this.compose();
+
+    if (!await hasAccounts(this.web3)) {
+      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+    }
+
+    const node: string = namehash(domain);
+
+    const resolver = await this._createResolver(
+      node,
+      CHAIN_ADDR_INTERFACE,
+      NO_SET_CHAIN_ADDR,
+      createChainAddrResolver,
+    );
+
+    const contractMethod = () => resolver
       .methods
-      .setAddr(
+      .setChainAddr(
         node,
+        chainId,
         addr,
-      ).send({ from: sender });
+      );
+
+    return this.estimateGasAndSendTransaction(contractMethod);
   }
 
   /**
@@ -217,23 +251,20 @@ export default class extends Composer implements Resolutions {
 
     const node: string = namehash(domain);
 
-    const sender = await getCurrentAddress(this.web3);
+    const contractMethod = () => this._contracts.registry.methods.setResolver(node, resolver);
 
-    return this._contracts.registry
-      .methods
-      .setResolver(node, resolver)
-      .send({ from: sender });
+    return this.estimateGasAndSendTransaction(contractMethod);
   }
 
   /**
-   * Set resolver of a given domain.
+   * Set reverse resolution with the given name for the current address
    *
    * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
-   * @throws INVALID_CHECKSUM_ADDRESS if the given resolver address has an invalid checksum - KB019
-   * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
+   * @throws NO_REVERSE_REGISTRAR if there is no owner for `addr.reverse` node - KB022
+   * @throws NO_SET_NAME_METHOD if reverse registrar does not implement `setName` method - KB023
    *
-   * @param domain - Domain to set resolver
+   * @param name - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain
    *
     * @returns TransactionReceipt of the submitted tx
@@ -263,12 +294,9 @@ export default class extends Composer implements Resolutions {
 
     const reverseRegistrar = createReverseRegistrar(this.web3, reverseRegistrarOwner);
 
-    const currentAddress = await getCurrentAddress(this.web3);
+    const contractMethod = () => reverseRegistrar.methods.setName(name);
 
-    return reverseRegistrar
-      .methods
-      .setName(name)
-      .send({ from: currentAddress });
+    return this.estimateGasAndSendTransaction(contractMethod);
   }
 
   /**

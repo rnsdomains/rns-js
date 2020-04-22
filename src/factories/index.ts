@@ -46,4 +46,4 @@ export const createRskOwner = (
 
 export const createReverseRegistrar = (
   web3: Web3, address: string,
-) => new web3.eth.Contract(ReverseRegistrarData.abi as AbiItem[], address, { gas: 2000000 });
+) => new web3.eth.Contract(ReverseRegistrarData.abi as AbiItem[], address);

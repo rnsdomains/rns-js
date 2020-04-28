@@ -17,6 +17,7 @@
   "SUBDOMAIN_NOT_AVAILABLE": { "id": "KB016", "message": "The subdomain is not available" },
   "INVALID_ADDRESS": { "id": "KB017", "message": "The given address is invalid" },
   "NO_SET_ADDR": { "id": "KB018", "message": "The resolver does not implements setAddr method" },
+  "INVALID_CHECKSUM_ADDRESS": { "id": "KB019", "message": "The address provided is not valid for the given blockchain" },
   "NO_TLD_OWNER": { "id": "KB020", "message": "The given TLD does not exists" },
   "NO_AVAILABLE_METHOD": { "id": "KB021", "message": "The owner of the TLD does not implement the available method" },
   "NO_REVERSE_REGISTRAR": { "id": "KB022", "message": "No reverse registrar" },

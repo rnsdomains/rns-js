@@ -5,13 +5,13 @@ import {
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import RNS from '../../src/index';
-import { Options } from '../../src/types';
+import { Options, NetworkId } from '../../src/types';
 import {
   asyncExpectThrowRNSError, asyncExpectThrowVMRevert, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET,
 } from '../utils';
 import {
   INVALID_DOMAIN, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS,
-  DOMAIN_NOT_EXISTS, INVALID_LABEL, NO_ACCOUNTS_TO_SIGN,
+  DOMAIN_NOT_EXISTS, INVALID_LABEL, NO_ACCOUNTS_TO_SIGN, INVALID_CHECKSUM_ADDRESS, INVALID_ADDRESS,
 } from '../../src/errors';
 import { labelhash } from '../../src/utils';
 
@@ -41,6 +41,25 @@ describe('subdomains.setOwner', () => {
   });
 
   describe('validations', () => {
+    it('should fail when instantiating the lib with RSK networkId and owner address has an invalid checksum for RSK', async () => {
+      options = {
+        contractAddresses: {
+          registry: registry.address,
+        },
+        networkId: NetworkId.RSK_MAINNET,
+      };
+
+      rns = new RNS(web3Instance, options);
+
+      const invalid = '0x53BF4d5cF81F8c52644912cfae4d0E3EA7faDd5B'; // valid for ethereum
+
+      await asyncExpectThrowRNSError(() => rns.subdomains.setOwner('alice.rsk', 'willfail', invalid), INVALID_CHECKSUM_ADDRESS);
+    });
+
+    it('should fail when invalid owner address', async () => {
+      await asyncExpectThrowRNSError(() => rns.subdomains.setOwner('alice.rsk', 'willfail', 'invalid'), INVALID_ADDRESS);
+    });
+
     it('should not fail when sending a subdomain', async () => {
       await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
       await registry.setSubnodeOwner(namehash('alice.rsk'), labelhash('subdomain'), defaultSender);
@@ -72,7 +91,7 @@ describe('subdomains.setOwner', () => {
     });
 
     it('should fail when given domain does not exist', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.setOwner('noexist.rsk', 'willfail', owner), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowRNSError(() => rns.subdomains.setOwner('noexists.rsk', 'willfail', owner), DOMAIN_NOT_EXISTS);
     });
 
     it('should fail when sending empty label', async () => {

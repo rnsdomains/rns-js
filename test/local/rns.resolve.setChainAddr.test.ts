@@ -7,7 +7,9 @@ import {
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
-import { NO_RESOLVER, NO_SET_CHAIN_ADDR, NO_ACCOUNTS_TO_SIGN } from '../../src/errors';
+import {
+  NO_RESOLVER, NO_SET_CHAIN_ADDR, NO_ACCOUNTS_TO_SIGN, INVALID_CHECKSUM_ADDRESS,
+} from '../../src/errors';
 import { ZERO_ADDRESS } from '../../src/constants';
 import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 import RNS from '../../src/index';
@@ -81,6 +83,18 @@ describe('setAddr', () => {
     const tx = await rns.setAddr('alice.rsk', rskAddr, ChainId.RSK);
 
     expect(tx.transactionHash).toBeTruthy();
+  });
+
+  it('should throw an error when invalid checksum for RSK', async () => {
+    const address = '0x53BF4d5cF81F8c52644912cfae4d0E3EA7faDd5B'; // valid for ethereum
+
+    await asyncExpectThrowRNSError(() => rns.setAddr('alice.rsk', address, ChainId.RSK), INVALID_CHECKSUM_ADDRESS);
+  });
+
+  it('should throw an error when invalid checksum for Ethereum', async () => {
+    const address = '0x53Bf4d5cF81F8c52644912cfaE4d0E3EA7FAdD5b'; // valid for rsk mainnet
+
+    await asyncExpectThrowRNSError(() => rns.setAddr('alice.rsk', address, ChainId.ETHEREUM), INVALID_CHECKSUM_ADDRESS);
   });
 
   it('should throw an error when resolver has not been set', async () => {

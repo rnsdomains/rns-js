@@ -7,13 +7,14 @@ import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import { TransactionReceipt } from 'web3-eth';
 import RNS from '../../src/index';
-import { Options } from '../../src/types';
+import { Options, NetworkId } from '../../src/types';
 import {
   asyncExpectThrowRNSError, asyncExpectThrowVMRevert, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET,
 } from '../utils';
 import {
   INVALID_DOMAIN, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS,
   DOMAIN_NOT_EXISTS, INVALID_LABEL, SUBDOMAIN_NOT_AVAILABLE, NO_ACCOUNTS_TO_SIGN,
+  INVALID_CHECKSUM_ADDRESS, INVALID_ADDRESS,
 } from '../../src/errors';
 import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
@@ -58,6 +59,44 @@ describe('subdomains.create', () => {
       await rns.subdomains.create('rsk', 'alice', owner);
     });
 
+    it('should fail when instating the lib with RSK networkId and owner address has an invalid checksum for RSK', async () => {
+      options = {
+        contractAddresses: {
+          registry: registry.address,
+        },
+        networkId: NetworkId.RSK_MAINNET,
+      };
+
+      rns = new RNS(web3Instance, options);
+
+      const invalid = '0x53BF4d5cF81F8c52644912cfae4d0E3EA7faDd5B'; // valid for ethereum
+
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', invalid), INVALID_CHECKSUM_ADDRESS);
+    });
+
+    it('should fail when instating the lib with RSK networkId and addr address has an invalid checksum for RSK', async () => {
+      options = {
+        contractAddresses: {
+          registry: registry.address,
+        },
+        networkId: NetworkId.RSK_MAINNET,
+      };
+
+      rns = new RNS(web3Instance, options);
+
+      const invalid = '0x53BF4d5cF81F8c52644912cfae4d0E3EA7faDd5B'; // valid for ethereum
+
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', owner, invalid), INVALID_CHECKSUM_ADDRESS);
+    });
+
+    it('should fail when invalid owner address', async () => {
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', 'invalid'), INVALID_ADDRESS);
+    });
+
+    it('should fail when invalid addr address', async () => {
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', owner, 'invalid'), INVALID_ADDRESS);
+    });
+
     it('should fail when sending an empty domain', async () => {
       await asyncExpectThrowRNSError(() => rns.subdomains.create('', 'willfail', owner), INVALID_DOMAIN);
     });
@@ -79,7 +118,7 @@ describe('subdomains.create', () => {
     });
 
     it('should fail when given domain does not exist', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('noexist.rsk', 'willfail', owner), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowRNSError(() => rns.subdomains.create('noexists.rsk', 'willfail', owner), DOMAIN_NOT_EXISTS);
     });
 
     it('should fail when sending empty label', async () => {

@@ -112,13 +112,13 @@ describe('subdomains.available validations', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('noexists.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('noexists.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
     });
   });
 

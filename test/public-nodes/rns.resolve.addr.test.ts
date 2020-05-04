@@ -83,13 +83,13 @@ describe('addr resolution', () => {
     test('mainnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_MAINNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(() => rns.addr('noexist.testing.rsk'), NO_RESOLVER);
+      await asyncExpectThrowRNSError(() => rns.addr('noexists.testing.rsk'), NO_RESOLVER);
     });
 
     test('testnet', async () => {
       const web3 = new Web3(PUBLIC_NODE_TESTNET);
       const rns = new RNS(web3);
-      await asyncExpectThrowRNSError(() => rns.addr('noexist.testing.rsk'), NO_RESOLVER);
+      await asyncExpectThrowRNSError(() => rns.addr('noexists.testing.rsk'), NO_RESOLVER);
     });
   });
 });

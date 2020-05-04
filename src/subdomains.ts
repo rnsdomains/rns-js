@@ -5,11 +5,14 @@ import RNSError, {
   SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN,
   INVALID_LABEL, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN,
   SUBDOMAIN_NOT_AVAILABLE,
+  INVALID_ADDRESS,
+  INVALID_CHECKSUM_ADDRESS,
 } from './errors';
 import { ZERO_ADDRESS } from './constants';
 import Composer from './composer';
 import {
-  isValidDomain, isValidTld, isValidLabel, namehash, hasAccounts, labelhash, getCurrentAddress,
+  isValidDomain, isValidTld, isValidLabel, namehash, hasAccounts, labelhash,
+  getCurrentAddress, isValidAddress, isValidChecksumAddress,
 } from './utils';
 
 /**
@@ -53,6 +56,16 @@ export default class extends Composer implements Subdomains {
     }
   }
 
+  private _validateAddress(addr: string) {
+    if (!isValidAddress(addr)) {
+      throw new RNSError(INVALID_ADDRESS);
+    }
+
+    if (!isValidChecksumAddress(addr, this.currentNetworkId)) {
+      throw new RNSError(INVALID_CHECKSUM_ADDRESS);
+    }
+  }
+
   /**
    * Checks if the given label subdomain is available under the given domain tree
    *
@@ -91,6 +104,8 @@ export default class extends Composer implements Subdomains {
    * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
    * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
    * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws INVALID_ADDRESS if the given owner address is invalid - KB017
+   * @throws INVALID_CHECKSUM_ADDRESS if the given owner address has an invalid checksum - KB019
    *
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice
@@ -104,6 +119,8 @@ export default class extends Composer implements Subdomains {
     }
 
     this._validateDomainAndLabel(domain, label);
+
+    this._validateAddress(owner);
 
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
@@ -125,6 +142,8 @@ export default class extends Composer implements Subdomains {
    * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
    * @throws SUBDOMAIN_NOT_AVAILABLE if the given domain is already owned - KB016
    * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws INVALID_ADDRESS if the given owner or address resolution is invalid - KB017
+   * @throws INVALID_CHECKSUM_ADDRESS if the given owner address or resolution has an invalid checksum - KB019
    *
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice
@@ -146,6 +165,14 @@ export default class extends Composer implements Subdomains {
     }
 
     this._validateDomainAndLabel(domain, label);
+
+    if (owner) {
+      this._validateAddress(owner);
+    }
+
+    if (addr) {
+      this._validateAddress(addr);
+    }
 
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {

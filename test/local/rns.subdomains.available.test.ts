@@ -70,7 +70,7 @@ describe('subdomains.available', () => {
     });
 
     it('should fail when given domain does not exist', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('noexist.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
+      await asyncExpectThrowRNSError(() => rns.subdomains.available('noexists.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
     });
 
     it('should fail when sending empty label', async () => {

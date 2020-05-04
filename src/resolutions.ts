@@ -9,10 +9,13 @@ import {
   CHAIN_ADDR_INTERFACE, NAME_INTERFACE, ADDR_REVERSE_NAMEHASH,
   SET_NAME_INTERFACE, SET_ADDR_INTERFACE,
 } from './constants';
-import { ChainId, Resolutions, Options } from './types';
+import {
+  ChainId, Resolutions, Options, NetworkId,
+} from './types';
 import Composer from './composer';
 import {
-  hasMethod, namehash, hasAccounts, isValidAddress, isValidChecksumAddress, isValidDomain,
+  hasMethod, namehash, hasAccounts, isValidAddress, isValidChecksumAddress,
+  isValidDomain, toChecksumAddress,
 } from './utils';
 import RNSError, {
   NO_RESOLVER, NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_CHAIN_ADDR_RESOLUTION,
@@ -77,12 +80,25 @@ export default class extends Composer implements Resolutions {
     return resolver;
   }
 
-  private _validateAddress(addr: string) {
-    if (!isValidAddress(addr)) {
-      throw new RNSError(INVALID_ADDRESS);
-    }
-    if (!isValidChecksumAddress(addr, this.currentNetworkId)) {
-      throw new RNSError(INVALID_CHECKSUM_ADDRESS);
+  private _validateAddress(addr: string, chainId?: ChainId) {
+    if (!chainId || chainId === ChainId.RSK || chainId === ChainId.ETHEREUM) {
+      if (!isValidAddress(addr)) {
+        throw new RNSError(INVALID_ADDRESS);
+      }
+
+      if (!chainId) {
+        if (!isValidChecksumAddress(addr, this.currentNetworkId)) {
+          throw new RNSError(INVALID_CHECKSUM_ADDRESS);
+        }
+      } else if (chainId === ChainId.RSK) {
+        if (!isValidChecksumAddress(addr, NetworkId.RSK_MAINNET)) {
+          throw new RNSError(INVALID_CHECKSUM_ADDRESS);
+        }
+      } else if (chainId === ChainId.ETHEREUM) {
+        if (!isValidChecksumAddress(addr)) {
+          throw new RNSError(INVALID_CHECKSUM_ADDRESS);
+        }
+      }
     }
   }
 
@@ -115,7 +131,7 @@ export default class extends Composer implements Resolutions {
       throw new RNSError(NO_ADDR_RESOLUTION_SET);
     }
 
-    return addr;
+    return toChecksumAddress(addr, this.currentNetworkId);
   }
 
   /**
@@ -145,6 +161,15 @@ export default class extends Composer implements Resolutions {
     const addr: string = await resolver.methods.chainAddr(node, chainId).call();
     if (!addr || addr === ZERO_ADDRESS) {
       throw new RNSError(NO_CHAIN_ADDR_RESOLUTION_SET);
+    }
+
+    // return checksum address just if it is a EVM blockchain address
+    if (isValidAddress(addr)) {
+      if (chainId === ChainId.RSK) {
+        return toChecksumAddress(addr, NetworkId.RSK_MAINNET);
+      }
+
+      return toChecksumAddress(addr);
     }
 
     return addr;
@@ -191,6 +216,8 @@ export default class extends Composer implements Resolutions {
    * @throws NO_SET_CHAIN_ADDR if it has an invalid resolver - KB024.
    * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
    * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws INVALID_ADDRESS if the given addr is invalid when the chainId belongs to an EVM compatible blockchain - KB017
+   * @throws INVALID_CHECKSUM_ADDRESS if the given addr has an invalid checksum and the chainId belongs to an EVM compatible blockchain - KB019
    *
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
@@ -203,6 +230,8 @@ export default class extends Composer implements Resolutions {
     if (!await hasAccounts(this.web3)) {
       throw new RNSError(NO_ACCOUNTS_TO_SIGN);
     }
+
+    this._validateAddress(addr, chainId);
 
     const node: string = namehash(domain);
 
@@ -312,7 +341,7 @@ export default class extends Composer implements Resolutions {
    */
   async name(address: string): Promise<string> {
     await this.compose();
-    const convertedAddress = address.substring(2).toLowerCase(); // remove '0x' and convert it to lowercase.
+    const convertedAddress = address.substring(2).toLowerCase(); // remove '0x'
 
     const node: string = namehash(`${convertedAddress}.addr.reverse`);
 

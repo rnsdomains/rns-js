@@ -68,7 +68,7 @@ export default class extends Composer implements RNS {
    * @param domain - Domain to be resolved
    * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    *
-   * @returns address resolution of the given domain and chainId (if provided)
+   * @returns checksummed address resolution of the given domain and chainId (if provided)
    */
   async addr(domain: string, chainId?: ChainId): Promise<string> {
     if (!chainId) {
@@ -192,6 +192,7 @@ export default class extends Composer implements RNS {
       labelhash: utils.labelhash,
       isValidAddress: utils.isValidAddress,
       isValidChecksumAddress: utils.isValidChecksumAddress,
+      toChecksumAddress: utils.toChecksumAddress,
     };
   }
 }

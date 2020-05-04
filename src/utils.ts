@@ -76,8 +76,29 @@ export const isValidAddress = (address: string) => rskjutils.isValidAddress(addr
  * true if valid, false if not
  */
 export const isValidChecksumAddress = (
-  address: string, networkId: NetworkId,
-) => rskjutils.isValidChecksumAddress(address, networkId);
+  address: string, networkId?: NetworkId,
+) => (
+  isValidAddress(address) && address === address.toLowerCase()
+) || rskjutils.isValidChecksumAddress(
+  address,
+  networkId && networkId in NetworkId ? networkId : null, // ethereum networks don't use network prefix
+);
+
+/**
+ * Generates checksum address
+ *
+ * @param address
+ * @param networkId - networkId where checksummed address should be valid
+ *
+ * @returns
+ * Checksummed address
+ */
+export const toChecksumAddress = (
+  address: string, networkId?: NetworkId,
+) => isValidAddress(address) && rskjutils.toChecksumAddress(
+  address,
+  networkId && networkId in NetworkId ? networkId : null, // ethereum networks don't use network prefix
+);
 
 /**
  * Validates the given label

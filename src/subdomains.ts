@@ -5,11 +5,14 @@ import RNSError, {
   SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN,
   INVALID_LABEL, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN,
   SUBDOMAIN_NOT_AVAILABLE,
+  INVALID_ADDRESS,
+  INVALID_CHECKSUM_ADDRESS,
 } from './errors';
 import { ZERO_ADDRESS } from './constants';
 import Composer from './composer';
 import {
   isValidDomain, isValidTld, isValidLabel, namehash, hasAccounts, labelhash,
+  getCurrentAddress, isValidAddress, isValidChecksumAddress,
 } from './utils';
 
 /**
@@ -29,15 +32,16 @@ export default class extends Composer implements Subdomains {
     node: string,
     label: string,
     owner: string,
-    sender?: string,
   ): Promise<TransactionReceipt> {
-    return this._contracts.registry
+    const contractMethod = () => this._contracts.registry
       .methods
       .setSubnodeOwner(
         node,
         labelhash(label),
         owner,
-      ).send({ from: sender || owner });
+      );
+
+    return this.estimateGasAndSendTransaction(contractMethod);
   }
 
   private _validateDomainAndLabel(domain: string, label: string): void {
@@ -49,6 +53,16 @@ export default class extends Composer implements Subdomains {
     }
     if (!isValidLabel(label)) {
       throw new RNSError(INVALID_LABEL);
+    }
+  }
+
+  private _validateAddress(addr: string) {
+    if (!isValidAddress(addr)) {
+      throw new RNSError(INVALID_ADDRESS);
+    }
+
+    if (!isValidChecksumAddress(addr, this.currentNetworkId)) {
+      throw new RNSError(INVALID_CHECKSUM_ADDRESS);
     }
   }
 
@@ -90,6 +104,8 @@ export default class extends Composer implements Subdomains {
    * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
    * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
    * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws INVALID_ADDRESS if the given owner address is invalid - KB017
+   * @throws INVALID_CHECKSUM_ADDRESS if the given owner address has an invalid checksum - KB019
    *
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice
@@ -104,15 +120,16 @@ export default class extends Composer implements Subdomains {
 
     this._validateDomainAndLabel(domain, label);
 
+    this._validateAddress(owner);
+
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
       throw new RNSError(DOMAIN_NOT_EXISTS);
     }
 
     const node: string = namehash(`${domain}`);
-    const accounts = await this.web3.eth.getAccounts();
 
-    return this._setSubnodeOwner(node, label, owner, accounts[0]);
+    return this._setSubnodeOwner(node, label, owner);
   }
 
   /**
@@ -125,6 +142,8 @@ export default class extends Composer implements Subdomains {
    * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
    * @throws SUBDOMAIN_NOT_AVAILABLE if the given domain is already owned - KB016
    * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws INVALID_ADDRESS if the given owner or address resolution is invalid - KB017
+   * @throws INVALID_CHECKSUM_ADDRESS if the given owner address or resolution has an invalid checksum - KB019
    *
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice
@@ -147,6 +166,14 @@ export default class extends Composer implements Subdomains {
 
     this._validateDomainAndLabel(domain, label);
 
+    if (owner) {
+      this._validateAddress(owner);
+    }
+
+    if (addr) {
+      this._validateAddress(addr);
+    }
+
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
       throw new RNSError(DOMAIN_NOT_EXISTS);
@@ -157,11 +184,10 @@ export default class extends Composer implements Subdomains {
     }
 
     const node: string = namehash(`${domain}`);
-    const accounts = await this.web3.eth.getAccounts();
-    const sender = accounts[0];
+    const sender = await getCurrentAddress(this.web3);
 
     if (!addr) {
-      return this._setSubnodeOwner(node, label, owner || sender, sender);
+      return this._setSubnodeOwner(node, label, owner || sender);
     } if (!owner || owner === sender) {
       // submits just two transactions
       await this._setSubnodeOwner(node, label, sender);
@@ -169,10 +195,10 @@ export default class extends Composer implements Subdomains {
       return this._resolutions.setAddr(`${label}.${domain}`, addr);
     }
     // needs to submit three txs
-    await this._setSubnodeOwner(node, label, sender, sender);
+    await this._setSubnodeOwner(node, label, sender);
 
     await this._resolutions.setAddr(`${label}.${domain}`, addr);
 
-    return this._setSubnodeOwner(node, label, owner, sender);
+    return this._setSubnodeOwner(node, label, owner);
   }
 }

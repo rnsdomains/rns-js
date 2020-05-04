@@ -12,7 +12,7 @@ import { ZERO_ADDRESS } from '../../src/constants';
 import { asyncExpectThrowRNSError } from '../utils';
 import RNS from '../../src/index';
 import { Options, ChainId } from '../../src/types';
-import { labelhash } from '../../src/utils';
+import { labelhash, toChecksumAddress } from '../../src/utils';
 
 describe('chainAddr resolution', () => {
   const [anotherAccount] = accounts;
@@ -65,9 +65,8 @@ describe('chainAddr resolution', () => {
     await multichainResolver.setChainAddr(namehash('alice.rsk'), ChainId.ETHEREUM, ethAddress);
 
     const addr = await rns.addr('alice.rsk', ChainId.ETHEREUM);
-    expect(addr).toBe(ethAddress);
+    expect(addr).toBe(toChecksumAddress(ethAddress));
   });
-
 
   it('should throw an error when resolver has not been set', async () => {
     await registry.setSubnodeOwner(namehash(TLD), labelhash('noresolver'), defaultSender);

@@ -75,7 +75,18 @@ export interface Utils {
    * @returns
    * true if valid, false if not
    */
-  isValidChecksumAddress(address: string, networkId: NetworkId): boolean;
+  isValidChecksumAddress(address: string, networkId?: NetworkId): boolean;
+
+  /**
+   * Generates checksum address
+   *
+   * @param address
+   * @param networkId - networkId where checksummed address should be valid
+   *
+   * @returns
+   * Checksummed address
+   */
+  toChecksumAddress(address: string, networkId?: NetworkId): string;
 
   /**
    * Returns namehash of the given domain

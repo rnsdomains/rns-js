@@ -5,6 +5,8 @@ import {
   Resolutions as IResolutions,
   Subdomains as ISubdomains,
   Registrations as IRegistrations,
+  ContractAddresses,
+  NetworkId,
 } from './types';
 import RNSError, { LIBRARY_NOT_COMPOSED } from './errors';
 import Resolutions from './resolutions';
@@ -65,6 +67,8 @@ export default class extends Composer implements RNS {
    *
    * @param domain - Domain to be resolved
    * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   *
+   * @returns checksummed address resolution of the given domain and chainId (if provided)
    */
   async addr(domain: string, chainId?: ChainId): Promise<string> {
     if (!chainId) {
@@ -74,19 +78,27 @@ export default class extends Composer implements RNS {
   }
 
   /**
-   * Set address resolution of a given domain.
+   * Set address resolution of a given domain in a given chain.
    *
    * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
    * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
    * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_ADDRESS if the given addr is invalid - KB017
    * @throws INVALID_CHECKSUM_ADDRESS if the given addr has an invalid checksum - KB019
+   * @throws NO_SET_CHAIN_ADDR if the multichain resolver does not implement setName method - KB024
    *
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
+   * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   *
+   * @returns TransactionReceipt of the submitted tx
    */
-  setAddr(domain: string, addr: string): Promise<TransactionReceipt> {
-    return this._resolutions.setAddr(domain, addr);
+  setAddr(domain: string, addr: string, chainId?: ChainId): Promise<TransactionReceipt> {
+    if (!chainId) {
+      return this._resolutions.setAddr(domain, addr);
+    }
+
+    return this._resolutions.setChainAddr(domain, addr, chainId);
   }
 
   /**
@@ -99,6 +111,8 @@ export default class extends Composer implements RNS {
    *
    * @param domain - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain
+   *
+   * @returns TransactionReceipt of the submitted tx
    */
   setResolver(domain: string, resolver: string): Promise<TransactionReceipt> {
     return this._resolutions.setResolver(domain, resolver);
@@ -112,11 +126,26 @@ export default class extends Composer implements RNS {
    *
    * @param address - address to be resolved
    *
-   * @returns
-   * Domain or subdomain associated to the given address.
+   * @returns Domain or subdomain associated to the given address.
    */
   async reverse(address: string): Promise<string> {
     return this._resolutions.name(address);
+  }
+
+  /**
+   * Set reverse resolution with the given name for the current address.
+   *
+   * @param name - Name to be set as the reverse resolution of the current address
+   *
+   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
+   * @throws NO_REVERSE_REGISTRAR if there is no owner for `addr.reverse` node - KB022
+   * @throws NO_SET_NAME_METHOD if reverse registrar does not implement `setName` method - KB023
+   *
+   * @returns TransactionReceipt of the submitted tx
+   */
+  setReverse(name: string): Promise<TransactionReceipt> {
+    return this._resolutions.setName(name);
   }
 
   /**
@@ -124,11 +153,11 @@ export default class extends Composer implements RNS {
    *
    * @param domain - Domain or label to check availability
    *
-   * SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is under an invalid tld
-   * INVALID_DOMAIN if the given parameter is a domain and is not alphanumeric
-   * INVALID_LABEL if the given parameter is a label and is not alphanumeric
-   * NO_AVAILABLE_METHOD when the TLD owner does not implement the available method
-   * NO_TLD_OWNER when the TLD does not has an owner
+   * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is under an invalid tld
+   * @throws INVALID_DOMAIN if the given parameter is a domain and is not alphanumeric
+   * @throws INVALID_LABEL if the given parameter is a label and is not alphanumeric
+   * @throws NO_AVAILABLE_METHOD when the TLD owner does not implement the available method
+   * @throws NO_TLD_OWNER when the TLD does not has an owner
    *
    * @returns
    * True if the domain is available, false if not, or an array of available domains under possible TLDs if the parameter is a label
@@ -163,6 +192,16 @@ export default class extends Composer implements RNS {
       labelhash: utils.labelhash,
       isValidAddress: utils.isValidAddress,
       isValidChecksumAddress: utils.isValidChecksumAddress,
+      toChecksumAddress: utils.toChecksumAddress,
     };
   }
 }
+
+export {
+  ChainId,
+  ContractAddresses,
+  Options,
+  NetworkId,
+  Contracts,
+  ISubdomains as Subdomains,
+};

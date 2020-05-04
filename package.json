@@ -1,6 +1,6 @@
 {
   "name": "@rsksmart/rns",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "RIF Name Service library.",
   "keywords": [
     "rsk",
@@ -26,7 +26,7 @@
     "build": "npm run tsc-build && babel src --out-dir lib --extensions '.ts' --copy-files && npx webpack",
     "test": "npm run test:local && npm run lint",
     "test:local": "npx jest --coverage --runInBand test/local/",
-    "test:public": "npx jest --coverage --runInBand test/public-nodes/",
+    "test:public": "npx jest --coverage test/public-nodes/",
     "test:bundle": "npx webpack && npx jest --coverage --runInBand test/bundle/",
     "lint": "npx eslint 'src/**.ts' 'src/**/**.ts' 'test/**'",
     "lint:fix": "npx eslint 'src/**.ts' 'src/**/**.ts' 'test/**' --fix",

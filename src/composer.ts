@@ -76,8 +76,8 @@ export default abstract class implements Composable {
 
     return new Promise((resolve, reject) => contractMethod()
       .send({ from: sender, gas })
-      .on('confirmation', (nbr: Number, receipt: TransactionReceipt) => resolve(receipt))
-      .on('error', (error: Error) => reject(error)));
+      .on('confirmation', (confirmations: Number, receipt: TransactionReceipt) => resolve(receipt))
+      .on('error', reject));
   }
 
   /**

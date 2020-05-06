@@ -216,13 +216,13 @@ describe.each([
 });
 
 describe.each([
-  new Web3(PUBLIC_NODE_MAINNET),
-  new Web3(PUBLIC_NODE_TESTNET),
-  new Rsk3(PUBLIC_NODE_MAINNET),
-  new Rsk3(PUBLIC_NODE_TESTNET),
-])('public nodes', (provider) => {
+  ['web3 mainnet', new Web3(PUBLIC_NODE_MAINNET)],
+  ['web3 testnet', new Web3(PUBLIC_NODE_TESTNET)],
+  ['rsk mainnet', new Rsk3(PUBLIC_NODE_MAINNET)],
+  ['rsk testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
+])('%s - subdomains.create public nodes', (name, blockchainApiInstance) => {
   test('should fail when web3 instance does not contain accounts to sign the tx', async () => {
-    const rns = new RNS(provider);
+    const rns = new RNS(blockchainApiInstance);
     await asyncExpectThrowRNSError(
       () => rns.subdomains.create('multichain.testing.rsk', 'check'),
       NO_ACCOUNTS_TO_SIGN,

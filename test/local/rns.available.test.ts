@@ -26,9 +26,9 @@ const web3Instance = web3 as unknown as Web3;
 const rsk3Instance = new Rsk3(web3.currentProvider);
 
 describe.each([
-  web3Instance,
-  rsk3Instance,
-])('subdomains.available', (blockchainApiInstance) => {
+  ['web3', web3Instance],
+  ['rsk3', rsk3Instance],
+])('%s - subdomains.available', (apiName, blockchainApiInstance) => {
   const TLD = 'rsk';
 
   let registry: any;

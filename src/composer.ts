@@ -16,19 +16,23 @@ export default abstract class implements Composable {
 
   protected _contracts!: Contracts;
 
-  public web3: Web3;
+  public blockchainApi: Web3;
 
   /**
    * Create RNS library.
    *
    * @remarks
-   * If web3 points to RSK Mainnet or RSK Testnet, no options are required. Contract addresses are detected automatically.
+   * If the blockchain api points to RSK Mainnet or RSK Testnet, no options are required. Contract addresses are detected automatically.
    *
-   * @param web3 - Web3 instance
+   * @param blockchainApi - Web3 or Rsk3 instance
    * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
    */
-  constructor(web3Instance: Web3 | any, options?: Options) {
-    this.web3 = web3Instance as Web3;
+  constructor(blockchainApi: Web3 | any, options?: Options) {
+    this.blockchainApi = blockchainApi as Web3;
+
+    // rsk3 eth namespace are exposed in the top level namespace
+    this.blockchainApi.eth = blockchainApi.eth || blockchainApi;
+
     if (options && options.contractAddresses) {
       this._contractAddresses = options.contractAddresses;
     }
@@ -44,8 +48,7 @@ export default abstract class implements Composable {
    * @throws NO_ADDRESSES_PROVIDED if the network is not RSK Mainnet or RSK Testnet and the options parameter was not provided in the constructor - KB005.
    */
   private async _detectNetwork() {
-    const namespace = this.web3.eth || this.web3;
-    const networkId = await namespace.net.getId();
+    const networkId = await this.blockchainApi.eth.net.getId();
 
     if (!this._contractAddresses) {
       this._contractAddresses = createContractAddresses(networkId);
@@ -53,7 +56,7 @@ export default abstract class implements Composable {
 
     if (!this._contracts) {
       this._contracts = {
-        registry: createRegistry(this.web3, this._contractAddresses.registry),
+        registry: createRegistry(this.blockchainApi, this._contractAddresses.registry),
       };
     }
 
@@ -65,18 +68,16 @@ export default abstract class implements Composable {
   protected async estimateGasAndSendTransaction(
     contractMethod: () => any,
   ): Promise<TransactionReceipt> {
-    const sender = await getCurrentAddress(this.web3);
+    const sender = await getCurrentAddress(this.blockchainApi);
 
     const estimated = await contractMethod().estimateGas();
 
     const gas = Math.floor(estimated * 1.1);
 
-    return new Promise((resolve, reject) => {
-      contractMethod()
-        .send({ from: sender, gas })
-        .on('confirmation', (nbr: Number, receipt: TransactionReceipt) => resolve(receipt))
-        .on('error', (error: Error) => reject(error));
-    });
+    return new Promise((resolve, reject) => contractMethod()
+      .send({ from: sender, gas })
+      .on('confirmation', (nbr: Number, receipt: TransactionReceipt) => resolve(receipt))
+      .on('error', (error: Error) => reject(error)));
   }
 
   /**

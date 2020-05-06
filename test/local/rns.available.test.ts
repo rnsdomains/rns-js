@@ -23,12 +23,12 @@ import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
 
 const web3Instance = web3 as unknown as Web3;
-const rsk3 = new Rsk3(web3.currentProvider);
+const rsk3Instance = new Rsk3(web3.currentProvider);
 
 describe.each([
   web3Instance,
-  rsk3,
-])('subdomains.available', (provider) => {
+  rsk3Instance,
+])('subdomains.available', (blockchainApiInstance) => {
   const TLD = 'rsk';
 
   let registry: any;
@@ -49,7 +49,7 @@ describe.each([
         },
       };
 
-      rns = new RNS(provider, options);
+      rns = new RNS(blockchainApiInstance, options);
     });
 
     it('should return false when sending a subdomain', async () => {
@@ -167,7 +167,7 @@ describe.each([
         },
       };
 
-      rns = new RNS(provider, options);
+      rns = new RNS(blockchainApiInstance, options);
     });
 
     it('should return an empty array just rsk', async () => {

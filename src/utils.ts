@@ -17,8 +17,7 @@ import RNSError, { NO_ACCOUNTS_TO_SIGN } from './errors';
  * true if method exists, false if not
  */
 export const hasMethod = async (web3: Web3, contractAddress: string, signatureHash: string) => {
-  const namespace = web3.eth || web3;
-  const code = await namespace.getCode(contractAddress);
+  const code = await web3.eth.getCode(contractAddress);
   return code.indexOf(signatureHash.slice(2, signatureHash.length)) > 0;
 };
 
@@ -33,8 +32,7 @@ export const hasMethod = async (web3: Web3, contractAddress: string, signatureHa
 export const hasAccounts = async (web3: Web3) => {
   let accounts = [];
   try {
-    const namespace = web3.eth || web3;
-    accounts = await namespace.getAccounts();
+    accounts = await web3.eth.getAccounts();
   } catch {
     return false;
   }
@@ -51,8 +49,7 @@ export const hasAccounts = async (web3: Web3) => {
 export const getCurrentAddress = async (web3: Web3): Promise<string> => {
   let accounts = [];
   try {
-    const namespace = web3.eth || web3;
-    accounts = await namespace.getAccounts();
+    accounts = await web3.eth.getAccounts();
   } catch {
     throw new RNSError(NO_ACCOUNTS_TO_SIGN);
   }

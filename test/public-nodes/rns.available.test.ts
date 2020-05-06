@@ -8,12 +8,12 @@ describe.each([
   new Web3(PUBLIC_NODE_TESTNET),
   new Rsk3(PUBLIC_NODE_MAINNET),
   new Rsk3(PUBLIC_NODE_TESTNET),
-])('subdomains.available', (provider) => {
+])('subdomains.available', (blockchainApiInstance) => {
   let rns: RNS;
 
   describe('happy paths', () => {
     beforeEach(async () => {
-      rns = new RNS(provider);
+      rns = new RNS(blockchainApiInstance);
     });
 
     it('should return an empty array just rsk', async () => {

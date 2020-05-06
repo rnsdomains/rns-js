@@ -30,16 +30,16 @@ export default class extends Composer implements RNS {
    * Create RNS library.
    *
    * @remarks
-   * If web3 points to RSK Mainnet or RSK Testnet, no options are required. Contract addresses are detected automatically.
+   * If the blockchain api points to RSK Mainnet or RSK Testnet, no options are required. Contract addresses are detected automatically.
    *
-   * @param web3 - Web3 instance
+   * @param blockchainApi - Web3 or Rsk3 instance
    * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
    */
-  constructor(web3: Web3 | any, options?: Options) {
-    super(web3, options);
-    this._resolutions = new Resolutions(this.web3, options);
-    this._subdomains = new Subdomains(this.web3, this._resolutions, options);
-    this._registrations = new Registrations(this.web3, options);
+  constructor(blockchainApi: Web3 | any, options?: Options) {
+    super(blockchainApi, options);
+    this._resolutions = new Resolutions(this.blockchainApi, options);
+    this._subdomains = new Subdomains(this.blockchainApi, this._resolutions, options);
+    this._registrations = new Registrations(this.blockchainApi, options);
   }
 
   /**
@@ -82,7 +82,7 @@ export default class extends Composer implements RNS {
    *
    * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
    * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
-   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_ADDRESS if the given addr is invalid - KB017
    * @throws INVALID_CHECKSUM_ADDRESS if the given addr has an invalid checksum - KB019
    * @throws NO_SET_CHAIN_ADDR if the multichain resolver does not implement setName method - KB024
@@ -104,7 +104,7 @@ export default class extends Composer implements RNS {
   /**
    * Set resolver of a given domain.
    *
-   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_ADDRESS if the given resolver address is invalid - KB017
    * @throws INVALID_CHECKSUM_ADDRESS if the given resolver address has an invalid checksum - KB019
    * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
@@ -137,7 +137,7 @@ export default class extends Composer implements RNS {
    *
    * @param name - Name to be set as the reverse resolution of the current address
    *
-   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
    * @throws NO_REVERSE_REGISTRAR if there is no owner for `addr.reverse` node - KB022
    * @throws NO_SET_NAME_METHOD if reverse registrar does not implement `setName` method - KB023

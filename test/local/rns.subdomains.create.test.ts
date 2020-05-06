@@ -21,12 +21,12 @@ import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
 
 const web3Instance = web3 as unknown as Web3;
-const rsk3 = new Rsk3(web3.currentProvider);
+const rsk3Instance = new Rsk3(web3.currentProvider);
 
 describe.each([
-  web3Instance,
-  rsk3,
-])('subdomains.create', (provider) => {
+  ['web3', web3Instance],
+  ['rsk3', rsk3Instance],
+])('%s - subdomains.create', (name, blockchainApiInstance) => {
   const TLD = 'rsk';
 
   let registry: any;
@@ -50,7 +50,7 @@ describe.each([
         registry: registry.address,
       },
     };
-    rns = new RNS(provider, options);
+    rns = new RNS(blockchainApiInstance, options);
   });
 
   describe('validations', () => {
@@ -72,7 +72,7 @@ describe.each([
         networkId: NetworkId.RSK_MAINNET,
       };
 
-      rns = new RNS(provider, options);
+      rns = new RNS(blockchainApiInstance, options);
 
       const invalid = '0x53BF4d5cF81F8c52644912cfae4d0E3EA7faDd5B'; // valid for ethereum
 
@@ -87,7 +87,7 @@ describe.each([
         networkId: NetworkId.RSK_MAINNET,
       };
 
-      rns = new RNS(provider, options);
+      rns = new RNS(blockchainApiInstance, options);
 
       const invalid = '0x53BF4d5cF81F8c52644912cfae4d0E3EA7faDd5B'; // valid for ethereum
 

@@ -24,31 +24,26 @@ export const createContractAddresses = (networkId: NetworkId): ContractAddresses
   }
 };
 
-const getContract = (web3: Web3 | any, abi: AbiItem[], address: string) => {
-  const namespace = web3.eth || web3;
-  return new namespace.Contract(abi, address);
-};
-
 export const createRegistry = (
   web3: Web3, address: string,
-) => getContract(web3, RNSRegistryData.abi as AbiItem[], address);
+) => new web3.eth.Contract(RNSRegistryData.abi as AbiItem[], address);
 
 export const createAddrResolver = (
   web3: Web3, address: string,
-) => getContract(web3, AddrResolverData.abi as AbiItem[], address);
+) => new web3.eth.Contract(AddrResolverData.abi as AbiItem[], address);
 
 export const createChainAddrResolver = (
   web3: Web3, address: string,
-) => getContract(web3, ChainAddrResolverData.abi as AbiItem[], address);
+) => new web3.eth.Contract(ChainAddrResolverData.abi as AbiItem[], address);
 
 export const createNameResolver = (
   web3: Web3, address: string,
-) => getContract(web3, NameResolverData.abi as AbiItem[], address);
+) => new web3.eth.Contract(NameResolverData.abi as AbiItem[], address);
 
 export const createRskOwner = (
   web3: Web3, address: string,
-) => getContract(web3, RSKOwnerData.abi as AbiItem[], address);
+) => new web3.eth.Contract(RSKOwnerData.abi as AbiItem[], address);
 
 export const createReverseRegistrar = (
   web3: Web3, address: string,
-) => getContract(web3, ReverseRegistrarData.abi as AbiItem[], address);
+) => new web3.eth.Contract(ReverseRegistrarData.abi as AbiItem[], address);

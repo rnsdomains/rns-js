@@ -1,10 +1,11 @@
+import Web3 from 'web3';
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import {
   accounts, contract, web3, defaultSender,
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
-import Web3 from 'web3';
+import Rsk3 from '@rsksmart/rsk3';
 import { TransactionReceipt } from 'web3-eth';
 import RNS from '../../src/index';
 import { Options, NetworkId } from '../../src/types';
@@ -19,14 +20,19 @@ import {
 import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
 
-describe('subdomains.create', () => {
+const web3Instance = web3 as unknown as Web3;
+const rsk3 = new Rsk3(web3.currentProvider);
+
+describe.each([
+  web3Instance,
+  rsk3,
+])('subdomains.create', (provider) => {
   const TLD = 'rsk';
 
   let registry: any;
   let publicResolver: any;
   let rns: RNS;
   let options: Options;
-  const web3Instance = web3 as unknown as Web3;
   const [owner] = accounts;
 
   beforeEach(async () => {
@@ -44,8 +50,7 @@ describe('subdomains.create', () => {
         registry: registry.address,
       },
     };
-
-    rns = new RNS(web3Instance, options);
+    rns = new RNS(provider, options);
   });
 
   describe('validations', () => {
@@ -67,7 +72,7 @@ describe('subdomains.create', () => {
         networkId: NetworkId.RSK_MAINNET,
       };
 
-      rns = new RNS(web3Instance, options);
+      rns = new RNS(provider, options);
 
       const invalid = '0x53BF4d5cF81F8c52644912cfae4d0E3EA7faDd5B'; // valid for ethereum
 
@@ -82,7 +87,7 @@ describe('subdomains.create', () => {
         networkId: NetworkId.RSK_MAINNET,
       };
 
-      rns = new RNS(web3Instance, options);
+      rns = new RNS(provider, options);
 
       const invalid = '0x53BF4d5cF81F8c52644912cfae4d0E3EA7faDd5B'; // valid for ethereum
 
@@ -208,26 +213,19 @@ describe('subdomains.create', () => {
       expectedOwner = '';
     });
   });
+});
 
-  describe('public nodes', () => {
-    describe('should fail when web3 instance does not contain accounts to sign the tx', () => {
-      test('mainnet', async () => {
-        const publicWeb3 = new Web3(PUBLIC_NODE_MAINNET);
-        rns = new RNS(publicWeb3);
-        await asyncExpectThrowRNSError(
-          () => rns.subdomains.create('multichain.testing.rsk', 'check'),
-          NO_ACCOUNTS_TO_SIGN,
-        );
-      });
-
-      test('testnet', async () => {
-        const publicWeb3 = new Web3(PUBLIC_NODE_TESTNET);
-        rns = new RNS(publicWeb3);
-        await asyncExpectThrowRNSError(
-          () => rns.subdomains.create('multichain.testing.rsk', 'check'),
-          NO_ACCOUNTS_TO_SIGN,
-        );
-      });
-    });
+describe.each([
+  new Web3(PUBLIC_NODE_MAINNET),
+  new Web3(PUBLIC_NODE_TESTNET),
+  new Rsk3(PUBLIC_NODE_MAINNET),
+  new Rsk3(PUBLIC_NODE_TESTNET),
+])('public nodes', (provider) => {
+  test('should fail when web3 instance does not contain accounts to sign the tx', async () => {
+    const rns = new RNS(provider);
+    await asyncExpectThrowRNSError(
+      () => rns.subdomains.create('multichain.testing.rsk', 'check'),
+      NO_ACCOUNTS_TO_SIGN,
+    );
   });
 });

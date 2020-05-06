@@ -35,7 +35,7 @@ export default class extends Composer implements RNS {
    * @param web3 - Web3 instance
    * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
    */
-  constructor(web3: Web3, options?: Options) {
+  constructor(web3: Web3 | any, options?: Options) {
     super(web3, options);
     this._resolutions = new Resolutions(this.web3, options);
     this._subdomains = new Subdomains(this.web3, this._resolutions, options);

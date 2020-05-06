@@ -10,6 +10,7 @@ import {
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
+import Rsk3 from '@rsksmart/rsk3';
 import helpers from '@openzeppelin/test-helpers';
 import {
   SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN, INVALID_LABEL,
@@ -21,14 +22,18 @@ import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
 
+const web3Instance = web3 as unknown as Web3;
+const rsk3 = new Rsk3(web3.currentProvider);
 
-describe('subdomains.available', () => {
+describe.each([
+  web3Instance,
+  rsk3,
+])('subdomains.available', (provider) => {
   const TLD = 'rsk';
 
   let registry: any;
   let rns: RNS;
   let options: Options;
-  const web3Instance = web3 as unknown as Web3;
 
   describe('validations', () => {
     beforeEach(async () => {
@@ -44,7 +49,7 @@ describe('subdomains.available', () => {
         },
       };
 
-      rns = new RNS(web3Instance, options);
+      rns = new RNS(provider, options);
     });
 
     it('should return false when sending a subdomain', async () => {
@@ -162,7 +167,7 @@ describe('subdomains.available', () => {
         },
       };
 
-      rns = new RNS(web3Instance, options);
+      rns = new RNS(provider, options);
     });
 
     it('should return an empty array just rsk', async () => {

@@ -27,8 +27,8 @@ export default abstract class implements Composable {
    * @param web3 - Web3 instance
    * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
    */
-  constructor(web3Instance: Web3, options?: Options) {
-    this.web3 = new Web3(web3Instance.currentProvider);
+  constructor(web3Instance: Web3 | any, options?: Options) {
+    this.web3 = web3Instance as Web3;
     if (options && options.contractAddresses) {
       this._contractAddresses = options.contractAddresses;
     }
@@ -44,7 +44,8 @@ export default abstract class implements Composable {
    * @throws NO_ADDRESSES_PROVIDED if the network is not RSK Mainnet or RSK Testnet and the options parameter was not provided in the constructor - KB005.
    */
   private async _detectNetwork() {
-    const networkId = await this.web3.eth.net.getId();
+    const namespace = this.web3.eth || this.web3;
+    const networkId = await namespace.net.getId();
 
     if (!this._contractAddresses) {
       this._contractAddresses = createContractAddresses(networkId);
@@ -70,7 +71,12 @@ export default abstract class implements Composable {
 
     const gas = Math.floor(estimated * 1.1);
 
-    return contractMethod().send({ from: sender, gas });
+    return new Promise((resolve, reject) => {
+      contractMethod()
+        .send({ from: sender, gas })
+        .on('confirmation', (nbr: Number, receipt: TransactionReceipt) => resolve(receipt))
+        .on('error', (error: Error) => reject(error));
+    });
   }
 
   /**

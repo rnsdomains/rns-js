@@ -24,7 +24,7 @@ export const asyncExpectThrowRNSError = async (prom: any, expectedError: string)
 export const asyncExpectThrowVMRevert = async (prom: any) => {
   await asyncTryCatchAssert(
     prom,
-    (error) => expect(error.message).toEqual('Returned error: VM Exception while processing transaction: revert'),
+    (error) => expect(error.message).toContain('VM Exception while processing transaction: revert'),
   );
 };
 

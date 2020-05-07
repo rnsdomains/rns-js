@@ -30,11 +30,11 @@ import RNSError, {
 export default class extends Composer implements Resolutions {
   /**
    *
-   * @param web3 - current Web3 instance
-   * @param registry - RNS Registry Web3 Contract instance
+   * @param blockchainApi - current Web3 or Rsk3 instance
+   * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
    */
-  constructor(public web3: Web3, options?: Options) {
-    super(web3, options);
+  constructor(public blockchainApi: Web3 | any, options?: Options) {
+    super(blockchainApi, options);
   }
 
   /**
@@ -53,7 +53,7 @@ export default class extends Composer implements Resolutions {
     node: string,
     methodInterface: string,
     errorMessage: string,
-    contractFactory: (web3: Web3, address: string) => Contract,
+    contractFactory: (blockchainApi: Web3 | any, address: string) => Contract,
     noResolverError?: string,
   ): Promise<Contract> {
     const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
@@ -62,12 +62,12 @@ export default class extends Composer implements Resolutions {
       throw new RNSError(noResolverError || NO_RESOLVER);
     }
 
-    const isErc165Contract = await hasMethod(this.web3, resolverAddress, ERC165_INTERFACE);
+    const isErc165Contract = await hasMethod(this.blockchainApi, resolverAddress, ERC165_INTERFACE);
     if (!isErc165Contract) {
       throw new RNSError(errorMessage);
     }
 
-    const resolver: Contract = contractFactory(this.web3, resolverAddress);
+    const resolver: Contract = contractFactory(this.blockchainApi, resolverAddress);
 
     const supportsInterface: boolean = await resolver.methods.supportsInterface(
       methodInterface,
@@ -180,7 +180,7 @@ export default class extends Composer implements Resolutions {
    *
    * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
    * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
-   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchainApi instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_ADDRESS if the given addr is invalid - KB017
    * @throws INVALID_CHECKSUM_ADDRESS if the given addr has an invalid checksum - KB019
    *
@@ -190,7 +190,7 @@ export default class extends Composer implements Resolutions {
   async setAddr(domain: string, addr: string): Promise<TransactionReceipt> {
     await this.compose();
 
-    if (!await hasAccounts(this.web3)) {
+    if (!await hasAccounts(this.blockchainApi)) {
       throw new RNSError(NO_ACCOUNTS_TO_SIGN);
     }
 
@@ -215,7 +215,7 @@ export default class extends Composer implements Resolutions {
    *
    * @throws NO_SET_CHAIN_ADDR if it has an invalid resolver - KB024.
    * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
-   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_ADDRESS if the given addr is invalid when the chainId belongs to an EVM compatible blockchain - KB017
    * @throws INVALID_CHECKSUM_ADDRESS if the given addr has an invalid checksum and the chainId belongs to an EVM compatible blockchain - KB019
    *
@@ -227,7 +227,7 @@ export default class extends Composer implements Resolutions {
   async setChainAddr(domain: string, addr: string, chainId: ChainId): Promise<TransactionReceipt> {
     await this.compose();
 
-    if (!await hasAccounts(this.web3)) {
+    if (!await hasAccounts(this.blockchainApi)) {
       throw new RNSError(NO_ACCOUNTS_TO_SIGN);
     }
 
@@ -256,7 +256,7 @@ export default class extends Composer implements Resolutions {
   /**
    * Set resolver of a given domain.
    *
-   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_ADDRESS if the given resolver address is invalid - KB017
    * @throws INVALID_CHECKSUM_ADDRESS if the given resolver address has an invalid checksum - KB019
    * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
@@ -267,7 +267,7 @@ export default class extends Composer implements Resolutions {
   async setResolver(domain: string, resolver: string): Promise<TransactionReceipt> {
     await this.compose();
 
-    if (!await hasAccounts(this.web3)) {
+    if (!await hasAccounts(this.blockchainApi)) {
       throw new RNSError(NO_ACCOUNTS_TO_SIGN);
     }
 
@@ -288,7 +288,7 @@ export default class extends Composer implements Resolutions {
   /**
    * Set reverse resolution with the given name for the current address
    *
-   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
    * @throws NO_REVERSE_REGISTRAR if there is no owner for `addr.reverse` node - KB022
    * @throws NO_SET_NAME_METHOD if reverse registrar does not implement `setName` method - KB023
@@ -301,7 +301,7 @@ export default class extends Composer implements Resolutions {
   async setName(name: string): Promise<TransactionReceipt> {
     await this.compose();
 
-    if (!await hasAccounts(this.web3)) {
+    if (!await hasAccounts(this.blockchainApi)) {
       throw new RNSError(NO_ACCOUNTS_TO_SIGN);
     }
 
@@ -316,12 +316,16 @@ export default class extends Composer implements Resolutions {
       throw new RNSError(NO_REVERSE_REGISTRAR);
     }
 
-    const hasSetNameMethod = await hasMethod(this.web3, reverseRegistrarOwner, SET_NAME_INTERFACE);
+    const hasSetNameMethod = await hasMethod(
+      this.blockchainApi,
+      reverseRegistrarOwner,
+      SET_NAME_INTERFACE,
+    );
     if (!hasSetNameMethod) {
       throw new RNSError(NO_SET_NAME_METHOD);
     }
 
-    const reverseRegistrar = createReverseRegistrar(this.web3, reverseRegistrarOwner);
+    const reverseRegistrar = createReverseRegistrar(this.blockchainApi, reverseRegistrarOwner);
 
     const contractMethod = () => reverseRegistrar.methods.setName(name);
 

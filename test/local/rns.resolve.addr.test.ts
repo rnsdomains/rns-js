@@ -6,6 +6,7 @@ import {
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
+import Rsk3 from '@rsksmart/rsk3';
 import { NO_ADDR_RESOLUTION_SET, NO_RESOLVER, NO_ADDR_RESOLUTION } from '../../src/errors';
 import { ZERO_ADDRESS } from '../../src/constants';
 import { asyncExpectThrowRNSError } from '../utils';
@@ -13,7 +14,13 @@ import RNS from '../../src/index';
 import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
 
-describe('addr resolution', () => {
+const web3Instance = web3 as unknown as Web3;
+const rsk3Instance = new Rsk3(web3.currentProvider);
+
+describe.each([
+  ['web3', web3Instance],
+  ['rsk3', rsk3Instance],
+])('%s - addr resolution', (name, blockchainApiInstance) => {
   const [resolution, anotherAccount] = accounts;
 
   const TLD = 'rsk';
@@ -22,7 +29,6 @@ describe('addr resolution', () => {
   let publicResolver: any;
   let rns: RNS;
   let options: Options;
-  const web3Instance = web3 as unknown as Web3;
 
   beforeEach(async () => {
     const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
@@ -40,7 +46,7 @@ describe('addr resolution', () => {
       },
     };
 
-    rns = new RNS(web3Instance, options);
+    rns = new RNS(blockchainApiInstance, options);
   });
 
   it('should resolve a name', async () => {

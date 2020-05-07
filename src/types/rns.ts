@@ -38,9 +38,9 @@ export interface Contracts {
  */
 export default interface RNS {
   /**
-   * Web3 instance used to interact with the blockchain
+   * Web3 or Rsk3 instance used to interact with the blockchain
    */
-  web3: Web3;
+  blockchainApi: Web3 | any;
 
   /**
    * RNS suite contract instances

@@ -6,6 +6,7 @@ import {
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
+import Rsk3 from '@rsksmart/rsk3';
 import {
   NO_ACCOUNTS_TO_SIGN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD, INVALID_DOMAIN,
 } from '../../src/errors';
@@ -15,14 +16,18 @@ import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
 
-describe('setReverse', () => {
+const web3Instance = web3 as unknown as Web3;
+const rsk3Instance = new Rsk3(web3.currentProvider);
+
+describe.each([
+  ['web3', web3Instance],
+  ['rsk3', rsk3Instance],
+])('%s - setReverse', (name, blockchainApiInstance) => {
   let registry: any;
   let nameResolver: any;
   let reverseRegistrar: any;
   let rns: RNS;
   let options: Options;
-
-  const web3Instance = web3 as unknown as Web3;
 
   beforeEach(async () => {
     const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
@@ -46,7 +51,7 @@ describe('setReverse', () => {
       },
     };
 
-    rns = new RNS(web3Instance, options);
+    rns = new RNS(blockchainApiInstance, options);
   });
 
   it('should set reverse resolution of an address', async () => {
@@ -81,24 +86,16 @@ describe('setReverse', () => {
 
     await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_SET_NAME_METHOD);
   });
+});
 
-  describe('public nodes', () => {
-    describe('should fail when web3 instance does not contain accounts to sign the tx', () => {
-      test('mainnet', async () => {
-        const publicWeb3 = new Web3(PUBLIC_NODE_MAINNET);
-
-        rns = new RNS(publicWeb3);
-
-        await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_ACCOUNTS_TO_SIGN);
-      });
-
-      test('testnet', async () => {
-        const publicWeb3 = new Web3(PUBLIC_NODE_TESTNET);
-
-        rns = new RNS(publicWeb3);
-
-        await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_ACCOUNTS_TO_SIGN);
-      });
-    });
+describe.each([
+  ['web3 mainnet', new Web3(PUBLIC_NODE_MAINNET)],
+  ['web3 testnet', new Web3(PUBLIC_NODE_TESTNET)],
+  ['rsk mainnet', new Rsk3(PUBLIC_NODE_MAINNET)],
+  ['rsk testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
+])('%s - public nodes setReverse', (name, blockchainApiInstance) => {
+  test('should fail when blockchain api instance does not contain accounts to sing the tx', async () => {
+    const rns = new RNS(blockchainApiInstance);
+    await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_ACCOUNTS_TO_SIGN);
   });
 });

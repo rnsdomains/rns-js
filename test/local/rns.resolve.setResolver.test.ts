@@ -4,6 +4,7 @@ import {
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
+import Rsk3 from '@rsksmart/rsk3';
 import {
   INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN,
 } from '../../src/errors';
@@ -14,13 +15,18 @@ import RNS from '../../src/index';
 import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
 
-describe('setResolver', () => {
+const web3Instance = web3 as unknown as Web3;
+const rsk3Instance = new Rsk3(web3.currentProvider);
+
+describe.each([
+  ['web3', web3Instance],
+  ['rsk3', rsk3Instance],
+])('%s - setResolver', (name, blockchainApiInstance) => {
   const TLD = 'rsk';
 
   let registry: any;
   let rns: RNS;
   let options: Options;
-  const web3Instance = web3 as unknown as Web3;
 
   beforeEach(async () => {
     const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
@@ -35,7 +41,7 @@ describe('setResolver', () => {
       },
     };
 
-    rns = new RNS(web3Instance, options);
+    rns = new RNS(blockchainApiInstance, options);
   });
 
   it('should set a resolver address', async () => {
@@ -77,26 +83,19 @@ describe('setResolver', () => {
 
     await asyncExpectThrowVMRevert(() => rns.setResolver('alice.rsk', '0x0000000000000000000000000000000001000006'));
   });
+});
 
-  describe('public nodes', () => {
-    describe('should fail when web3 instance does not contain accounts to sign the tx', () => {
-      test('mainnet', async () => {
-        const publicWeb3 = new Web3(PUBLIC_NODE_MAINNET);
-        rns = new RNS(publicWeb3);
-        await asyncExpectThrowRNSError(
-          () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
-          NO_ACCOUNTS_TO_SIGN,
-        );
-      });
-
-      test('testnet', async () => {
-        const publicWeb3 = new Web3(PUBLIC_NODE_TESTNET);
-        rns = new RNS(publicWeb3);
-        await asyncExpectThrowRNSError(
-          () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
-          NO_ACCOUNTS_TO_SIGN,
-        );
-      });
-    });
+describe.each([
+  ['web3 mainnet', new Web3(PUBLIC_NODE_MAINNET)],
+  ['web3 testnet', new Web3(PUBLIC_NODE_TESTNET)],
+  ['rsk mainnet', new Rsk3(PUBLIC_NODE_MAINNET)],
+  ['rsk testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
+])('%s - public nodes setResolver', (name, blockchainApiInstance) => {
+  test('should fail when blockchain api instance does not contain accounts to sing the tx', async () => {
+    const rns = new RNS(blockchainApiInstance);
+    await asyncExpectThrowRNSError(
+      () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
+      NO_ACCOUNTS_TO_SIGN,
+    );
   });
 });

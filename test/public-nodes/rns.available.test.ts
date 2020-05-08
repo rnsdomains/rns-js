@@ -1,14 +1,19 @@
 import Web3 from 'web3';
+import Rsk3 from '@rsksmart/rsk3';
 import RNS from '../../src/index';
-import { PUBLIC_NODE_MAINNET } from '../utils';
+import { PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 
-describe('subdomains.available', () => {
+describe.each([
+  new Web3(PUBLIC_NODE_MAINNET),
+  new Web3(PUBLIC_NODE_TESTNET),
+  new Rsk3(PUBLIC_NODE_MAINNET),
+  new Rsk3(PUBLIC_NODE_TESTNET),
+])('subdomains.available', (blockchainApiInstance) => {
   let rns: RNS;
 
-  describe('happy paths testnet', () => {
+  describe('happy paths', () => {
     beforeEach(async () => {
-      const web3 = new Web3(PUBLIC_NODE_MAINNET);
-      rns = new RNS(web3);
+      rns = new RNS(blockchainApiInstance);
     });
 
     it('should return an empty array just rsk', async () => {

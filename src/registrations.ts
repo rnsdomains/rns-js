@@ -15,17 +15,17 @@ import { createRskOwner } from './factories';
 export default class extends Composer implements Registrations {
   /**
    *
-   * @param web3 - current Web3 instance
+   * @param blockchainApi - current Web3 or Rsk3 instance
    * @param registry - RNS Registry Web3 Contract instance
    */
-  constructor(public web3: Web3, options?: Options) {
-    super(web3, options);
+  constructor(public blockchainApi: Web3 | any, options?: Options) {
+    super(blockchainApi, options);
   }
 
   private async _createTldOwner(
     tld: string,
     errorMessage: string,
-    contractFactory: (web3: Web3, address: string) => Contract,
+    contractFactory: (blockchainApi: Web3 | any, address: string) => Contract,
   ): Promise<Contract> {
     const nodeOwnerAddress: string = await this._contracts.registry.methods.owner(
       namehash(tld),
@@ -35,12 +35,16 @@ export default class extends Composer implements Registrations {
       throw new RNSError(NO_TLD_OWNER);
     }
 
-    const hasAvailableMethod = await hasMethod(this.web3, nodeOwnerAddress, AVAILABLE_INTERFACE);
+    const hasAvailableMethod = await hasMethod(
+      this.blockchainApi,
+      nodeOwnerAddress,
+      AVAILABLE_INTERFACE,
+    );
     if (!hasAvailableMethod) {
       throw new RNSError(errorMessage);
     }
 
-    const nodeOwner: Contract = contractFactory(this.web3, nodeOwnerAddress);
+    const nodeOwner: Contract = contractFactory(this.blockchainApi, nodeOwnerAddress);
 
     return nodeOwner;
   }

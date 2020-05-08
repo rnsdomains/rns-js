@@ -12,7 +12,7 @@ npm i web3 @rsksmart/rns
 Or just use it directly in your webpage:
 ```
 <script src="https://unpkg.com/web3@1.2.6/dist/web3.min.js"></script>
-<script src="https://unpkg.com/@rsksmart/rns@1.5.11/lib/rns.min.js"></script>
+<script src="https://unpkg.com/@rsksmart/rns@1.7.0/lib/rns.min.js"></script>
 ```
 > Don't forget to specify the desired version of the package!
 

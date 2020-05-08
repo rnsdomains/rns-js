@@ -77,11 +77,9 @@ describe('library setup', () => {
     });
   });
 
-  describe('should fail when compose if invalid network', () => {
-    it('', async () => {
-      const web3 = new Web3('https://invalid.rsk.co');
-      const rns = new RNS(web3);
-      await asyncExpectThrowError(() => rns.compose());
-    });
+  test('should fail when compose if invalid network', async () => {
+    const web3 = new Web3('https://invalid.rsk.co');
+    const rns = new RNS(web3);
+    await asyncExpectThrowError(() => rns.compose());
   });
 });

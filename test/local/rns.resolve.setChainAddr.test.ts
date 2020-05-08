@@ -7,6 +7,7 @@ import {
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
+import Rsk3 from '@rsksmart/rsk3';
 import {
   NO_RESOLVER, NO_SET_CHAIN_ADDR, NO_ACCOUNTS_TO_SIGN, INVALID_CHECKSUM_ADDRESS,
 } from '../../src/errors';
@@ -16,7 +17,13 @@ import RNS from '../../src/index';
 import { ChainId } from '../../src/types';
 import { labelhash } from '../../src/utils';
 
-describe('setAddr', () => {
+const web3Instance = web3 as unknown as Web3;
+const rsk3Instance = new Rsk3(web3.currentProvider);
+
+describe.each([
+  ['web3', web3Instance],
+  ['rsk3', rsk3Instance],
+])('%s - setChainAddr', (name, blockchainApiInstance) => {
   const TLD = 'rsk';
   const rskAddr = '0x0000000000000000000000000000000001000006';
   const ethAddr = '0x0000000000000000000000000000000012345678';
@@ -25,7 +32,6 @@ describe('setAddr', () => {
   let registry: any;
   let multichainResolver: any;
   let rns: RNS;
-  const web3Instance = web3 as unknown as Web3;
 
   beforeEach(async () => {
     const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
@@ -47,7 +53,7 @@ describe('setAddr', () => {
       },
     };
 
-    rns = new RNS(web3Instance, options);
+    rns = new RNS(blockchainApiInstance, options);
   });
 
   it('should set an address for RSK', async () => {
@@ -127,36 +133,19 @@ describe('setAddr', () => {
   it('should throw an error when domain do not exist', async () => {
     await asyncExpectThrowRNSError(() => rns.setAddr('noexists.rsk', rskAddr), NO_RESOLVER);
   });
+});
 
-  describe('public nodes', () => {
-    describe('should fail when web3 instance does not contain accounts to sing the tx', () => {
-      describe('mainnet', () => {
-        beforeEach(() => {
-          const publicWeb3 = new Web3(PUBLIC_NODE_MAINNET);
-          rns = new RNS(publicWeb3);
-        });
-
-        test('setAddr', async () => {
-          await asyncExpectThrowRNSError(
-            () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001', ChainId.ETHEREUM),
-            NO_ACCOUNTS_TO_SIGN,
-          );
-        });
-      });
-
-      describe('testnet', () => {
-        beforeEach(() => {
-          const publicWeb3 = new Web3(PUBLIC_NODE_TESTNET);
-          rns = new RNS(publicWeb3);
-        });
-
-        test('setAddr', async () => {
-          await asyncExpectThrowRNSError(
-            () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001', ChainId.ETHEREUM),
-            NO_ACCOUNTS_TO_SIGN,
-          );
-        });
-      });
-    });
+describe.each([
+  ['web3 mainnet', new Web3(PUBLIC_NODE_MAINNET)],
+  ['web3 testnet', new Web3(PUBLIC_NODE_TESTNET)],
+  ['rsk mainnet', new Rsk3(PUBLIC_NODE_MAINNET)],
+  ['rsk testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
+])('%s - public nodes setChainAddr', (name, blockchainApiInstance) => {
+  test('should fail when blockchain api instance does not contain accounts to sing the tx', async () => {
+    const rns = new RNS(blockchainApiInstance);
+    await asyncExpectThrowRNSError(
+      () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001', ChainId.ETHEREUM),
+      NO_ACCOUNTS_TO_SIGN,
+    );
   });
 });

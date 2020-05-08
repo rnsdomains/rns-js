@@ -4,15 +4,21 @@ import { contract, web3, accounts } from '@openzeppelin/test-environment';
 import Web3 from 'web3';
 import { hash as namehash } from 'eth-ens-namehash';
 import { keccak256 } from 'js-sha3';
+import Rsk3 from '@rsksmart/rsk3';
 import RNS from '../../src/index';
 import { Options, NetworkId } from '../../src/types';
 import { ERC165_INTERFACE } from '../../src/constants';
 
-describe('rns.utils', () => {
+const web3Instance = web3 as unknown as Web3;
+const rsk3Instance = new Rsk3(web3.currentProvider);
+
+describe.each([
+  ['web3', web3Instance],
+  ['rsk3', rsk3Instance],
+])('%s - rns.utils', (name, blockchainApiInstance) => {
   let registry: any;
   let rns: RNS;
   let options: Options;
-  const web3Instance = web3 as unknown as Web3;
 
   beforeEach(async () => {
     const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
@@ -25,7 +31,7 @@ describe('rns.utils', () => {
       },
     };
 
-    rns = new RNS(web3Instance, options);
+    rns = new RNS(blockchainApiInstance, options);
   });
 
   describe('.validDomain', () => {
@@ -196,7 +202,7 @@ describe('rns.utils', () => {
 
   describe('.hasAccounts', () => {
     it('should return true when sending web3 instance pointing to OpenZeppelin test enviroment blockchain', async () => {
-      expect(await rns.utils.hasAccounts(web3Instance)).toEqual(true);
+      expect(await rns.utils.hasAccounts(blockchainApiInstance)).toEqual(true);
     });
 
     it('should return false when sending web3 instance instantiated with testnet', async () => {
@@ -208,11 +214,17 @@ describe('rns.utils', () => {
     it('should return false when sending an account address', async () => {
       const [anAccount] = accounts;
 
-      expect(await rns.utils.hasMethod(web3Instance, anAccount, ERC165_INTERFACE)).toEqual(false);
+      expect(
+        await rns.utils.hasMethod(blockchainApiInstance, anAccount, ERC165_INTERFACE),
+      ).toEqual(false);
     });
 
     it('should return false when sending the registry contract that does not support the ERC165 interface', async () => {
-      const hasMethod = await rns.utils.hasMethod(web3Instance, registry.address, ERC165_INTERFACE);
+      const hasMethod = await rns.utils.hasMethod(
+        blockchainApiInstance,
+        registry.address,
+        ERC165_INTERFACE,
+      );
       expect(hasMethod).toEqual(false);
     });
 
@@ -221,7 +233,7 @@ describe('rns.utils', () => {
       const publicResolver = await PublicResolver.new(registry.address);
 
       const hasMethod = await rns.utils.hasMethod(
-        web3Instance, publicResolver.address, ERC165_INTERFACE,
+        blockchainApiInstance, publicResolver.address, ERC165_INTERFACE,
       );
       expect(hasMethod).toEqual(true);
     });

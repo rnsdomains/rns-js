@@ -21,11 +21,11 @@ import {
 export default class extends Composer implements Subdomains {
   /**
    *
-   * @param web3 - current Web3 instance
+   * @param blockchainApi - current Web3 or Rsk3 instance
    * @param registry - RNS registry used to look for given domains
    */
-  constructor(public web3: Web3, private _resolutions: Resolutions, options?: Options) {
-    super(web3, options);
+  constructor(blockchainApi: Web3 | any, private _resolutions: Resolutions, options?: Options) {
+    super(blockchainApi, options);
   }
 
   private _setSubnodeOwner(
@@ -103,7 +103,7 @@ export default class extends Composer implements Subdomains {
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
    * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
    * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
-   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_ADDRESS if the given owner address is invalid - KB017
    * @throws INVALID_CHECKSUM_ADDRESS if the given owner address has an invalid checksum - KB019
    *
@@ -114,7 +114,7 @@ export default class extends Composer implements Subdomains {
   async setOwner(domain: string, label: string, owner: string): Promise<TransactionReceipt> {
     await this.compose();
 
-    if (!await hasAccounts(this.web3)) {
+    if (!await hasAccounts(this.blockchainApi)) {
       throw new RNSError(NO_ACCOUNTS_TO_SIGN);
     }
 
@@ -141,7 +141,7 @@ export default class extends Composer implements Subdomains {
    * @throws INVALID_LABEL if the given label is empty, is not alphanumeric or if has uppercase characters - KB011
    * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
    * @throws SUBDOMAIN_NOT_AVAILABLE if the given domain is already owned - KB016
-   * @throws NO_ACCOUNTS_TO_SIGN if the given web3 instance does not have associated accounts to sign the transaction - KB015
+   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_ADDRESS if the given owner or address resolution is invalid - KB017
    * @throws INVALID_CHECKSUM_ADDRESS if the given owner address or resolution has an invalid checksum - KB019
    *
@@ -160,7 +160,7 @@ export default class extends Composer implements Subdomains {
   ): Promise<TransactionReceipt> {
     await this.compose();
 
-    if (!await hasAccounts(this.web3)) {
+    if (!await hasAccounts(this.blockchainApi)) {
       throw new RNSError(NO_ACCOUNTS_TO_SIGN);
     }
 
@@ -184,7 +184,7 @@ export default class extends Composer implements Subdomains {
     }
 
     const node: string = namehash(`${domain}`);
-    const sender = await getCurrentAddress(this.web3);
+    const sender = await getCurrentAddress(this.blockchainApi);
 
     if (!addr) {
       return this._setSubnodeOwner(node, label, owner || sender);

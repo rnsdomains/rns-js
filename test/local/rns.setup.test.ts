@@ -1,6 +1,7 @@
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import { contract, web3 } from '@openzeppelin/test-environment';
 import Web3 from 'web3';
+import Rsk3 from '@rsksmart/rsk3';
 import { LIBRARY_NOT_COMPOSED, NO_ADDRESSES_PROVIDED } from '../../src/errors';
 import {
   asyncExpectThrowRNSError, expectThrowRNSError, asyncExpectThrowError,
@@ -9,9 +10,13 @@ import {
 import RNS from '../../src/index';
 import { NetworkId } from '../../src/types';
 
-describe('library setup', () => {
-  const web3Instance = web3 as unknown as Web3;
+const web3Instance = web3 as unknown as Web3;
+const rsk3Instance = new Rsk3(web3.currentProvider);
 
+describe.each([
+  ['web3', web3Instance],
+  ['rsk3', rsk3Instance],
+])('%s - library setup', (name, blockchainApiInstance) => {
   it('should set custom address if provided', async () => {
     const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
     const registry = await Registry.new();
@@ -20,19 +25,19 @@ describe('library setup', () => {
       contractAddresses: { registry: registryAddress },
     };
 
-    const rns = new RNS(web3Instance, options);
+    const rns = new RNS(blockchainApiInstance, options);
 
     await rns.compose();
     expect(rns.contracts.registry.options.address).toBe(registryAddress);
   });
 
   it('should fail when getting contracts if library not composed', () => {
-    const rns = new RNS(web3Instance);
+    const rns = new RNS(blockchainApiInstance);
     expectThrowRNSError(() => rns.contracts, LIBRARY_NOT_COMPOSED);
   });
 
   it('should fail when getting currentNetworkId if library not composed', () => {
-    const rns = new RNS(web3Instance);
+    const rns = new RNS(blockchainApiInstance);
     expectThrowRNSError(() => rns.currentNetworkId, LIBRARY_NOT_COMPOSED);
   });
 
@@ -43,7 +48,7 @@ describe('library setup', () => {
   });
 
   it('should fail when compose if custom network and no addresses provided', async () => {
-    const rns = new RNS(web3Instance);
+    const rns = new RNS(blockchainApiInstance);
     await asyncExpectThrowRNSError(() => rns.compose(), NO_ADDRESSES_PROVIDED);
   });
 

@@ -9,6 +9,8 @@ RNS JavaScript library.
 npm i web3 @rsksmart/rns
 ```
 
+Types are exposed under '@rsksmart/rns/types'
+
 Or just use it directly in your webpage:
 ```
 <script src="https://unpkg.com/web3@1.2.6/dist/web3.min.js"></script>
@@ -23,6 +25,7 @@ Instance de library:
 ```javascript
 import Web3 from 'web3'
 import RNS from '@rsksmart/rns'
+import { ChainId } from '@rsksmart/rns/types'
 
 const web3 = new Web3('https://public-node.rsk.co')
 const rns = new RNS(web3)
@@ -35,7 +38,7 @@ rns.addr('testing.rsk').then(console.log)
 
 Get Bitcoin address:
 ```javascript
-rns.addr('testing.rsk', '0x80000000').then(console.log)
+rns.addr('testing.rsk', ChainId.BITCOIN).then(console.log)
 ```
 
 Check if `testing.rsk` domain is available:

@@ -1,6 +1,6 @@
 {
   "name": "@rsksmart/rns",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "RIF Name Service library.",
   "keywords": [
     "rsk",
@@ -13,7 +13,8 @@
   },
   "license": "ISC",
   "files": [
-    "lib"
+    "lib",
+    "types"
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -30,7 +31,7 @@
     "test:bundle": "npx webpack && npx jest --coverage --runInBand test/bundle/",
     "lint": "npx eslint 'src/**.ts' 'src/**/**.ts' 'test/**'",
     "lint:fix": "npx eslint 'src/**.ts' 'src/**/**.ts' 'test/**' --fix",
-    "prepublishOnly": "npm run test && npm run build"
+    "prepublishOnly": "npm test && npm run build && cp -r lib/types/ types/"
   },
   "dependencies": {
     "@rsksmart/rns-registry": "^1.0.2",

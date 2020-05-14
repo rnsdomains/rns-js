@@ -5,8 +5,6 @@ import {
   Resolutions as IResolutions,
   Subdomains as ISubdomains,
   Registrations as IRegistrations,
-  ContractAddresses,
-  NetworkId,
 } from './types';
 import RNSError, { LIBRARY_NOT_COMPOSED } from './errors';
 import Resolutions from './resolutions';
@@ -196,12 +194,3 @@ export default class extends Composer implements RNS {
     };
   }
 }
-
-export {
-  ChainId,
-  ContractAddresses,
-  Options,
-  NetworkId,
-  Contracts,
-  ISubdomains as Subdomains,
-};

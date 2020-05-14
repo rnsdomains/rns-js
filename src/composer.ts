@@ -70,7 +70,7 @@ export default abstract class implements Composable {
   ): Promise<TransactionReceipt> {
     const sender = await getCurrentAddress(this.blockchainApi);
 
-    const estimated = await contractMethod().estimateGas();
+    const estimated = await contractMethod().estimateGas({ from: sender });
 
     const gas = Math.floor(estimated * 1.1);
 

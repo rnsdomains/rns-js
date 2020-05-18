@@ -16,7 +16,7 @@ export interface Subdomains {
   available(domain: string, label: string): Promise<boolean>;
 
   /**
-   * Creates a new subdomain under the given domain tree
+   * Sets a subdomain owner. If the subdomain exists, sets the new owner, if not, creates the subdomain and sets the owner.
    *
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice
@@ -25,7 +25,8 @@ export interface Subdomains {
   setOwner(domain: string, label: string, owner: string): Promise<TransactionReceipt>;
 
   /**
-   * Creates a new subdomain under the given domain tree and sets addr if provided
+   * Creates a new subdomain under the given domain tree if it is available, and sets its resolution if addr is provided.
+   * It could send one, two or three transactions based on the value of the sent parameters.
    *
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice

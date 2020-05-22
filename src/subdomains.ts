@@ -97,7 +97,7 @@ export default class extends Composer implements Subdomains {
   }
 
   /**
-   * Creates a new subdomain under the given domain tree if not exists.
+   * Sets a subdomain owner. If the subdomain exists, sets the new owner, if not, creates the subdomain and sets the owner.
    *
    * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is not a domain under valid TLDs - KB009
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
@@ -133,8 +133,8 @@ export default class extends Composer implements Subdomains {
   }
 
   /**
-   * Creates a new subdomain under the given domain tree and sets addr if provided
-   *
+   * Creates a new subdomain under the given domain tree if it is available, and sets its resolution if addr is provided.
+   * It could send one, two or three transactions based on the value of the sent parameters.
    *
    * @throws SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS if the given domain is not a domain under valid TLDs - KB009
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010

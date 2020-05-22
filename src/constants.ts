@@ -3,12 +3,12 @@ export const DEVPORTAL_ERRORS_URL = 'https://developers.rsk.co/rif/rns/libs/java
 
 // contracts interfaces
 export const ADDR_INTERFACE = '0x3b3b57de';
-export const ERC165_INTERFACE = '0x01ffc9a7';
+export const SET_ADDR_INTERFACE = '0xd5fa2b00';
 export const CHAIN_ADDR_INTERFACE = '0x8be4b5f6';
+export const SET_CHAIN_ADDR_INTERFACE = '0xd278b400';
 export const NAME_INTERFACE = '0x691f3431';
-export const SET_ADDR_INTERFACE = '0xd8389dc5';
-export const AVAILABLE_INTERFACE = '0x96e494e8';
 export const SET_NAME_INTERFACE = '0xc47f0027';
+export const AVAILABLE_INTERFACE = '0x96e494e8';
 
 export const AVAILABLE_TLDS = ['rsk'];
 

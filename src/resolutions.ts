@@ -5,7 +5,7 @@ import {
   createAddrResolver, createChainAddrResolver, createNameResolver, createReverseRegistrar,
 } from './factories';
 import {
-  ZERO_ADDRESS, ADDR_INTERFACE, ERC165_INTERFACE,
+  ZERO_ADDRESS, ADDR_INTERFACE, SET_CHAIN_ADDR_INTERFACE,
   CHAIN_ADDR_INTERFACE, NAME_INTERFACE, ADDR_REVERSE_NAMEHASH,
   SET_NAME_INTERFACE, SET_ADDR_INTERFACE,
 } from './constants';
@@ -62,16 +62,11 @@ export default class extends Composer implements Resolutions {
       throw new RNSError(noResolverError || NO_RESOLVER);
     }
 
-    const isErc165Contract = await hasMethod(this.blockchainApi, resolverAddress, ERC165_INTERFACE);
-    if (!isErc165Contract) {
-      throw new RNSError(errorMessage);
-    }
-
     const resolver: Contract = contractFactory(this.blockchainApi, resolverAddress);
 
-    const supportsInterface: boolean = await resolver.methods.supportsInterface(
-      methodInterface,
-    ).call();
+    const supportsInterface: boolean = await hasMethod(
+      this.blockchainApi, resolverAddress, methodInterface,
+    );
 
     if (!supportsInterface) {
       throw new RNSError(errorMessage);
@@ -237,7 +232,7 @@ export default class extends Composer implements Resolutions {
 
     const resolver = await this._createResolver(
       node,
-      CHAIN_ADDR_INTERFACE,
+      SET_CHAIN_ADDR_INTERFACE,
       NO_SET_CHAIN_ADDR,
       createChainAddrResolver,
     );

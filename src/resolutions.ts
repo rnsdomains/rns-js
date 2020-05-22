@@ -173,7 +173,7 @@ export default class extends Composer implements Resolutions {
   /**
    * Sets addr for the given domain using the AbstractAddrResolver interface.
    *
-   * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
+   * @throws NO_SET_ADDR it has an invalid resolver - KB018.
    * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
    * @throws NO_ACCOUNTS_TO_SIGN if the given blockchainApi instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_ADDRESS if the given addr is invalid - KB017

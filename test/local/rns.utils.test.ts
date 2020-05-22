@@ -7,7 +7,7 @@ import { keccak256 } from 'js-sha3';
 import Rsk3 from '@rsksmart/rsk3';
 import RNS from '../../src/index';
 import { Options, NetworkId } from '../../src/types';
-import { ERC165_INTERFACE } from '../../src/constants';
+import { ADDR_INTERFACE } from '../../src/constants';
 
 const web3Instance = web3 as unknown as Web3;
 const rsk3Instance = new Rsk3(web3.currentProvider);
@@ -215,25 +215,25 @@ describe.each([
       const [anAccount] = accounts;
 
       expect(
-        await rns.utils.hasMethod(blockchainApiInstance, anAccount, ERC165_INTERFACE),
+        await rns.utils.hasMethod(blockchainApiInstance, anAccount, ADDR_INTERFACE),
       ).toEqual(false);
     });
 
-    it('should return false when sending the registry contract that does not support the ERC165 interface', async () => {
+    it('should return false when sending the registry contract that does not support the addr interface', async () => {
       const hasMethod = await rns.utils.hasMethod(
         blockchainApiInstance,
         registry.address,
-        ERC165_INTERFACE,
+        ADDR_INTERFACE,
       );
       expect(hasMethod).toEqual(false);
     });
 
-    it('should return true when sending the publicResolver contract that supports the ERC165 interface', async () => {
+    it('should return true when sending the publicResolver contract that supports the addr interface', async () => {
       const PublicResolver = contract.fromABI(AddrResolverData.abi, AddrResolverData.bytecode);
       const publicResolver = await PublicResolver.new(registry.address);
 
       const hasMethod = await rns.utils.hasMethod(
-        blockchainApiInstance, publicResolver.address, ERC165_INTERFACE,
+        blockchainApiInstance, publicResolver.address, ADDR_INTERFACE,
       );
       expect(hasMethod).toEqual(true);
     });

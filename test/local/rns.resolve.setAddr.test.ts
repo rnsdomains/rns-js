@@ -1,6 +1,7 @@
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
+import ChainAddrResolverData from '@rsksmart/rns-resolver/ChainAddrResolverData.json';
 import {
   contract, web3, defaultSender,
 } from '@openzeppelin/test-environment';
@@ -48,7 +49,25 @@ describe.each([
     rns = new RNS(blockchainApiInstance, options);
   });
 
-  it('should set an address', async () => {
+  it('should set an address if implements the multichain resolver', async () => {
+    const MultichainResolver = contract.fromABI(
+      ChainAddrResolverData.abi, ChainAddrResolverData.bytecode,
+    );
+
+    const multichainResolver = await MultichainResolver.new(
+      registry.address, publicResolver.address,
+    );
+
+    await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+    await registry.setResolver(namehash('alice.rsk'), multichainResolver.address);
+
+    await rns.setAddr('alice.rsk', addr);
+
+    const actualAddr = await rns.addr('alice.rsk');
+    expect(actualAddr).toBe(addr);
+  });
+
+  it('should set an address with public resolver', async () => {
     await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
 
     await rns.setAddr('alice.rsk', addr);

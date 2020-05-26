@@ -4,24 +4,7 @@ import { TransactionReceipt } from 'web3-eth';
 import { ChainId } from './enums';
 import { Utils } from './utils';
 import { Subdomains } from './subdomains';
-
-/**
- * Contains the necessary contract addresses to run the current lib.
- */
-export interface ContractAddresses {
-  /**
-   * RNS.sol address
-   */
-  registry: string;
-}
-
-/**
- * Configuration object used to run the lib if the current network is not RSK Mainnet or RSK Testnet
- */
-export interface Options {
-  contractAddresses?: ContractAddresses,
-  networkId?: number
-}
+import { TransactionOptions } from './options';
 
 /**
  * web3.eth.Contract wrapper. Contains an instance for each Contract used to run the lib.
@@ -67,24 +50,33 @@ export default interface RNS {
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
    * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   * @param options - Custom configs to be used when submitting the transaction
    *
    */
-  setAddr(domain: string, addr: string, chainId?: ChainId): Promise<TransactionReceipt>;
+  setAddr(
+    domain: string, addr: string, chainId?: ChainId, options?: TransactionOptions,
+  ): Promise<TransactionReceipt>;
 
   /**
    * Set resolver of a given domain.
    *
    * @param domain - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain
+   * @param options - Custom configs to be used when submitting the transaction
+   *
    */
-  setResolver(domain: string, resolver: string): Promise<TransactionReceipt>;
+  setResolver(
+    domain: string, resolver: string, options?: TransactionOptions,
+  ): Promise<TransactionReceipt>;
 
   /**
    * Set reverse resolution with the given name for the current address.
    *
    * @param name - Name to be set as the reverse resolution of the current address
+   * @param options - Custom configs to be used when submitting the transaction
+   *
    */
-  setReverse(name: string): Promise<TransactionReceipt>;
+  setReverse(name: string, options?: TransactionOptions): Promise<TransactionReceipt>;
 
   /**
    * Reverse lookup: get name of a given address.

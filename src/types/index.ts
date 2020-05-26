@@ -1,5 +1,6 @@
 import { ChainId, NetworkId } from './enums';
-import RNS, { ContractAddresses, Options, Contracts } from './rns';
+import RNS, { Contracts } from './rns';
+import { ContractAddresses, Options } from './options';
 import { Resolutions } from './resolutions';
 import { Subdomains } from './subdomains';
 import { Composable } from './composable';

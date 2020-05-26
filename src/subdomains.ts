@@ -14,6 +14,7 @@ import {
   isValidDomain, isValidTld, isValidLabel, namehash, hasAccounts, labelhash,
   getCurrentAddress, isValidAddress, isValidChecksumAddress,
 } from './utils';
+import { TransactionOptions } from './types/options';
 
 /**
  * Set of subdomains related methods
@@ -32,6 +33,7 @@ export default class extends Composer implements Subdomains {
     node: string,
     label: string,
     owner: string,
+    options?: TransactionOptions,
   ): Promise<TransactionReceipt> {
     const contractMethod = () => this._contracts.registry
       .methods
@@ -41,7 +43,7 @@ export default class extends Composer implements Subdomains {
         owner,
       );
 
-    return this.estimateGasAndSendTransaction(contractMethod);
+    return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
   private _validateDomainAndLabel(domain: string, label: string): void {
@@ -110,8 +112,13 @@ export default class extends Composer implements Subdomains {
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice
    * @param owner - The owner of the new subdomain
+   * @param options - Custom configs to be used when submitting the transaction
+   *
+   * @returns Transaction receipt
    */
-  async setOwner(domain: string, label: string, owner: string): Promise<TransactionReceipt> {
+  async setOwner(
+    domain: string, label: string, owner: string, options?: TransactionOptions,
+  ): Promise<TransactionReceipt> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
@@ -129,7 +136,7 @@ export default class extends Composer implements Subdomains {
 
     const node: string = namehash(`${domain}`);
 
-    return this._setSubnodeOwner(node, label, owner);
+    return this._setSubnodeOwner(node, label, owner, options);
   }
 
   /**
@@ -149,6 +156,7 @@ export default class extends Composer implements Subdomains {
    * @param label - Subdomain to register. ie: alice
    * @param owner - The owner of the new subdomain. If not provided, the address who executes the tx will be the owner
    * @param addr - The address to be set as resolution of the new subdomain
+   * @param options - Custom configs to be used when submitting the transaction
    *
    * @returns Transaction receipt
    */
@@ -157,6 +165,7 @@ export default class extends Composer implements Subdomains {
     label: string,
     owner?: string,
     addr?: string,
+    options?: TransactionOptions,
   ): Promise<TransactionReceipt> {
     await this.compose();
 
@@ -187,18 +196,18 @@ export default class extends Composer implements Subdomains {
     const sender = await getCurrentAddress(this.blockchainApi);
 
     if (!addr) {
-      return this._setSubnodeOwner(node, label, owner || sender);
+      return this._setSubnodeOwner(node, label, owner || sender, options);
     } if (!owner || owner === sender) {
       // submits just two transactions
-      await this._setSubnodeOwner(node, label, sender);
+      await this._setSubnodeOwner(node, label, sender, options);
 
-      return this._resolutions.setAddr(`${label}.${domain}`, addr);
+      return this._resolutions.setAddr(`${label}.${domain}`, addr, options);
     }
     // needs to submit three txs
-    await this._setSubnodeOwner(node, label, sender);
+    await this._setSubnodeOwner(node, label, sender, options);
 
-    await this._resolutions.setAddr(`${label}.${domain}`, addr);
+    await this._resolutions.setAddr(`${label}.${domain}`, addr, options);
 
-    return this._setSubnodeOwner(node, label, owner);
+    return this._setSubnodeOwner(node, label, owner, options);
   }
 }

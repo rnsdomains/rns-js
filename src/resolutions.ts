@@ -23,6 +23,7 @@ import RNSError, {
   NO_ACCOUNTS_TO_SIGN, NO_SET_ADDR, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
   DOMAIN_NOT_EXISTS, INVALID_DOMAIN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD, NO_SET_CHAIN_ADDR,
 } from './errors';
+import { TransactionOptions } from './types/options';
 
 /**
  * Standard resolution protocols.
@@ -181,8 +182,12 @@ export default class extends Composer implements Resolutions {
    *
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
+   * @param options - Custom configs to be used when submitting the transaction
+   *
    */
-  async setAddr(domain: string, addr: string): Promise<TransactionReceipt> {
+  async setAddr(
+    domain: string, addr: string, options?: TransactionOptions,
+  ): Promise<TransactionReceipt> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
@@ -202,7 +207,7 @@ export default class extends Composer implements Resolutions {
 
     const contractMethod = () => resolver.methods.setAddr(node, addr);
 
-    return this.estimateGasAndSendTransaction(contractMethod);
+    return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
   /**
@@ -217,9 +222,13 @@ export default class extends Composer implements Resolutions {
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
    * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   * @param options - Custom configs to be used when submitting the transaction
+   *
    *
    */
-  async setChainAddr(domain: string, addr: string, chainId: ChainId): Promise<TransactionReceipt> {
+  async setChainAddr(
+    domain: string, addr: string, chainId: ChainId, options?: TransactionOptions,
+  ): Promise<TransactionReceipt> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
@@ -245,7 +254,7 @@ export default class extends Composer implements Resolutions {
         addr,
       );
 
-    return this.estimateGasAndSendTransaction(contractMethod);
+    return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
   /**
@@ -258,8 +267,12 @@ export default class extends Composer implements Resolutions {
    *
    * @param domain - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain
+   * @param options - Custom configs to be used when submitting the transaction
+   *
    */
-  async setResolver(domain: string, resolver: string): Promise<TransactionReceipt> {
+  async setResolver(
+    domain: string, resolver: string, options?: TransactionOptions,
+  ): Promise<TransactionReceipt> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
@@ -277,7 +290,7 @@ export default class extends Composer implements Resolutions {
 
     const contractMethod = () => this._contracts.registry.methods.setResolver(node, resolver);
 
-    return this.estimateGasAndSendTransaction(contractMethod);
+    return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
   /**
@@ -290,10 +303,11 @@ export default class extends Composer implements Resolutions {
    *
    * @param name - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain
+   * @param options - Custom configs to be used when submitting the transaction
    *
-    * @returns TransactionReceipt of the submitted tx
+   * @returns TransactionReceipt of the submitted tx
    */
-  async setName(name: string): Promise<TransactionReceipt> {
+  async setName(name: string, options?: TransactionOptions): Promise<TransactionReceipt> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
@@ -324,7 +338,7 @@ export default class extends Composer implements Resolutions {
 
     const contractMethod = () => reverseRegistrar.methods.setName(name);
 
-    return this.estimateGasAndSendTransaction(contractMethod);
+    return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
   /**

@@ -86,6 +86,28 @@ describe.each([
 
     await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_SET_NAME_METHOD);
   });
+
+  describe('custom tx options', () => {
+    it('should send custom gasPrice', async () => {
+      const gasPrice = 70000000;
+
+      const txReceipt = await rns.setReverse('alice.rsk', { gasPrice });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gasPrice).toEqual(gasPrice.toString());
+    });
+
+    it('should send custom gasLimit', async () => {
+      const gasLimit = 800000;
+
+      const txReceipt = await rns.setReverse('alice.rsk', { gasLimit });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gas).toEqual(gasLimit);
+    });
+  });
 });
 
 describe.each([

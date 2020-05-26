@@ -83,6 +83,34 @@ describe.each([
 
     await asyncExpectThrowVMRevert(() => rns.setResolver('alice.rsk', '0x0000000000000000000000000000000001000006'));
   });
+
+  describe('custom tx options', () => {
+    const addr = '0x0000000000000000000000000000000001000006';
+
+    it('should send custom gasPrice', async () => {
+      const gasPrice = 70000000;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.setResolver('alice.rsk', addr, { gasPrice });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gasPrice).toEqual(gasPrice.toString());
+    });
+
+    it('should send custom gasLimit', async () => {
+      const gasLimit = 80000;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.setResolver('alice.rsk', addr, { gasLimit });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gas).toEqual(gasLimit);
+    });
+  });
 });
 
 describe.each([

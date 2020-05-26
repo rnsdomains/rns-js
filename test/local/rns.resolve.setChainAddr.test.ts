@@ -133,6 +133,32 @@ describe.each([
   it('should throw an error when domain do not exist', async () => {
     await asyncExpectThrowRNSError(() => rns.setAddr('noexists.rsk', rskAddr), NO_RESOLVER);
   });
+
+  describe('custom tx options', () => {
+    it('should send custom gasPrice', async () => {
+      const gasPrice = 70000000;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.setAddr('alice.rsk', btcAddr, ChainId.BITCOIN, { gasPrice });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gasPrice).toEqual(gasPrice.toString());
+    });
+
+    it('should send custom gasLimit', async () => {
+      const gasLimit = 800000;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.setAddr('alice.rsk', ethAddr, ChainId.ETHEREUM, { gasLimit });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gas).toEqual(gasLimit);
+    });
+  });
 });
 
 describe.each([

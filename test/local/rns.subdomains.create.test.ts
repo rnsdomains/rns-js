@@ -213,6 +213,34 @@ describe.each([
       expectedOwner = '';
     });
   });
+
+  describe('custom tx options', () => {
+    const addr = '0x0000000000000000000000000000000001000006';
+
+    it('should send custom gasPrice', async () => {
+      const gasPrice = 70000000;
+
+      await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { gasPrice });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gasPrice).toEqual(gasPrice.toString());
+    });
+
+    it('should send custom gasLimit', async () => {
+      const gasLimit = 800000;
+
+      await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { gasLimit });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gas).toEqual(gasLimit);
+    });
+  });
 });
 
 describe.each([

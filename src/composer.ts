@@ -67,14 +67,22 @@ export default abstract class implements Composable {
   }
 
   protected async estimateGasAndSendTransaction(
-    contractMethod: () => any,
+    contractMethod: any,
     customOptions?: TransactionOptions,
   ): Promise<TransactionReceipt> {
-    const sender = await getCurrentAddress(this.blockchainApi);
+    let options: any;
 
-    let options: any = {
-      from: sender,
-    };
+    if (customOptions && customOptions.from) {
+      options = {
+        from: customOptions.from,
+      };
+    } else {
+      const sender = await getCurrentAddress(this.blockchainApi);
+
+      options = {
+        from: sender,
+      };
+    }
 
     if (customOptions && customOptions.gasLimit) {
       options = {
@@ -82,7 +90,7 @@ export default abstract class implements Composable {
         gas: customOptions.gasLimit,
       };
     } else {
-      const estimated = await contractMethod().estimateGas({ from: sender });
+      const estimated = await contractMethod.estimateGas(options);
 
       const gas = Math.floor(estimated * 1.1);
 
@@ -99,8 +107,7 @@ export default abstract class implements Composable {
       };
     }
 
-    return new Promise((resolve, reject) => contractMethod()
-      .send(options)
+    return new Promise((resolve, reject) => contractMethod.send(options)
       .on('confirmation', (confirmations: Number, receipt: TransactionReceipt) => resolve(receipt))
       .on('error', reject));
   }

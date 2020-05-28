@@ -35,7 +35,7 @@ export default class extends Composer implements Subdomains {
     owner: string,
     options?: TransactionOptions,
   ): Promise<TransactionReceipt> {
-    const contractMethod = () => this._contracts.registry
+    const contractMethod = this._contracts.registry
       .methods
       .setSubnodeOwner(
         node,
@@ -193,7 +193,13 @@ export default class extends Composer implements Subdomains {
     }
 
     const node: string = namehash(`${domain}`);
-    const sender = await getCurrentAddress(this.blockchainApi);
+    let sender;
+
+    if (options && options.from) {
+      sender = options.from;
+    } else {
+      sender = await getCurrentAddress(this.blockchainApi);
+    }
 
     if (!addr) {
       return this._setSubnodeOwner(node, label, owner || sender, options);

@@ -205,7 +205,7 @@ export default class extends Composer implements Resolutions {
       createAddrResolver,
     );
 
-    const contractMethod = () => resolver.methods.setAddr(node, addr);
+    const contractMethod = resolver.methods.setAddr(node, addr);
 
     return this.estimateGasAndSendTransaction(contractMethod, options);
   }
@@ -246,7 +246,7 @@ export default class extends Composer implements Resolutions {
       createChainAddrResolver,
     );
 
-    const contractMethod = () => resolver
+    const contractMethod = resolver
       .methods
       .setChainAddr(
         node,
@@ -288,7 +288,7 @@ export default class extends Composer implements Resolutions {
 
     const node: string = namehash(domain);
 
-    const contractMethod = () => this._contracts.registry.methods.setResolver(node, resolver);
+    const contractMethod = this._contracts.registry.methods.setResolver(node, resolver);
 
     return this.estimateGasAndSendTransaction(contractMethod, options);
   }
@@ -336,7 +336,7 @@ export default class extends Composer implements Resolutions {
 
     const reverseRegistrar = createReverseRegistrar(this.blockchainApi, reverseRegistrarOwner);
 
-    const contractMethod = () => reverseRegistrar.methods.setName(name);
+    const contractMethod = reverseRegistrar.methods.setName(name);
 
     return this.estimateGasAndSendTransaction(contractMethod, options);
   }

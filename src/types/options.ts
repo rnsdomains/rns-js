@@ -22,4 +22,5 @@ export interface Options {
 export interface TransactionOptions {
   gasPrice?: number,
   gasLimit?: number,
+  from?: string,
 }

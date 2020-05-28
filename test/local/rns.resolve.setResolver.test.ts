@@ -109,6 +109,19 @@ describe.each([
       const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
 
       expect(tx.gas).toEqual(gasLimit);
+      expect(tx.from).toEqual(defaultSender);
+    });
+
+    it('should send custom sender', async () => {
+      const [from] = accounts;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), from);
+
+      const txReceipt = await rns.setResolver('alice.rsk', addr, { from });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.from).toEqual(from);
     });
   });
 });

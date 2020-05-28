@@ -3,7 +3,7 @@ import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import ChainAddrResolverData from '@rsksmart/rns-resolver/ChainAddrResolverData.json';
 import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
 import {
-  contract, web3, defaultSender,
+  contract, web3, defaultSender, accounts,
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
@@ -157,6 +157,19 @@ describe.each([
       const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
 
       expect(tx.gas).toEqual(gasLimit);
+      expect(tx.from).toEqual(defaultSender);
+    });
+
+    it('should send custom sender', async () => {
+      const [from] = accounts;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), from);
+
+      const txReceipt = await rns.setAddr('alice.rsk', ethAddr, ChainId.ETHEREUM, { from });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.from).toEqual(from);
     });
   });
 });

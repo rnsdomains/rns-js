@@ -20,7 +20,7 @@ export interface Options {
  * Configuration object used to set custom options when sending transactions
  */
 export interface TransactionOptions {
-  gasPrice?: number,
+  gasPrice?: string,
   gas?: number,
   from?: string,
 }

@@ -218,7 +218,7 @@ describe.each([
     const addr = '0x0000000000000000000000000000000001000006';
 
     it('should send custom gasPrice', async () => {
-      const gasPrice = 70000000;
+      const gasPrice = '70000000';
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 

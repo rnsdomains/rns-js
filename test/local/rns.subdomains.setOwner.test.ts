@@ -147,6 +147,45 @@ describe.each([
 
     await asyncExpectThrowVMRevert(() => rns.subdomains.setOwner('alice.rsk', 'test', owner));
   });
+
+  describe('custom tx options', () => {
+    it('should send custom gasPrice', async () => {
+      const gasPrice = 70000000;
+
+      await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.subdomains.setOwner('alice.rsk', 'test', owner, { gasPrice });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gasPrice).toEqual(gasPrice.toString());
+    });
+
+    it('should send custom gas', async () => {
+      const gas = 800000;
+
+      await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.subdomains.setOwner('alice.rsk', 'test', owner, { gas });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gas).toEqual(gas);
+      expect(tx.from).toEqual(defaultSender);
+    });
+
+    it('should send custom sender', async () => {
+      const [from] = accounts;
+
+      await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), from);
+
+      const txReceipt = await rns.subdomains.setOwner('alice.rsk', 'test', owner, { from });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.from).toEqual(from);
+    });
+  });
 });
 
 describe.each([

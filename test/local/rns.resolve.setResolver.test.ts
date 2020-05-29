@@ -83,6 +83,47 @@ describe.each([
 
     await asyncExpectThrowVMRevert(() => rns.setResolver('alice.rsk', '0x0000000000000000000000000000000001000006'));
   });
+
+  describe('custom tx options', () => {
+    const addr = '0x0000000000000000000000000000000001000006';
+
+    it('should send custom gasPrice', async () => {
+      const gasPrice = 70000000;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.setResolver('alice.rsk', addr, { gasPrice });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gasPrice).toEqual(gasPrice.toString());
+    });
+
+    it('should send custom gas', async () => {
+      const gas = 80000;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.setResolver('alice.rsk', addr, { gas });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gas).toEqual(gas);
+      expect(tx.from).toEqual(defaultSender);
+    });
+
+    it('should send custom sender', async () => {
+      const [from] = accounts;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), from);
+
+      const txReceipt = await rns.setResolver('alice.rsk', addr, { from });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.from).toEqual(from);
+    });
+  });
 });
 
 describe.each([

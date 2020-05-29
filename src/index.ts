@@ -12,6 +12,7 @@ import Registrations from './registrations';
 import Subdomains from './subdomains';
 import Composer from './composer';
 import * as utils from './utils';
+import { TransactionOptions } from './types/options';
 
 
 /**
@@ -88,15 +89,18 @@ export default class extends Composer implements RNS {
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
    * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   * @param options - Custom configs to be used when submitting the transaction
    *
    * @returns TransactionReceipt of the submitted tx
    */
-  setAddr(domain: string, addr: string, chainId?: ChainId): Promise<TransactionReceipt> {
+  setAddr(
+    domain: string, addr: string, chainId?: ChainId, options?: TransactionOptions,
+  ): Promise<TransactionReceipt> {
     if (!chainId) {
-      return this._resolutions.setAddr(domain, addr);
+      return this._resolutions.setAddr(domain, addr, options);
     }
 
-    return this._resolutions.setChainAddr(domain, addr, chainId);
+    return this._resolutions.setChainAddr(domain, addr, chainId, options);
   }
 
   /**
@@ -109,11 +113,14 @@ export default class extends Composer implements RNS {
    *
    * @param domain - Domain to set resolver
    * @param resolver - Address to be set as the resolver of the given domain
+   * @param options - Custom configs to be used when submitting the transaction
    *
    * @returns TransactionReceipt of the submitted tx
    */
-  setResolver(domain: string, resolver: string): Promise<TransactionReceipt> {
-    return this._resolutions.setResolver(domain, resolver);
+  setResolver(
+    domain: string, resolver: string, options?: TransactionOptions,
+  ): Promise<TransactionReceipt> {
+    return this._resolutions.setResolver(domain, resolver, options);
   }
 
   /**
@@ -134,6 +141,7 @@ export default class extends Composer implements RNS {
    * Set reverse resolution with the given name for the current address.
    *
    * @param name - Name to be set as the reverse resolution of the current address
+   * @param options - Custom configs to be used when submitting the transaction
    *
    * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
    * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
@@ -142,8 +150,8 @@ export default class extends Composer implements RNS {
    *
    * @returns TransactionReceipt of the submitted tx
    */
-  setReverse(name: string): Promise<TransactionReceipt> {
-    return this._resolutions.setName(name);
+  setReverse(name: string, options?: TransactionOptions): Promise<TransactionReceipt> {
+    return this._resolutions.setName(name, options);
   }
 
   /**

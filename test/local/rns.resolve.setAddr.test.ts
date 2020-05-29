@@ -3,7 +3,7 @@ import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
 import ChainAddrResolverData from '@rsksmart/rns-resolver/ChainAddrResolverData.json';
 import {
-  contract, web3, defaultSender,
+  contract, web3, defaultSender, accounts,
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
@@ -139,6 +139,45 @@ describe.each([
 
   it('should throw an error when domain do not exist', async () => {
     await asyncExpectThrowRNSError(() => rns.setAddr('noexists.rsk', addr), NO_RESOLVER);
+  });
+
+  describe('custom tx options', () => {
+    it('should send custom gasPrice', async () => {
+      const gasPrice = 70000000;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.setAddr('alice.rsk', addr, undefined, { gasPrice });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gasPrice).toEqual(gasPrice.toString());
+    });
+
+    it('should send custom gas', async () => {
+      const gas = 80000;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+
+      const txReceipt = await rns.setAddr('alice.rsk', addr, undefined, { gas });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.gas).toEqual(gas);
+      expect(tx.from).toEqual(defaultSender);
+    });
+
+    it('should send custom sender', async () => {
+      const [from] = accounts;
+
+      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), from);
+
+      const txReceipt = await rns.setAddr('alice.rsk', addr, undefined, { from });
+
+      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+
+      expect(tx.from).toEqual(from);
+    });
   });
 });
 

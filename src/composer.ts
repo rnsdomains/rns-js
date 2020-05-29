@@ -84,10 +84,10 @@ export default abstract class implements Composable {
       };
     }
 
-    if (customOptions && customOptions.gasLimit) {
+    if (customOptions && customOptions.gas) {
       options = {
         ...options,
-        gas: customOptions.gasLimit,
+        gas: customOptions.gas,
       };
     } else {
       const estimated = await contractMethod.estimateGas(options);

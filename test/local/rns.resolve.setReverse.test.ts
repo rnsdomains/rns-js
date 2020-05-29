@@ -98,14 +98,14 @@ describe.each([
       expect(tx.gasPrice).toEqual(gasPrice.toString());
     });
 
-    it('should send custom gasLimit', async () => {
-      const gasLimit = 800000;
+    it('should send custom gas', async () => {
+      const gas = 800000;
 
-      const txReceipt = await rns.setReverse('alice.rsk', { gasLimit });
+      const txReceipt = await rns.setReverse('alice.rsk', { gas });
 
       const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
 
-      expect(tx.gas).toEqual(gasLimit);
+      expect(tx.gas).toEqual(gas);
       expect(tx.from).toEqual(defaultSender);
     });
 

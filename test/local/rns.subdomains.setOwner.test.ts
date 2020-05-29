@@ -161,16 +161,16 @@ describe.each([
       expect(tx.gasPrice).toEqual(gasPrice.toString());
     });
 
-    it('should send custom gasLimit', async () => {
-      const gasLimit = 800000;
+    it('should send custom gas', async () => {
+      const gas = 800000;
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-      const txReceipt = await rns.subdomains.setOwner('alice.rsk', 'test', owner, { gasLimit });
+      const txReceipt = await rns.subdomains.setOwner('alice.rsk', 'test', owner, { gas });
 
       const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
 
-      expect(tx.gas).toEqual(gasLimit);
+      expect(tx.gas).toEqual(gas);
       expect(tx.from).toEqual(defaultSender);
     });
 

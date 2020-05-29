@@ -1,4 +1,5 @@
 import { TransactionReceipt } from 'web3-eth';
+import { TransactionOptions } from './options';
 
 /**
  * Set of subdomains related methods
@@ -21,8 +22,12 @@ export interface Subdomains {
    * @param domain - Parent .rsk domain. ie: wallet.rsk
    * @param label - Subdomain to register. ie: alice
    * @param owner - The owner of the new subdomain
+   * @param options - Custom configs to be used when submitting the transaction
+   *
    */
-  setOwner(domain: string, label: string, owner: string): Promise<TransactionReceipt>;
+  setOwner(
+    domain: string, label: string, owner: string, options?: TransactionOptions,
+  ): Promise<TransactionReceipt>;
 
   /**
    * Creates a new subdomain under the given domain tree if it is available, and sets its resolution if addr is provided.
@@ -32,6 +37,10 @@ export interface Subdomains {
    * @param label - Subdomain to register. ie: alice
    * @param owner - The owner of the new subdomain. If not provided, the address who executes the tx will be the owner
    * @param addr - The address to be set as resolution of the new subdomain
+   * @param options - Custom configs to be used when submitting the transaction
+   *
    */
-  create(domain: string, label: string, owner?: string, addr?: string): Promise<TransactionReceipt>;
+  create(
+    domain: string, label: string, owner?: string, addr?: string, options?: TransactionOptions,
+  ): Promise<TransactionReceipt>;
 }

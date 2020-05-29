@@ -6,6 +6,7 @@ import {
 import { createRegistry, createContractAddresses } from './factories';
 import RNSError, { LIBRARY_NOT_COMPOSED } from './errors';
 import { getCurrentAddress } from './utils';
+import { TransactionOptions } from './types/options';
 
 export default abstract class implements Composable {
   private _contractAddresses!: ContractAddresses;
@@ -66,16 +67,47 @@ export default abstract class implements Composable {
   }
 
   protected async estimateGasAndSendTransaction(
-    contractMethod: () => any,
+    contractMethod: any,
+    customOptions?: TransactionOptions,
   ): Promise<TransactionReceipt> {
-    const sender = await getCurrentAddress(this.blockchainApi);
+    let options: any;
 
-    const estimated = await contractMethod().estimateGas({ from: sender });
+    if (customOptions && customOptions.from) {
+      options = {
+        from: customOptions.from,
+      };
+    } else {
+      const sender = await getCurrentAddress(this.blockchainApi);
 
-    const gas = Math.floor(estimated * 1.1);
+      options = {
+        from: sender,
+      };
+    }
 
-    return new Promise((resolve, reject) => contractMethod()
-      .send({ from: sender, gas })
+    if (customOptions && customOptions.gas) {
+      options = {
+        ...options,
+        gas: customOptions.gas,
+      };
+    } else {
+      const estimated = await contractMethod.estimateGas(options);
+
+      const gas = Math.floor(estimated * 1.1);
+
+      options = {
+        ...options,
+        gas,
+      };
+    }
+
+    if (customOptions && customOptions.gasPrice) {
+      options = {
+        ...options,
+        gasPrice: customOptions.gasPrice,
+      };
+    }
+
+    return new Promise((resolve, reject) => contractMethod.send(options)
       .on('confirmation', (confirmations: Number, receipt: TransactionReceipt) => resolve(receipt))
       .on('error', reject));
   }

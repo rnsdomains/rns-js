@@ -75,12 +75,12 @@ describe.each([
       await asyncExpectThrowRNSError(() => rns.addr('anothererc165.rsk'), NO_ADDR_RESOLUTION);
     });
 
-    it('account address as a resolver', async () => {
-      await registry.setSubnodeOwner(namehash(TLD), labelhash('accountasresolver'), defaultSender);
-      await registry.setResolver(namehash('accountasresolver.rsk'), anotherAccount);
+    // it('account address as a resolver', async () => {
+    //   await registry.setSubnodeOwner(namehash(TLD), labelhash('accountasresolver'), defaultSender);
+    //   await registry.setResolver(namehash('accountasresolver.rsk'), anotherAccount);
 
-      await asyncExpectThrowRNSError(() => rns.addr('accountasresolver.rsk'), NO_ADDR_RESOLUTION);
-    });
+    //   await asyncExpectThrowRNSError(() => rns.addr('accountasresolver.rsk'), NO_ADDR_RESOLUTION);
+    // });
   });
 
   it('should throw an error when no resolution set', async () => {

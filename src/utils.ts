@@ -17,7 +17,6 @@ import { NetworkId } from './types';
  */
 export const hasMethod = async (web3: Web3, contractAddress: string, signatureHash: string) => {
   const code = await web3.eth.getCode(contractAddress);
-  console.log(code);
   return code.indexOf(signatureHash.slice(2, signatureHash.length)) > 0;
 };
 

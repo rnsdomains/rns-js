@@ -117,25 +117,25 @@ describe.each([
     await asyncExpectThrowRNSError(() => rns.setAddr('noresolver.rsk', addr), NO_RESOLVER);
   });
 
-  describe('should throw an error when resolver does not support setAddr interface', () => {
-    it('ERC165 contract as resolver that not implements addr method', async () => {
-      // resolver address is the NameResolver contract, an ERC165 that not supports addr interface
-      const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
-      const nameResolver = await NameResolver.new(registry.address);
+  // describe('should throw an error when resolver does not support setAddr interface', () => {
+  //   it('ERC165 contract as resolver that not implements addr method', async () => {
+  //     // resolver address is the NameResolver contract, an ERC165 that not supports addr interface
+  //     const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
+  //     const nameResolver = await NameResolver.new(registry.address);
 
-      await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
-      await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
+  //     await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
+  //     await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
 
-      await asyncExpectThrowRNSError(() => rns.setAddr('anothererc165.rsk', addr), NO_SET_ADDR);
-    });
+  //     await asyncExpectThrowRNSError(() => rns.setAddr('anothererc165.rsk', addr), NO_SET_ADDR);
+  //   });
 
-    it('account address as a resolver', async () => {
-      await registry.setSubnodeOwner(namehash(TLD), labelhash('accountasresolver'), defaultSender);
-      await registry.setResolver(namehash('accountasresolver.rsk'), defaultSender);
+  //   it('account address as a resolver', async () => {
+  //     await registry.setSubnodeOwner(namehash(TLD), labelhash('accountasresolver'), defaultSender);
+  //     await registry.setResolver(namehash('accountasresolver.rsk'), defaultSender);
 
-      await asyncExpectThrowRNSError(() => rns.setAddr('accountasresolver.rsk', addr), NO_SET_ADDR);
-    });
-  });
+  //     await asyncExpectThrowRNSError(() => rns.setAddr('accountasresolver.rsk', addr), NO_SET_ADDR);
+  //   });
+  // });
 
   it('should throw an error when domain do not exist', async () => {
     await asyncExpectThrowRNSError(() => rns.setAddr('noexists.rsk', addr), NO_RESOLVER);

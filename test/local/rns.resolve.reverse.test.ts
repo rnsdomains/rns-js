@@ -61,12 +61,12 @@ describe.each([
     expect(actual).toBe(expected);
   });
 
-  it('should throw an error when invalid ERC165 contract (account address) as reverse resolver', async () => {
-    const [alice, accountAsResolver] = accounts;
+  // it('should throw an error when invalid ERC165 contract (account address) as reverse resolver', async () => {
+  //   const [alice, accountAsResolver] = accounts;
 
-    await reverseRegistrar.claimWithResolver(alice, accountAsResolver, { from: alice });
-    await asyncExpectThrowRNSError(() => rns.reverse(alice), NO_NAME_RESOLUTION);
-  });
+  //   await reverseRegistrar.claimWithResolver(alice, accountAsResolver, { from: alice });
+  //   await asyncExpectThrowRNSError(() => rns.reverse(alice), NO_NAME_RESOLUTION);
+  // });
 
   it('should throw an error when ERC165 that not support name interface (public resolver) as reverse resolver', async () => {
     const [alice] = accounts;

@@ -8,7 +8,7 @@ import {
 import {
   ZERO_ADDRESS, ADDR_INTERFACE, SET_CHAIN_ADDR_INTERFACE,
   CHAIN_ADDR_INTERFACE, NAME_INTERFACE, ADDR_REVERSE_NAMEHASH,
-  SET_NAME_INTERFACE, SET_ADDR_INTERFACE, ADDR_RESOLVER_V1,
+  SET_NAME_INTERFACE, NEW_ADDR_INTERFACE,
 } from './constants';
 import {
   ChainId, Resolutions, Options, NetworkId,
@@ -54,8 +54,6 @@ export default class extends Composer implements Resolutions {
    */
   private async _createResolver(
     node: string,
-    methodInterface: string,
-    errorMessage: string,
     contractFactory: (blockchainApi: Web3 | any, address: string) => Contract,
     noResolverError?: string,
   ): Promise<Contract> {
@@ -66,14 +64,6 @@ export default class extends Composer implements Resolutions {
     }
 
     const resolver: Contract = contractFactory(this.blockchainApi, resolverAddress);
-
-    // const supportsInterface: boolean = await hasMethod(
-    //   this.blockchainApi, resolverAddress, methodInterface,
-    // );
-
-    // if (!supportsInterface) {
-    //   throw new RNSError(errorMessage);
-    // }
 
     return resolver;
   }
@@ -116,12 +106,15 @@ export default class extends Composer implements Resolutions {
     await this.compose();
     const node: string = namehash(domain);
 
-    const resolver = await this._createResolver(
-      node,
+    const resolver = await this._createResolver(node, createAddrResolver);
+
+    const supportsInterface: boolean = await resolver.methods.supportsInterface(
       ADDR_INTERFACE,
-      NO_ADDR_RESOLUTION,
-      createAddrResolver,
-    );
+    ).call();
+
+    if (!supportsInterface) {
+      throw new RNSError(NO_ADDR_RESOLUTION);
+    }
 
     const addr: string = await resolver.methods.addr(node).call();
 
@@ -149,36 +142,30 @@ export default class extends Composer implements Resolutions {
     await this.compose();
     const node: string = namehash(domain);
 
-    const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
+    const newResolver = await this._createResolver(node, createNewAddrResolver);
 
-    if (resolverAddress === ZERO_ADDRESS) {
-      throw new RNSError(NO_RESOLVER);
-    }
+    const supportsNewAddrInterface: boolean = await newResolver.methods.supportsInterface(
+      NEW_ADDR_INTERFACE,
+    ).call();
 
-    const supportsResolverV1Interface: boolean = await hasMethod(
-      this.blockchainApi, resolverAddress, ADDR_RESOLVER_V1,
-    );
-
-    let method;
-    if (supportsResolverV1Interface) {
-      const resolver: Contract = createNewAddrResolver(this.blockchainApi, resolverAddress);
+    let addr;
+    if (supportsNewAddrInterface) {
       // TODO: Decode address
-      method = resolver.methods.addr(node, chainId);
+      addr = await newResolver.methods.addr(node, chainId).call();
     } else {
-      const supportsChainAddrInterface: boolean = await hasMethod(
-        this.blockchainApi, resolverAddress, CHAIN_ADDR_INTERFACE,
-      );
+      const chainResolver = await this._createResolver(node, createChainAddrResolver);
+
+      const supportsChainAddrInterface: boolean = await chainResolver.methods.supportsInterface(
+        CHAIN_ADDR_INTERFACE,
+      ).call();
 
       if (!supportsChainAddrInterface) {
         throw new RNSError(NO_CHAIN_ADDR_RESOLUTION);
       }
 
-      const resolver: Contract = createChainAddrResolver(this.blockchainApi, resolverAddress);
-
-      method = resolver.methods.chainAddr(node, chainId);
+      addr = await chainResolver.methods.chainAddr(node, chainId).call();
     }
 
-    const addr: string = await method.call();
     if (!addr || addr === ZERO_ADDRESS) {
       this._throw(NO_CHAIN_ADDR_RESOLUTION_SET);
     }
@@ -222,12 +209,7 @@ export default class extends Composer implements Resolutions {
 
     const node: string = namehash(domain);
 
-    const resolver = await this._createResolver(
-      node,
-      SET_ADDR_INTERFACE,
-      NO_SET_ADDR,
-      createAddrResolver,
-    );
+    const resolver = await this._createResolver(node, createAddrResolver);
 
     const contractMethod = resolver.methods.setAddr(node, addr);
 
@@ -270,7 +252,7 @@ export default class extends Composer implements Resolutions {
     }
 
     const supportsResolverV1Interface: boolean = await hasMethod(
-      this.blockchainApi, resolverAddress, ADDR_RESOLVER_V1,
+      this.blockchainApi, resolverAddress, NEW_ADDR_INTERFACE,
     );
 
     let contractMethod;
@@ -399,11 +381,17 @@ export default class extends Composer implements Resolutions {
 
     const resolver = await this._createResolver(
       node,
-      NAME_INTERFACE,
-      NO_NAME_RESOLUTION,
       createNameResolver,
       NO_REVERSE_RESOLUTION_SET,
     );
+
+    const supportsInterface: boolean = await resolver.methods.supportsInterface(
+      NAME_INTERFACE,
+    ).call();
+
+    if (!supportsInterface) {
+      throw new RNSError(NO_NAME_RESOLUTION);
+    }
 
     const name: string = await resolver.methods.name(node).call();
     if (!name) {

@@ -11,11 +11,14 @@ export default class extends Error {
     let error = (errors as ErrorDictionary)[errorId];
     if (!error) {
       error = {
-        id: 'KB000', message: 'Unknown error',
+        id: 'KB000',
+        message: {
+          en: 'Unknown error',
+        },
       };
     }
 
-    super(error.message);
+    super(error.message.en);
     this.id = error.id;
     this.ref = `${DEVPORTAL_ERRORS_URL}#${error.id.toLowerCase()}`;
   }

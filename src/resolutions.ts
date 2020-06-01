@@ -2,12 +2,13 @@ import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 import { TransactionReceipt } from 'web3-eth';
 import {
-  createAddrResolver, createChainAddrResolver, createNameResolver, createReverseRegistrar,
+  createAddrResolver, createChainAddrResolver, createNameResolver,
+  createReverseRegistrar, createNewAddrResolver,
 } from './factories';
 import {
   ZERO_ADDRESS, ADDR_INTERFACE, SET_CHAIN_ADDR_INTERFACE,
   CHAIN_ADDR_INTERFACE, NAME_INTERFACE, ADDR_REVERSE_NAMEHASH,
-  SET_NAME_INTERFACE, SET_ADDR_INTERFACE,
+  SET_NAME_INTERFACE, SET_ADDR_INTERFACE, ADDR_RESOLVER_V1,
 } from './constants';
 import {
   ChainId, Resolutions, Options, NetworkId,
@@ -24,6 +25,7 @@ import {
   DOMAIN_NOT_EXISTS, INVALID_DOMAIN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD, NO_SET_CHAIN_ADDR,
 } from './errors';
 import { TransactionOptions } from './types/options';
+import { CoinType } from './types/enums';
 
 /**
  * Standard resolution protocols.
@@ -65,13 +67,13 @@ export default class extends Composer implements Resolutions {
 
     const resolver: Contract = contractFactory(this.blockchainApi, resolverAddress);
 
-    const supportsInterface: boolean = await hasMethod(
-      this.blockchainApi, resolverAddress, methodInterface,
-    );
+    // const supportsInterface: boolean = await hasMethod(
+    //   this.blockchainApi, resolverAddress, methodInterface,
+    // );
 
-    if (!supportsInterface) {
-      this._throw(errorMessage);
-    }
+    // if (!supportsInterface) {
+    //   throw new RNSError(errorMessage);
+    // }
 
     return resolver;
   }
@@ -143,18 +145,40 @@ export default class extends Composer implements Resolutions {
    * @return
    * Address resolution for a domain in a given chain
    */
-  async chainAddr(domain: string, chainId: ChainId): Promise<string> {
+  async chainAddr(domain: string, chainId: ChainId | CoinType): Promise<string> {
     await this.compose();
     const node: string = namehash(domain);
 
-    const resolver = await this._createResolver(
-      node,
-      CHAIN_ADDR_INTERFACE,
-      NO_CHAIN_ADDR_RESOLUTION,
-      createChainAddrResolver,
+    const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
+
+    if (resolverAddress === ZERO_ADDRESS) {
+      throw new RNSError(NO_RESOLVER);
+    }
+
+    const supportsResolverV1Interface: boolean = await hasMethod(
+      this.blockchainApi, resolverAddress, ADDR_RESOLVER_V1,
     );
 
-    const addr: string = await resolver.methods.chainAddr(node, chainId).call();
+    let method;
+    if (supportsResolverV1Interface) {
+      const resolver: Contract = createNewAddrResolver(this.blockchainApi, resolverAddress);
+      // TODO: Decode address
+      method = resolver.methods.addr(node, chainId);
+    } else {
+      const supportsChainAddrInterface: boolean = await hasMethod(
+        this.blockchainApi, resolverAddress, CHAIN_ADDR_INTERFACE,
+      );
+
+      if (!supportsChainAddrInterface) {
+        throw new RNSError(NO_CHAIN_ADDR_RESOLUTION);
+      }
+
+      const resolver: Contract = createChainAddrResolver(this.blockchainApi, resolverAddress);
+
+      method = resolver.methods.chainAddr(node, chainId);
+    }
+
+    const addr: string = await method.call();
     if (!addr || addr === ZERO_ADDRESS) {
       this._throw(NO_CHAIN_ADDR_RESOLUTION_SET);
     }
@@ -239,20 +263,35 @@ export default class extends Composer implements Resolutions {
 
     const node: string = namehash(domain);
 
-    const resolver = await this._createResolver(
-      node,
-      SET_CHAIN_ADDR_INTERFACE,
-      NO_SET_CHAIN_ADDR,
-      createChainAddrResolver,
+    const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
+
+    if (resolverAddress === ZERO_ADDRESS) {
+      throw new RNSError(NO_RESOLVER);
+    }
+
+    const supportsResolverV1Interface: boolean = await hasMethod(
+      this.blockchainApi, resolverAddress, ADDR_RESOLVER_V1,
     );
 
-    const contractMethod = resolver
-      .methods
-      .setChainAddr(
-        node,
-        chainId,
-        addr,
+    let contractMethod;
+    if (supportsResolverV1Interface) {
+      // TODO: Encode address
+      const resolver: Contract = createNewAddrResolver(this.blockchainApi, resolverAddress);
+
+      contractMethod = resolver.methods.setAddr(node, chainId, addr);
+    } else {
+      const supportsChainAddrInterface: boolean = await hasMethod(
+        this.blockchainApi, resolverAddress, SET_CHAIN_ADDR_INTERFACE,
       );
+
+      if (!supportsChainAddrInterface) {
+        throw new RNSError(NO_SET_CHAIN_ADDR);
+      }
+
+      const resolver: Contract = createChainAddrResolver(this.blockchainApi, resolverAddress);
+
+      contractMethod = resolver.methods.setChainAddr(node, chainId, addr);
+    }
 
     return this.estimateGasAndSendTransaction(contractMethod, options);
   }

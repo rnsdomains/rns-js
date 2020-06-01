@@ -1,5 +1,5 @@
 import { TransactionReceipt } from 'web3-eth';
-import { ChainId } from './enums';
+import { ChainId, CoinType } from './enums';
 import { TransactionOptions } from './options';
 
 /**
@@ -20,9 +20,9 @@ export interface Resolutions {
    * Resolves the given domain using the AbstractMultiChainResolver interface
    *
    * @param domain - Domain to be resolved
-   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   * @param chainId - chain hexa or index listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    */
-  chainAddr(domain: string, chainId: ChainId): Promise<string>;
+  chainAddr(domain: string, chainId: ChainId | CoinType): Promise<string>;
 
   /**
    * Sets addr for the given domain using the AbstractAddrResolver interface.

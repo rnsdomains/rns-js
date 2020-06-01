@@ -13,6 +13,7 @@ import Subdomains from './subdomains';
 import Composer from './composer';
 import * as utils from './utils';
 import { TransactionOptions } from './types/options';
+import { CoinType } from './types/enums';
 
 /**
  * RNS JavaScript library.
@@ -68,7 +69,7 @@ export default class extends Composer implements RNS {
    *
    * @returns checksummed address resolution of the given domain and chainId (if provided)
    */
-  async addr(domain: string, chainId?: ChainId): Promise<string> {
+  async addr(domain: string, chainId?: ChainId | CoinType): Promise<string> {
     if (!chainId) {
       return this._resolutions.addr(domain);
     }

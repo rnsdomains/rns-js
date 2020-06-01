@@ -36,6 +36,10 @@ export const createChainAddrResolver = (
   web3: Web3, address: string,
 ) => new web3.eth.Contract(ChainAddrResolverData.abi as AbiItem[], address);
 
+export const createNewAddrResolver = (
+  web3: Web3, address: string,
+) => new web3.eth.Contract(ChainAddrResolverData.abi as AbiItem[], address); // TODO
+
 export const createNameResolver = (
   web3: Web3, address: string,
 ) => new web3.eth.Contract(NameResolverData.abi as AbiItem[], address);

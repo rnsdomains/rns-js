@@ -57,10 +57,10 @@ describe.each([
       await registry.setResolver(namehash('noresolver.rsk'), ZERO_ADDRESS);
     });
 
-    it('should throw an error in the current language', async () => {
+    it('should throw an error in the current language', () => {
       const rns = new RNS(blockchainApiInstance, options);
 
-      await asyncExpectThrowRNSError(() => rns.addr('noresolver.rsk'), NO_RESOLVER, lang);
+      asyncExpectThrowRNSError(() => rns.addr('noresolver.rsk'), NO_RESOLVER, lang);
     });
   });
 });

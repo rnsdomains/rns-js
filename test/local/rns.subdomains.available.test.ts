@@ -55,40 +55,40 @@ describe.each([
       expect(available).toBe(true);
     });
 
-    it('should fail when sending an empty domain', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('', 'willfail'), INVALID_DOMAIN);
+    it('should fail when sending an empty domain', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.available('', 'willfail'), INVALID_DOMAIN);
     });
 
-    it('should fail when sending an just a dot with no labels', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('.', 'willfail'), INVALID_DOMAIN);
+    it('should fail when sending an just a dot with no labels', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.available('.', 'willfail'), INVALID_DOMAIN);
     });
 
-    it('should fail when not sending an .rsk domain', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+    it('should fail when not sending an .rsk domain', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.available('domain.notrsk', 'willfail'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     });
 
-    it('should fail when sending upper case domain', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
+    it('should fail when sending upper case domain', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.available('DOMAIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
 
-    it('should fail when sending invalid characters', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
+    it('should fail when sending invalid characters', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.available('DOM-AIN.rsk', 'willfail'), INVALID_DOMAIN);
     });
 
-    it('should fail when given domain does not exist', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('noexists.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
+    it('should fail when given domain does not exist', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.available('noexists.rsk', 'willfail'), DOMAIN_NOT_EXISTS);
     });
 
-    it('should fail when sending empty label', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', ''), INVALID_LABEL);
+    it('should fail when sending empty label', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', ''), INVALID_LABEL);
     });
 
-    it('should fail when sending label with upper case characters', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', 'iNVAlid'), INVALID_LABEL);
+    it('should fail when sending label with upper case characters', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', 'iNVAlid'), INVALID_LABEL);
     });
 
-    it('should fail when sending label with invalid characters', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
+    it('should fail when sending label with invalid characters', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.available('domain.rsk', 'iNVA-lid'), INVALID_LABEL);
     });
   });
 

@@ -41,15 +41,15 @@ describe.each([
     expectThrowRNSError(() => rns.currentNetworkId, LIBRARY_NOT_COMPOSED);
   });
 
-  it('should fail when compose if invalid network', async () => {
+  it('should fail when compose if invalid network', () => {
     const invalidWeb3 = new Web3('https://invalid.rsk.co');
     const rns = new RNS(invalidWeb3);
-    await asyncExpectThrowError(() => rns.compose());
+    asyncExpectThrowError(() => rns.compose());
   });
 
-  it('should fail when compose if custom network and no addresses provided', async () => {
+  it('should fail when compose if custom network and no addresses provided', () => {
     const rns = new RNS(blockchainApiInstance);
-    await asyncExpectThrowRNSError(() => rns.compose(), NO_ADDRESSES_PROVIDED);
+    asyncExpectThrowRNSError(() => rns.compose(), NO_ADDRESSES_PROVIDED);
   });
 
   describe('public nodes', () => {

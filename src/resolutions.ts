@@ -128,7 +128,7 @@ export default class extends Composer implements Resolutions {
     ).call();
 
     if (!supportsInterface) {
-      throw new RNSError(NO_ADDR_RESOLUTION);
+      this._throw(NO_ADDR_RESOLUTION);
     }
 
     const addr: string = await resolver.methods.addr(node).call();
@@ -168,7 +168,7 @@ export default class extends Composer implements Resolutions {
       const decodedAddr = await newResolver.methods['addr(bytes32,uint256)'](node, coinType).call();
 
       if (!decodedAddr || decodedAddr === ZERO_ADDRESS || decodedAddr === '0x') {
-        throw new RNSError(NO_CHAIN_ADDR_RESOLUTION_SET);
+        this._throw(NO_CHAIN_ADDR_RESOLUTION_SET);
       }
 
       const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
@@ -183,7 +183,7 @@ export default class extends Composer implements Resolutions {
     ).call();
 
     if (!supportsChainAddrInterface) {
-      throw new RNSError(NO_CHAIN_ADDR_RESOLUTION);
+      this._throw(NO_CHAIN_ADDR_RESOLUTION);
     }
 
     const addr = await chainResolver.methods.chainAddr(node, chainId).call();
@@ -270,7 +270,7 @@ export default class extends Composer implements Resolutions {
     const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
 
     if (resolverAddress === ZERO_ADDRESS) {
-      throw new RNSError(NO_RESOLVER);
+      this._throw(NO_RESOLVER);
     }
 
     const supportsChainAddrInterface: boolean = await hasMethod(
@@ -407,7 +407,7 @@ export default class extends Composer implements Resolutions {
     ).call();
 
     if (!supportsInterface) {
-      throw new RNSError(NO_NAME_RESOLUTION);
+      this._throw(NO_NAME_RESOLUTION);
     }
 
     const name: string = await resolver.methods.name(node).call();

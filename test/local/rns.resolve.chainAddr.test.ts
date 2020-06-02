@@ -76,7 +76,7 @@ describe.each([
     await registry.setSubnodeOwner(namehash(TLD), labelhash('noresolver'), defaultSender);
     await registry.setResolver(namehash('noresolver.rsk'), ZERO_ADDRESS);
 
-    await asyncExpectThrowRNSError(() => rns.addr('noresolver.rsk', ChainId.BITCOIN), NO_RESOLVER);
+    asyncExpectThrowRNSError(() => rns.addr('noresolver.rsk', ChainId.BITCOIN), NO_RESOLVER);
   });
 
   it('should throw an error when resolver does not support chainAddr interface', async () => {
@@ -86,16 +86,16 @@ describe.each([
 
     await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
     await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
-    await asyncExpectThrowRNSError(() => rns.addr('anothererc165.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION);
+    asyncExpectThrowRNSError(() => rns.addr('anothererc165.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION);
   });
 
   it('should throw an error when no resolution set', async () => {
     await registry.setSubnodeOwner(namehash(TLD), labelhash('noresolution'), defaultSender);
 
-    await asyncExpectThrowRNSError(() => rns.addr('noresolution.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION_SET);
+    asyncExpectThrowRNSError(() => rns.addr('noresolution.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION_SET);
   });
 
-  it('should throw an error when domain do not exist', async () => {
-    await asyncExpectThrowRNSError(() => rns.addr('noexists.rsk', ChainId.BITCOIN), NO_RESOLVER);
+  it('should throw an error when domain do not exist', () => {
+    asyncExpectThrowRNSError(() => rns.addr('noexists.rsk', ChainId.BITCOIN), NO_RESOLVER);
   });
 });

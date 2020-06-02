@@ -64,27 +64,27 @@ describe.each([
     expect(actual).toBe(expected);
   });
 
-  it('should fail if sending an invalid domain', async () => {
-    await asyncExpectThrowRNSError(() => rns.setReverse('INV-alid.rsk'), INVALID_DOMAIN);
+  it('should fail if sending an invalid domain', () => {
+    asyncExpectThrowRNSError(() => rns.setReverse('INV-alid.rsk'), INVALID_DOMAIN);
   });
 
   it('should fail if no reverse registrar contract address', async () => {
     await registry.setSubnodeOwner(namehash('reverse'), labelhash('addr'), ZERO_ADDRESS);
 
-    await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_REVERSE_REGISTRAR);
+    asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_REVERSE_REGISTRAR);
   });
 
   it('should fail if addr.reverse node owner is an account', async () => {
     const [alice] = accounts;
     await registry.setSubnodeOwner(namehash('reverse'), labelhash('addr'), alice);
 
-    await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_SET_NAME_METHOD);
+    asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_SET_NAME_METHOD);
   });
 
   it('should fail if addr.reverse node owner is a contract that not implement setName method', async () => {
     await registry.setSubnodeOwner(namehash('reverse'), labelhash('addr'), registry.address);
 
-    await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_SET_NAME_METHOD);
+    asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_SET_NAME_METHOD);
   });
 
   describe('custom tx options', () => {
@@ -127,8 +127,8 @@ describe.each([
   ['rsk mainnet', new Rsk3(PUBLIC_NODE_MAINNET)],
   ['rsk testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
 ])('%s - public nodes setReverse', (name, blockchainApiInstance) => {
-  test('should fail when blockchain api instance does not contain accounts to sing the tx', async () => {
+  test('should fail when blockchain api instance does not contain accounts to sing the tx', () => {
     const rns = new RNS(blockchainApiInstance);
-    await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_ACCOUNTS_TO_SIGN);
+    asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_ACCOUNTS_TO_SIGN);
   });
 });

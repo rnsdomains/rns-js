@@ -90,27 +90,27 @@ describe.each([
     expect(tx.transactionHash).toBeTruthy();
   });
 
-  it('should throw an error when invalid checksum for RSK', async () => {
+  it('should throw an error when invalid checksum for RSK', () => {
     const address = '0x53BF4d5cF81F8c52644912cfae4d0E3EA7faDd5B'; // valid for ethereum
 
-    await asyncExpectThrowRNSError(() => rns.setAddr('alice.rsk', address, ChainId.RSK), INVALID_CHECKSUM_ADDRESS);
+    asyncExpectThrowRNSError(() => rns.setAddr('alice.rsk', address, ChainId.RSK), INVALID_CHECKSUM_ADDRESS);
   });
 
-  it('should throw an error when invalid checksum for Ethereum', async () => {
+  it('should throw an error when invalid checksum for Ethereum', () => {
     const address = '0x53Bf4d5cF81F8c52644912cfaE4d0E3EA7FAdD5b'; // valid for rsk mainnet
 
-    await asyncExpectThrowRNSError(() => rns.setAddr('alice.rsk', address, ChainId.ETHEREUM), INVALID_CHECKSUM_ADDRESS);
+    asyncExpectThrowRNSError(() => rns.setAddr('alice.rsk', address, ChainId.ETHEREUM), INVALID_CHECKSUM_ADDRESS);
   });
 
   it('should throw an error when resolver has not been set', async () => {
     await registry.setSubnodeOwner(namehash(TLD), labelhash('noresolver'), defaultSender);
     await registry.setResolver(namehash('noresolver.rsk'), ZERO_ADDRESS);
 
-    await asyncExpectThrowRNSError(() => rns.setAddr('noresolver.rsk', rskAddr, ChainId.RSK), NO_RESOLVER);
+    asyncExpectThrowRNSError(() => rns.setAddr('noresolver.rsk', rskAddr, ChainId.RSK), NO_RESOLVER);
   });
 
-  it('should throw an error when domain do not exist', async () => {
-    await asyncExpectThrowRNSError(() => rns.setAddr('noexists.rsk', rskAddr), NO_RESOLVER);
+  it('should throw an error when domain do not exist', () => {
+    asyncExpectThrowRNSError(() => rns.setAddr('noexists.rsk', rskAddr), NO_RESOLVER);
   });
 
   describe('custom tx options', () => {
@@ -159,9 +159,9 @@ describe.each([
   ['rsk mainnet', new Rsk3(PUBLIC_NODE_MAINNET)],
   ['rsk testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
 ])('%s - public nodes setChainAddr', (name, blockchainApiInstance) => {
-  test('should fail when blockchain api instance does not contain accounts to sing the tx', async () => {
+  test('should fail when blockchain api instance does not contain accounts to sing the tx', () => {
     const rns = new RNS(blockchainApiInstance);
-    await asyncExpectThrowRNSError(
+    asyncExpectThrowRNSError(
       () => rns.setAddr('testing.rsk', '0x0000000000000000000000000000000000000001', ChainId.ETHEREUM),
       NO_ACCOUNTS_TO_SIGN,
     );

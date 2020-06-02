@@ -65,16 +65,16 @@ describe.each([
     expect(tx.transactionHash).toBeTruthy();
   });
 
-  it('should throw an error when address is invalid', async () => {
-    await asyncExpectThrowRNSError(() => rns.setResolver('alice.rsk', 'invalidaddress'), INVALID_ADDRESS);
+  it('should throw an error when address is invalid', () => {
+    asyncExpectThrowRNSError(() => rns.setResolver('alice.rsk', 'invalidaddress'), INVALID_ADDRESS);
   });
 
-  it('should throw an error when address has invalid checksum', async () => {
-    await asyncExpectThrowRNSError(() => rns.setResolver('alice.rsk', '0x0000000000000000000000000000000001ABcdEF'), INVALID_CHECKSUM_ADDRESS);
+  it('should throw an error when address has invalid checksum', () => {
+    asyncExpectThrowRNSError(() => rns.setResolver('alice.rsk', '0x0000000000000000000000000000000001ABcdEF'), INVALID_CHECKSUM_ADDRESS);
   });
 
-  it('should throw an error when domain does not exists has invalid checksum', async () => {
-    await asyncExpectThrowRNSError(() => rns.setResolver('noexists.rsk', '0x0000000000000000000000000000000001000006'), DOMAIN_NOT_EXISTS);
+  it('should throw an error when domain does not exists has invalid checksum', () => {
+    asyncExpectThrowRNSError(() => rns.setResolver('noexists.rsk', '0x0000000000000000000000000000000001000006'), DOMAIN_NOT_EXISTS);
   });
 
   it('should VM revert when domain is not owned by the sender', async () => {
@@ -132,9 +132,9 @@ describe.each([
   ['rsk mainnet', new Rsk3(PUBLIC_NODE_MAINNET)],
   ['rsk testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
 ])('%s - public nodes setResolver', (name, blockchainApiInstance) => {
-  test('should fail when blockchain api instance does not contain accounts to sing the tx', async () => {
+  test('should fail when blockchain api instance does not contain accounts to sing the tx', () => {
     const rns = new RNS(blockchainApiInstance);
-    await asyncExpectThrowRNSError(
+    asyncExpectThrowRNSError(
       () => rns.setResolver('multichain.testing.rsk', '0x0000000000000000000000000000000000000001'),
       NO_ACCOUNTS_TO_SIGN,
     );

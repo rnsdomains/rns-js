@@ -76,7 +76,7 @@ describe.each([
 
       const invalid = '0x53BF4d5cF81F8c52644912cfae4d0E3EA7faDd5B'; // valid for ethereum
 
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', invalid), INVALID_CHECKSUM_ADDRESS);
+      asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', invalid), INVALID_CHECKSUM_ADDRESS);
     });
 
     it('should fail when instating the lib with RSK networkId and addr address has an invalid checksum for RSK', async () => {
@@ -91,51 +91,51 @@ describe.each([
 
       const invalid = '0x53BF4d5cF81F8c52644912cfae4d0E3EA7faDd5B'; // valid for ethereum
 
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', owner, invalid), INVALID_CHECKSUM_ADDRESS);
+      asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', owner, invalid), INVALID_CHECKSUM_ADDRESS);
     });
 
-    it('should fail when invalid owner address', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', 'invalid'), INVALID_ADDRESS);
+    it('should fail when invalid owner address', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', 'invalid'), INVALID_ADDRESS);
     });
 
-    it('should fail when invalid addr address', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', owner, 'invalid'), INVALID_ADDRESS);
+    it('should fail when invalid addr address', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'willfail', owner, 'invalid'), INVALID_ADDRESS);
     });
 
-    it('should fail when sending an empty domain', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('', 'willfail', owner), INVALID_DOMAIN);
+    it('should fail when sending an empty domain', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.create('', 'willfail', owner), INVALID_DOMAIN);
     });
 
-    it('should fail when sending an just a dot with no labels', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('.', 'willfail', owner), INVALID_DOMAIN);
+    it('should fail when sending an just a dot with no labels', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.create('.', 'willfail', owner), INVALID_DOMAIN);
     });
 
-    it('should fail when not sending an .rsk domain', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('domain.notrsk', 'willfail', owner), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+    it('should fail when not sending an .rsk domain', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.create('domain.notrsk', 'willfail', owner), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     });
 
-    it('should fail when sending upper case domain', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('DOMAIN.rsk', 'willfail', owner), INVALID_DOMAIN);
+    it('should fail when sending upper case domain', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.create('DOMAIN.rsk', 'willfail', owner), INVALID_DOMAIN);
     });
 
-    it('should fail when sending invalid characters', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('DOM-AIN.rsk', 'willfail', owner), INVALID_DOMAIN);
+    it('should fail when sending invalid characters', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.create('DOM-AIN.rsk', 'willfail', owner), INVALID_DOMAIN);
     });
 
-    it('should fail when given domain does not exist', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('noexists.rsk', 'willfail', owner), DOMAIN_NOT_EXISTS);
+    it('should fail when given domain does not exist', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.create('noexists.rsk', 'willfail', owner), DOMAIN_NOT_EXISTS);
     });
 
-    it('should fail when sending empty label', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('domain.rsk', '', owner), INVALID_LABEL);
+    it('should fail when sending empty label', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.create('domain.rsk', '', owner), INVALID_LABEL);
     });
 
-    it('should fail when sending label with upper case characters', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('domain.rsk', 'iNVAlid', owner), INVALID_LABEL);
+    it('should fail when sending label with upper case characters', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.create('domain.rsk', 'iNVAlid', owner), INVALID_LABEL);
     });
 
-    it('should fail when sending label with invalid characters', async () => {
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('domain.rsk', 'iNVA-lid', owner), INVALID_LABEL);
+    it('should fail when sending label with invalid characters', () => {
+      asyncExpectThrowRNSError(() => rns.subdomains.create('domain.rsk', 'iNVA-lid', owner), INVALID_LABEL);
     });
 
     it('should revert if creating a subdomain under a domain that the current address does not own', async () => {
@@ -149,7 +149,7 @@ describe.each([
       await rns.subdomains.create('alice.rsk', 'test', owner);
 
       // create it again should fail
-      await asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'test', owner), SUBDOMAIN_NOT_AVAILABLE);
+      asyncExpectThrowRNSError(() => rns.subdomains.create('alice.rsk', 'test', owner), SUBDOMAIN_NOT_AVAILABLE);
     });
   });
 
@@ -262,9 +262,9 @@ describe.each([
   ['rsk mainnet', new Rsk3(PUBLIC_NODE_MAINNET)],
   ['rsk testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
 ])('%s - subdomains.create public nodes', (name, blockchainApiInstance) => {
-  test('should fail when web3 instance does not contain accounts to sign the tx', async () => {
+  test('should fail when web3 instance does not contain accounts to sign the tx', () => {
     const rns = new RNS(blockchainApiInstance);
-    await asyncExpectThrowRNSError(
+    asyncExpectThrowRNSError(
       () => rns.subdomains.create('multichain.testing.rsk', 'check'),
       NO_ACCOUNTS_TO_SIGN,
     );

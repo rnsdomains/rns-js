@@ -4,7 +4,6 @@ import { keccak256 } from 'js-sha3';
 import * as rskjutils from 'rskjs-util';
 import { AVAILABLE_TLDS } from './constants';
 import { NetworkId } from './types';
-import RNSError, { NO_ACCOUNTS_TO_SIGN } from './errors';
 
 /**
  * Checks if the contract in the given address has the given method
@@ -46,15 +45,9 @@ export const hasAccounts = async (web3: Web3) => {
  *
  * @returns Current address
  */
-export const getCurrentAddress = async (web3: Web3): Promise<string> => {
-  let accounts = [];
-  try {
-    accounts = await web3.eth.getAccounts();
-  } catch {
-    throw new RNSError(NO_ACCOUNTS_TO_SIGN);
-  }
-  return accounts[0];
-};
+export const getCurrentAddress = async (web3: Web3): Promise<string> => (
+  web3.eth.getAccounts().then((a) => a[0])
+);
 
 /**
  * Validates the given address

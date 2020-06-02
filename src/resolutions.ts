@@ -17,7 +17,7 @@ import {
   hasMethod, namehash, hasAccounts, isValidAddress, isValidChecksumAddress,
   isValidDomain, toChecksumAddress,
 } from './utils';
-import RNSError, {
+import {
   NO_RESOLVER, NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_CHAIN_ADDR_RESOLUTION,
   NO_CHAIN_ADDR_RESOLUTION_SET, NO_NAME_RESOLUTION, NO_REVERSE_RESOLUTION_SET,
   NO_ACCOUNTS_TO_SIGN, NO_SET_ADDR, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
@@ -60,7 +60,7 @@ export default class extends Composer implements Resolutions {
     const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
 
     if (resolverAddress === ZERO_ADDRESS) {
-      throw new RNSError(noResolverError || NO_RESOLVER);
+      this._throw(noResolverError || NO_RESOLVER);
     }
 
     const resolver: Contract = contractFactory(this.blockchainApi, resolverAddress);
@@ -70,7 +70,7 @@ export default class extends Composer implements Resolutions {
     );
 
     if (!supportsInterface) {
-      throw new RNSError(errorMessage);
+      this._throw(errorMessage);
     }
 
     return resolver;
@@ -79,20 +79,20 @@ export default class extends Composer implements Resolutions {
   private _validateAddress(addr: string, chainId?: ChainId) {
     if (!chainId || chainId === ChainId.RSK || chainId === ChainId.ETHEREUM) {
       if (!isValidAddress(addr)) {
-        throw new RNSError(INVALID_ADDRESS);
+        this._throw(INVALID_ADDRESS);
       }
 
       if (!chainId) {
         if (!isValidChecksumAddress(addr, this.currentNetworkId)) {
-          throw new RNSError(INVALID_CHECKSUM_ADDRESS);
+          this._throw(INVALID_CHECKSUM_ADDRESS);
         }
       } else if (chainId === ChainId.RSK) {
         if (!isValidChecksumAddress(addr, NetworkId.RSK_MAINNET)) {
-          throw new RNSError(INVALID_CHECKSUM_ADDRESS);
+          this._throw(INVALID_CHECKSUM_ADDRESS);
         }
       } else if (chainId === ChainId.ETHEREUM) {
         if (!isValidChecksumAddress(addr)) {
-          throw new RNSError(INVALID_CHECKSUM_ADDRESS);
+          this._throw(INVALID_CHECKSUM_ADDRESS);
         }
       }
     }
@@ -124,7 +124,7 @@ export default class extends Composer implements Resolutions {
     const addr: string = await resolver.methods.addr(node).call();
 
     if (addr === ZERO_ADDRESS) {
-      throw new RNSError(NO_ADDR_RESOLUTION_SET);
+      this._throw(NO_ADDR_RESOLUTION_SET);
     }
 
     return toChecksumAddress(addr, this.currentNetworkId);
@@ -156,7 +156,7 @@ export default class extends Composer implements Resolutions {
 
     const addr: string = await resolver.methods.chainAddr(node, chainId).call();
     if (!addr || addr === ZERO_ADDRESS) {
-      throw new RNSError(NO_CHAIN_ADDR_RESOLUTION_SET);
+      this._throw(NO_CHAIN_ADDR_RESOLUTION_SET);
     }
 
     // return checksum address just if it is a EVM blockchain address
@@ -191,7 +191,7 @@ export default class extends Composer implements Resolutions {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
-      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+      this._throw(NO_ACCOUNTS_TO_SIGN);
     }
 
     this._validateAddress(addr);
@@ -232,7 +232,7 @@ export default class extends Composer implements Resolutions {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
-      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+      this._throw(NO_ACCOUNTS_TO_SIGN);
     }
 
     this._validateAddress(addr, chainId);
@@ -276,14 +276,14 @@ export default class extends Composer implements Resolutions {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
-      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+      this._throw(NO_ACCOUNTS_TO_SIGN);
     }
 
     this._validateAddress(resolver);
 
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
-      throw new RNSError(DOMAIN_NOT_EXISTS);
+      this._throw(DOMAIN_NOT_EXISTS);
     }
 
     const node: string = namehash(domain);
@@ -311,18 +311,18 @@ export default class extends Composer implements Resolutions {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
-      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+      this._throw(NO_ACCOUNTS_TO_SIGN);
     }
 
     if (!isValidDomain(name)) {
-      throw new RNSError(INVALID_DOMAIN);
+      this._throw(INVALID_DOMAIN);
     }
 
     const reverseRegistrarOwner = await this._contracts.registry.methods.owner(
       ADDR_REVERSE_NAMEHASH,
     ).call();
     if (reverseRegistrarOwner === ZERO_ADDRESS) {
-      throw new RNSError(NO_REVERSE_REGISTRAR);
+      this._throw(NO_REVERSE_REGISTRAR);
     }
 
     const hasSetNameMethod = await hasMethod(
@@ -331,7 +331,7 @@ export default class extends Composer implements Resolutions {
       SET_NAME_INTERFACE,
     );
     if (!hasSetNameMethod) {
-      throw new RNSError(NO_SET_NAME_METHOD);
+      this._throw(NO_SET_NAME_METHOD);
     }
 
     const reverseRegistrar = createReverseRegistrar(this.blockchainApi, reverseRegistrarOwner);
@@ -368,7 +368,7 @@ export default class extends Composer implements Resolutions {
 
     const name: string = await resolver.methods.name(node).call();
     if (!name) {
-      throw new RNSError(NO_REVERSE_RESOLUTION_SET);
+      this._throw(NO_REVERSE_RESOLUTION_SET);
     }
 
     return name;

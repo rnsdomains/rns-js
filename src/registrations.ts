@@ -5,7 +5,7 @@ import { Registrations, Options } from './types';
 import {
   isValidDomain, isValidTld, isValidLabel, labelhash, namehash, hasMethod,
 } from './utils';
-import RNSError, {
+import {
   INVALID_DOMAIN, SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_LABEL,
   NO_TLD_OWNER, NO_AVAILABLE_METHOD,
 } from './errors';
@@ -32,7 +32,7 @@ export default class extends Composer implements Registrations {
     ).call();
 
     if (nodeOwnerAddress === ZERO_ADDRESS) {
-      throw new RNSError(NO_TLD_OWNER);
+      this._throw(NO_TLD_OWNER);
     }
 
     const hasAvailableMethod = await hasMethod(
@@ -41,7 +41,7 @@ export default class extends Composer implements Registrations {
       AVAILABLE_INTERFACE,
     );
     if (!hasAvailableMethod) {
-      throw new RNSError(errorMessage);
+      this._throw(errorMessage);
     }
 
     const nodeOwner: Contract = contractFactory(this.blockchainApi, nodeOwnerAddress);
@@ -51,7 +51,7 @@ export default class extends Composer implements Registrations {
 
   private async _searchAvailabilityByLabel(label: string): Promise<string[]> {
     if (!isValidLabel(label)) {
-      throw new RNSError(INVALID_LABEL);
+      this._throw(INVALID_LABEL);
     }
 
     let availables = [];
@@ -72,10 +72,10 @@ export default class extends Composer implements Registrations {
 
   private async _searchAvailabilityByDomain(domain: string): Promise<boolean> {
     if (!isValidDomain(domain)) {
-      throw new RNSError(INVALID_DOMAIN);
+      this._throw(INVALID_DOMAIN);
     }
     if (!isValidTld(domain)) {
-      throw new RNSError(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      this._throw(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     }
 
     const [label, tld] = domain.split('.');

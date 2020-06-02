@@ -4,11 +4,13 @@ import {
   Composable, Options, ContractAddresses, Contracts,
 } from './types';
 import { createRegistry, createContractAddresses } from './factories';
-import RNSError, { LIBRARY_NOT_COMPOSED } from './errors';
+import RNSError, { LIBRARY_NOT_COMPOSED, NO_ACCOUNTS_TO_SIGN } from './errors';
 import { getCurrentAddress } from './utils';
 import { TransactionOptions } from './types/options';
+import ErrorWrapper from './errors/ErrorWrapper';
+import { Lang } from './types/enums';
 
-export default abstract class implements Composable {
+export default abstract class extends ErrorWrapper implements Composable {
   private _contractAddresses!: ContractAddresses;
 
   private _composed!: boolean;
@@ -29,6 +31,8 @@ export default abstract class implements Composable {
    * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
    */
   constructor(blockchainApi: Web3 | any, options?: Options) {
+    super(options && options.lang ? options.lang : Lang.en);
+
     this.blockchainApi = blockchainApi as Web3;
 
     // rsk3 eth namespace are exposed in the top level namespace
@@ -77,7 +81,13 @@ export default abstract class implements Composable {
         from: customOptions.from,
       };
     } else {
-      const sender = await getCurrentAddress(this.blockchainApi);
+      let sender;
+
+      try {
+        sender = await getCurrentAddress(this.blockchainApi);
+      } catch {
+        this._throw(NO_ACCOUNTS_TO_SIGN);
+      }
 
       options = {
         from: sender,

@@ -6,14 +6,13 @@ import {
   Subdomains as ISubdomains,
   Registrations as IRegistrations,
 } from './types';
-import RNSError, { LIBRARY_NOT_COMPOSED } from './errors';
+import { LIBRARY_NOT_COMPOSED } from './errors';
 import Resolutions from './resolutions';
 import Registrations from './registrations';
 import Subdomains from './subdomains';
 import Composer from './composer';
 import * as utils from './utils';
 import { TransactionOptions } from './types/options';
-
 
 /**
  * RNS JavaScript library.
@@ -50,7 +49,7 @@ export default class extends Composer implements RNS {
    */
   get contracts(): Contracts {
     if (!this._contracts) {
-      throw new RNSError(LIBRARY_NOT_COMPOSED);
+      this._throw(LIBRARY_NOT_COMPOSED);
     }
     return this._contracts;
   }

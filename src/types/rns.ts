@@ -1,7 +1,7 @@
 import { Contract } from 'web3-eth-contract';
 import Web3 from 'web3';
 import { TransactionReceipt } from 'web3-eth';
-import { ChainId, CoinType } from './enums';
+import { ChainId } from './enums';
 import { Utils } from './utils';
 import { Subdomains } from './subdomains';
 import { TransactionOptions } from './options';
@@ -54,7 +54,7 @@ export default interface RNS {
    *
    */
   setAddr(
-    domain: string, addr: string, chainId?: ChainId | CoinType, options?: TransactionOptions,
+    domain: string, addr: string, chainId?: ChainId, options?: TransactionOptions,
   ): Promise<TransactionReceipt>;
 
   /**

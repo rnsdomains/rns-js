@@ -34,6 +34,7 @@
     "prepublishOnly": "npm test && npm run build && cp -r lib/types/ types/"
   },
   "dependencies": {
+    "@ensdomains/address-encoder": "^0.1.7",
     "@rsksmart/rns-registry": "^1.0.2",
     "@rsksmart/rns-resolver": "^1.0.2",
     "@rsksmart/rns-reverse": "^1.0.2",

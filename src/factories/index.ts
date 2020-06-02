@@ -3,6 +3,7 @@ import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import ChainAddrResolverData from '@rsksmart/rns-resolver/ChainAddrResolverData.json';
 import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
 import ReverseRegistrarData from '@rsksmart/rns-reverse/ReverseRegistrarData.json';
+import ResolverV1Data from '@rsksmart/rns-resolver/ResolverV1Data.json';
 import RSKOwnerData from '@rsksmart/rns-rskregistrar/RSKOwnerData.json';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
@@ -38,7 +39,7 @@ export const createChainAddrResolver = (
 
 export const createNewAddrResolver = (
   web3: Web3, address: string,
-) => new web3.eth.Contract(ChainAddrResolverData.abi as AbiItem[], address); // TODO
+) => new web3.eth.Contract(ResolverV1Data.abi as AbiItem[], address); // TODO
 
 export const createNameResolver = (
   web3: Web3, address: string,

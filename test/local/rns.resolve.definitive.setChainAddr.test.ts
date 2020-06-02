@@ -1,21 +1,23 @@
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
-import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
-import ChainAddrResolverData from '@rsksmart/rns-resolver/ChainAddrResolverData.json';
+import ResolverV1Data from '@rsksmart/rns-resolver/ResolverV1Data.json';
+import ProxyAdminData from '@rsksmart/rns-resolver/ProxyAdminData.json';
+import ProxyFactoryData from '@rsksmart/rns-resolver/ProxyFactoryData.json';
 import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
+import { formatsByCoinType } from '@ensdomains/address-encoder';
 import {
-  contract, web3, defaultSender, accounts,
+  accounts, contract, web3, defaultSender,
 } from '@openzeppelin/test-environment';
+import { encodeCall } from '@openzeppelin/upgrades';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import Rsk3 from '@rsksmart/rsk3';
-import {
-  NO_RESOLVER, NO_SET_CHAIN_ADDR, NO_ACCOUNTS_TO_SIGN, INVALID_CHECKSUM_ADDRESS,
-} from '../../src/errors';
+import { NO_CHAIN_ADDR_RESOLUTION_SET, NO_RESOLVER, NO_CHAIN_ADDR_RESOLUTION, NO_ACCOUNTS_TO_SIGN, INVALID_CHECKSUM_ADDRESS } from '../../src/errors';
 import { ZERO_ADDRESS } from '../../src/constants';
 import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 import RNS from '../../src/index';
-import { ChainId } from '../../src/types';
+import { Options, ChainId } from '../../src/types';
 import { labelhash } from '../../src/utils';
+import { CoinType } from '../../src/types/enums';
 
 const web3Instance = web3 as unknown as Web3;
 const rsk3Instance = new Rsk3(web3.currentProvider);
@@ -23,31 +25,41 @@ const rsk3Instance = new Rsk3(web3.currentProvider);
 describe.each([
   ['web3', web3Instance],
   ['rsk3', rsk3Instance],
-])('%s - setChainAddr', (name, blockchainApiInstance) => {
+])('%s - chainAddr resolution', (name, blockchainApiInstance) => {
+
   const TLD = 'rsk';
   const rskAddr = '0x0000000000000000000000000000000001000006';
   const ethAddr = '0x0000000000000000000000000000000012345678';
   const btcAddr = '1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2';
 
   let registry: any;
-  let multichainResolver: any;
   let rns: RNS;
-
+  let options: Options;
+  let proxy: any;
   beforeEach(async () => {
     const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
-    const PublicResolver = contract.fromABI(AddrResolverData.abi, AddrResolverData.bytecode);
-    const MultichainResolver = contract.fromABI(
-      ChainAddrResolverData.abi, ChainAddrResolverData.bytecode,
-    );
+    const ResolverV1 = contract.fromABI(ResolverV1Data.abi, ResolverV1Data.bytecode);
+    const ProxyFactory = contract.fromABI(ProxyFactoryData.abi, ProxyFactoryData.bytecode);
+    const ProxyAdmin = contract.fromABI(ProxyAdminData.abi, ProxyAdminData.bytecode);
 
     registry = await Registry.new();
-    const publicResolver = await PublicResolver.new(registry.address);
-    multichainResolver = await MultichainResolver.new(registry.address, publicResolver.address);
+    const proxyFactory = await ProxyFactory.new();
+    const proxyAdmin = await ProxyAdmin.new();
+    const resolverV1 = await ResolverV1.new();
 
-    await registry.setDefaultResolver(multichainResolver.address);
+    const salt = '16';
+    const data = encodeCall('initialize', ['address'], [registry.address]);
+    await proxyFactory.deploy(salt, resolverV1.address, proxyAdmin.address, data);
+
+    const resolverAddress = await proxyFactory.getDeploymentAddress(salt, defaultSender);
+    
+    proxy = contract.fromABI(ResolverV1Data.abi, ResolverV1Data.bytecode, resolverAddress);
+    
+    await registry.setDefaultResolver(resolverAddress);
+
     await registry.setSubnodeOwner('0x00', labelhash(TLD), defaultSender);
 
-    const options = {
+    options = {
       contractAddresses: {
         registry: registry.address,
       },
@@ -61,8 +73,14 @@ describe.each([
 
     await rns.setAddr('alice.rsk', rskAddr, ChainId.RSK);
 
-    const actualAddr = await rns.addr('alice.rsk', ChainId.RSK);
-    expect(actualAddr).toBe(rskAddr);
+    const decodedAddr = await proxy.methods['addr(bytes32,uint256)'](
+      namehash('alice.rsk'),
+      CoinType.RSK
+    );
+    
+    const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
+
+    expect(formatsByCoinType[CoinType.RSK].encoder(buff)).toBe(rskAddr);
   });
 
   it('should set an address for ETH', async () => {
@@ -70,8 +88,14 @@ describe.each([
 
     await rns.setAddr('alice.rsk', ethAddr, ChainId.ETHEREUM);
 
-    const actualAddr = await rns.addr('alice.rsk', ChainId.ETHEREUM);
-    expect(actualAddr).toBe(ethAddr);
+    const decodedAddr = await proxy.methods['addr(bytes32,uint256)'](
+      namehash('alice.rsk'),
+      CoinType.ETHEREUM
+    );
+    
+    const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
+
+    expect(formatsByCoinType[CoinType.ETHEREUM].encoder(buff)).toBe(ethAddr);
   });
 
   it('should set an address for BTC', async () => {
@@ -79,8 +103,14 @@ describe.each([
 
     await rns.setAddr('alice.rsk', btcAddr, ChainId.BITCOIN);
 
-    const actualAddr = await rns.addr('alice.rsk', ChainId.BITCOIN);
-    expect(actualAddr).toBe(btcAddr);
+    const decodedAddr = await proxy.methods['addr(bytes32,uint256)'](
+      namehash('alice.rsk'),
+      CoinType.BITCOIN
+    );
+    
+    const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
+
+    expect(formatsByCoinType[CoinType.BITCOIN].encoder(buff)).toBe(btcAddr);
   });
 
   it('should return a tx receipt when setting an address', async () => {

@@ -1,6 +1,7 @@
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 import { TransactionReceipt } from 'web3-eth';
+import { formatsByCoinType } from '@ensdomains/address-encoder';
 import {
   createAddrResolver, createChainAddrResolver, createNameResolver,
   createReverseRegistrar, createNewAddrResolver,
@@ -90,6 +91,19 @@ export default class extends Composer implements Resolutions {
     }
   }
 
+  _getCoinTypeFromChainId(chainId: ChainId): number {
+    switch(chainId) {
+      case ChainId.BITCOIN:
+        return CoinType.BITCOIN;
+      case ChainId.ETHEREUM:
+        return CoinType.ETHEREUM;
+      case ChainId.RSK:
+        return CoinType.RSK;
+      case ChainId.LITECOIN:
+        return CoinType.LITECOIN;
+    }
+  }
+
   /**
    * addr resolution protocol.
 
@@ -138,7 +152,7 @@ export default class extends Composer implements Resolutions {
    * @return
    * Address resolution for a domain in a given chain
    */
-  async chainAddr(domain: string, chainId: ChainId | CoinType): Promise<string> {
+  async chainAddr(domain: string, chainId: ChainId): Promise<string> {
     await this.compose();
     const node: string = namehash(domain);
 
@@ -148,23 +162,30 @@ export default class extends Composer implements Resolutions {
       NEW_ADDR_INTERFACE,
     ).call();
 
-    let addr;
     if (supportsNewAddrInterface) {
-      // TODO: Decode address
-      addr = await newResolver.methods.addr(node, chainId).call();
-    } else {
-      const chainResolver = await this._createResolver(node, createChainAddrResolver);
+      const coinType = this._getCoinTypeFromChainId(chainId);
+      const decodedAddr = await newResolver.methods['addr(bytes32,uint256)'](node, coinType).call();
 
-      const supportsChainAddrInterface: boolean = await chainResolver.methods.supportsInterface(
-        CHAIN_ADDR_INTERFACE,
-      ).call();
-
-      if (!supportsChainAddrInterface) {
-        throw new RNSError(NO_CHAIN_ADDR_RESOLUTION);
+      if (!decodedAddr || decodedAddr === ZERO_ADDRESS || decodedAddr === '0x') {
+        throw new RNSError(NO_CHAIN_ADDR_RESOLUTION_SET);
       }
 
-      addr = await chainResolver.methods.chainAddr(node, chainId).call();
+      const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
+      
+      return formatsByCoinType[coinType].encoder(buff);
     }
+
+    const chainResolver = await this._createResolver(node, createChainAddrResolver);
+
+    const supportsChainAddrInterface: boolean = await chainResolver.methods.supportsInterface(
+      CHAIN_ADDR_INTERFACE,
+    ).call();
+
+    if (!supportsChainAddrInterface) {
+      throw new RNSError(NO_CHAIN_ADDR_RESOLUTION);
+    }
+
+    const addr = await chainResolver.methods.chainAddr(node, chainId).call();
 
     if (!addr || addr === ZERO_ADDRESS) {
       this._throw(NO_CHAIN_ADDR_RESOLUTION_SET);
@@ -251,28 +272,23 @@ export default class extends Composer implements Resolutions {
       throw new RNSError(NO_RESOLVER);
     }
 
-    const supportsResolverV1Interface: boolean = await hasMethod(
-      this.blockchainApi, resolverAddress, NEW_ADDR_INTERFACE,
+    const supportsChainAddrInterface: boolean = await hasMethod(
+      this.blockchainApi, resolverAddress, SET_CHAIN_ADDR_INTERFACE,
     );
 
     let contractMethod;
-    if (supportsResolverV1Interface) {
-      // TODO: Encode address
-      const resolver: Contract = createNewAddrResolver(this.blockchainApi, resolverAddress);
-
-      contractMethod = resolver.methods.setAddr(node, chainId, addr);
-    } else {
-      const supportsChainAddrInterface: boolean = await hasMethod(
-        this.blockchainApi, resolverAddress, SET_CHAIN_ADDR_INTERFACE,
-      );
-
-      if (!supportsChainAddrInterface) {
-        throw new RNSError(NO_SET_CHAIN_ADDR);
-      }
-
+    if (supportsChainAddrInterface) {
       const resolver: Contract = createChainAddrResolver(this.blockchainApi, resolverAddress);
 
       contractMethod = resolver.methods.setChainAddr(node, chainId, addr);
+    } else {
+      const resolver: Contract = createNewAddrResolver(this.blockchainApi, resolverAddress);
+
+      const coinType = this._getCoinTypeFromChainId(chainId);
+
+      const decodedAddr = formatsByCoinType[coinType].decoder(addr);
+
+      contractMethod = resolver.methods['setAddr(bytes32,uint256,bytes)'](node, coinType, decodedAddr);
     }
 
     return this.estimateGasAndSendTransaction(contractMethod, options);

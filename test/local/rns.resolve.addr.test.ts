@@ -21,7 +21,7 @@ describe.each([
   ['web3', web3Instance],
   ['rsk3', rsk3Instance],
 ])('%s - addr resolution', (name, blockchainApiInstance) => {
-  const [resolution, anotherAccount] = accounts;
+  const [resolution] = accounts;
 
   const TLD = 'rsk';
 
@@ -64,23 +64,14 @@ describe.each([
     await asyncExpectThrowRNSError(() => rns.addr('noresolver.rsk'), NO_RESOLVER);
   });
 
-  describe('should throw an error when resolver does not support addr interface', () => {
-    it('ERC165 contract as resolver that not implements addr method', async () => {
-      // resolver address is the NameResolver contract, an ERC165 that not supports addr interface
-      const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
-      const nameResolver = await NameResolver.new(registry.address);
+  it('should throw an error when resolver does not support addr interface', async () => {
+    // resolver address is the NameResolver contract, an ERC165 that not supports addr interface
+    const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
+    const nameResolver = await NameResolver.new(registry.address);
 
-      await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
-      await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
-      await asyncExpectThrowRNSError(() => rns.addr('anothererc165.rsk'), NO_ADDR_RESOLUTION);
-    });
-
-    // it('account address as a resolver', async () => {
-    //   await registry.setSubnodeOwner(namehash(TLD), labelhash('accountasresolver'), defaultSender);
-    //   await registry.setResolver(namehash('accountasresolver.rsk'), anotherAccount);
-
-    //   await asyncExpectThrowRNSError(() => rns.addr('accountasresolver.rsk'), NO_ADDR_RESOLUTION);
-    // });
+    await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
+    await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
+    await asyncExpectThrowRNSError(() => rns.addr('anothererc165.rsk'), NO_ADDR_RESOLUTION);
   });
 
   it('should throw an error when no resolution set', async () => {

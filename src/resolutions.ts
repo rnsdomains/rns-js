@@ -22,8 +22,8 @@ import {
 import {
   NO_RESOLVER, NO_ADDR_RESOLUTION, NO_ADDR_RESOLUTION_SET, NO_CHAIN_ADDR_RESOLUTION,
   NO_CHAIN_ADDR_RESOLUTION_SET, NO_NAME_RESOLUTION, NO_REVERSE_RESOLUTION_SET,
-  NO_ACCOUNTS_TO_SIGN, NO_SET_ADDR, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
-  DOMAIN_NOT_EXISTS, INVALID_DOMAIN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD, NO_SET_CHAIN_ADDR,
+  NO_ACCOUNTS_TO_SIGN, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
+  DOMAIN_NOT_EXISTS, INVALID_DOMAIN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD,
 } from './errors';
 import { TransactionOptions } from './types/options';
 import { CoinType } from './types/enums';
@@ -92,15 +92,16 @@ export default class extends Composer implements Resolutions {
   }
 
   _getCoinTypeFromChainId(chainId: ChainId): number {
-    switch(chainId) {
+    switch (chainId) {
       case ChainId.BITCOIN:
         return CoinType.BITCOIN;
       case ChainId.ETHEREUM:
         return CoinType.ETHEREUM;
-      case ChainId.RSK:
-        return CoinType.RSK;
       case ChainId.LITECOIN:
         return CoinType.LITECOIN;
+      case ChainId.RSK:
+      default:
+        return CoinType.RSK;
     }
   }
 
@@ -171,7 +172,7 @@ export default class extends Composer implements Resolutions {
       }
 
       const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
-      
+
       return formatsByCoinType[coinType].encoder(buff);
     }
 

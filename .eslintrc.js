@@ -32,6 +32,6 @@ module.exports = {
     'eol-last': 'error',
     'no-underscore-dangle': ['error', { 'allowAfterThis': true }],
     'max-len': ['error', { 'code': 100, 'ignoreStrings': true, 'ignoreComments': true }],
-    'class-methods-use-this': ['error', { 'exceptMethods': ['_validateDomainAndLabel'] }]
+    'class-methods-use-this': ['error', { 'exceptMethods': ['_validateDomainAndLabel', '_createResolver', '_getCoinTypeFromChainId'] }]
   }
 }

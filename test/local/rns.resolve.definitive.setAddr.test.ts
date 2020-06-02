@@ -2,7 +2,6 @@ import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import ResolverV1Data from '@rsksmart/rns-resolver/ResolverV1Data.json';
 import ProxyAdminData from '@rsksmart/rns-resolver/ProxyAdminData.json';
 import ProxyFactoryData from '@rsksmart/rns-resolver/ProxyFactoryData.json';
-import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
 import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import ChainAddrResolverData from '@rsksmart/rns-resolver/ChainAddrResolverData.json';
 import {
@@ -13,7 +12,7 @@ import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import Rsk3 from '@rsksmart/rsk3';
 import {
-  NO_RESOLVER, INVALID_ADDRESS, NO_SET_ADDR, INVALID_CHECKSUM_ADDRESS, NO_ACCOUNTS_TO_SIGN,
+  NO_RESOLVER, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS, NO_ACCOUNTS_TO_SIGN,
 } from '../../src/errors';
 import { ZERO_ADDRESS } from '../../src/constants';
 import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
@@ -49,7 +48,7 @@ describe.each([
     await proxyFactory.deploy(salt, resolverV1.address, proxyAdmin.address, data);
 
     const resolverAddress = await proxyFactory.getDeploymentAddress(salt, defaultSender);
-    
+
     await registry.setDefaultResolver(resolverAddress);
 
     await registry.setSubnodeOwner('0x00', labelhash(TLD), defaultSender);
@@ -133,26 +132,6 @@ describe.each([
 
     await asyncExpectThrowRNSError(() => rns.setAddr('noresolver.rsk', addr), NO_RESOLVER);
   });
-
-  // describe('should throw an error when resolver does not support setAddr interface', () => {
-  //   it('ERC165 contract as resolver that not implements addr method', async () => {
-  //     // resolver address is the NameResolver contract, an ERC165 that not supports addr interface
-  //     const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
-  //     const nameResolver = await NameResolver.new(registry.address);
-
-  //     await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
-  //     await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
-
-  //     await asyncExpectThrowRNSError(() => rns.setAddr('anothererc165.rsk', addr), NO_SET_ADDR);
-  //   });
-
-  //   it('account address as a resolver', async () => {
-  //     await registry.setSubnodeOwner(namehash(TLD), labelhash('accountasresolver'), defaultSender);
-  //     await registry.setResolver(namehash('accountasresolver.rsk'), defaultSender);
-
-  //     await asyncExpectThrowRNSError(() => rns.setAddr('accountasresolver.rsk', addr), NO_SET_ADDR);
-  //   });
-  // });
 
   it('should throw an error when domain do not exist', async () => {
     await asyncExpectThrowRNSError(() => rns.setAddr('noexists.rsk', addr), NO_RESOLVER);

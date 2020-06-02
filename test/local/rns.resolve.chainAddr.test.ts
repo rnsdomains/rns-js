@@ -3,7 +3,7 @@ import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import ChainAddrResolverData from '@rsksmart/rns-resolver/ChainAddrResolverData.json';
 import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
 import {
-  accounts, contract, web3, defaultSender,
+  contract, web3, defaultSender,
 } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
@@ -22,8 +22,6 @@ describe.each([
   ['web3', web3Instance],
   ['rsk3', rsk3Instance],
 ])('%s - chainAddr resolution', (name, blockchainApiInstance) => {
-  const [anotherAccount] = accounts;
-
   const TLD = 'rsk';
 
   let registry: any;
@@ -81,23 +79,14 @@ describe.each([
     await asyncExpectThrowRNSError(() => rns.addr('noresolver.rsk', ChainId.BITCOIN), NO_RESOLVER);
   });
 
-  describe('should throw an error when resolver does not support chainAddr interface', () => {
-    it('ERC165 contract as resolver that not implements addr method', async () => {
-      // the address is the NameResolver contract, an ERC165 that not supports chainAddr interface
-      const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
-      const nameResolver = await NameResolver.new(registry.address);
+  it('should throw an error when resolver does not support chainAddr interface', async () => {
+    // the address is the NameResolver contract, an ERC165 that not supports chainAddr interface
+    const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
+    const nameResolver = await NameResolver.new(registry.address);
 
-      await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
-      await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
-      await asyncExpectThrowRNSError(() => rns.addr('anothererc165.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION);
-    });
-
-    // it('account address as a resolver', async () => {
-    //   await registry.setSubnodeOwner(namehash(TLD), labelhash('accountasresolver'), defaultSender);
-    //   await registry.setResolver(namehash('accountasresolver.rsk'), anotherAccount);
-
-    //   await asyncExpectThrowRNSError(() => rns.addr('accountasresolver.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION);
-    // });
+    await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
+    await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
+    await asyncExpectThrowRNSError(() => rns.addr('anothererc165.rsk', ChainId.BITCOIN), NO_CHAIN_ADDR_RESOLUTION);
   });
 
   it('should throw an error when no resolution set', async () => {

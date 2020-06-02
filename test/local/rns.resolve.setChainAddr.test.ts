@@ -1,7 +1,6 @@
 import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import ChainAddrResolverData from '@rsksmart/rns-resolver/ChainAddrResolverData.json';
-import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
 import {
   contract, web3, defaultSender, accounts,
 } from '@openzeppelin/test-environment';
@@ -9,7 +8,7 @@ import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import Rsk3 from '@rsksmart/rsk3';
 import {
-  NO_RESOLVER, NO_SET_CHAIN_ADDR, NO_ACCOUNTS_TO_SIGN, INVALID_CHECKSUM_ADDRESS,
+  NO_RESOLVER, NO_ACCOUNTS_TO_SIGN, INVALID_CHECKSUM_ADDRESS,
 } from '../../src/errors';
 import { ZERO_ADDRESS } from '../../src/constants';
 import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
@@ -109,26 +108,6 @@ describe.each([
 
     await asyncExpectThrowRNSError(() => rns.setAddr('noresolver.rsk', rskAddr, ChainId.RSK), NO_RESOLVER);
   });
-
-  // describe('should throw an error when resolver does not support setAddr interface', () => {
-  //   it('ERC165 contract as resolver that not implements addr method', async () => {
-  //     // resolver address is the NameResolver contract, an ERC165 that not supports addr interface
-  //     const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
-  //     const nameResolver = await NameResolver.new(registry.address);
-
-  //     await registry.setSubnodeOwner(namehash(TLD), labelhash('anothererc165'), defaultSender);
-  //     await registry.setResolver(namehash('anothererc165.rsk'), nameResolver.address);
-
-  //     await asyncExpectThrowRNSError(() => rns.setAddr('anothererc165.rsk', rskAddr, ChainId.RSK), NO_SET_CHAIN_ADDR);
-  //   });
-
-  //   it('account address as a resolver', async () => {
-  //     await registry.setSubnodeOwner(namehash(TLD), labelhash('accountasresolver'), defaultSender);
-  //     await registry.setResolver(namehash('accountasresolver.rsk'), defaultSender);
-
-  //     await asyncExpectThrowRNSError(() => rns.setAddr('accountasresolver.rsk', rskAddr, ChainId.RSK), NO_SET_CHAIN_ADDR);
-  //   });
-  // });
 
   it('should throw an error when domain do not exist', async () => {
     await asyncExpectThrowRNSError(() => rns.setAddr('noexists.rsk', rskAddr), NO_RESOLVER);

@@ -1,6 +1,7 @@
 import RNSError from './RNSError';
 
 export default RNSError;
+export { default as ErrorWrapper } from './ErrorWrapper';
 
 export const NO_ADDR_RESOLUTION_SET = 'NO_ADDR_RESOLUTION_SET';
 export const NO_ADDR_RESOLUTION = 'NO_ADDR_RESOLUTION';

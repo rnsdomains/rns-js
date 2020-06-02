@@ -1,4 +1,5 @@
 import RNSError from '../src/errors';
+import { Lang } from '../src/types/enums';
 
 export const PUBLIC_NODE_MAINNET = 'https://public-node.rsk.co';
 export const PUBLIC_NODE_TESTNET = 'https://public-node.testnet.rsk.co';
@@ -14,10 +15,14 @@ const asyncTryCatchAssert = async (prom: any, assertion: (error: any) => void) =
   }
 };
 
-export const asyncExpectThrowRNSError = async (prom: any, expectedError: string) => {
+export const asyncExpectThrowRNSError = async (
+  prom: any,
+  expectedError: string,
+  expectedLang = Lang.en,
+) => {
   await asyncTryCatchAssert(
     prom,
-    (error) => expect(error).toEqual(new RNSError(expectedError)),
+    (error) => expect(error).toEqual(new RNSError(expectedError, expectedLang)),
   );
 };
 

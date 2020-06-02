@@ -15,3 +15,16 @@ export enum ChainId {
   ETHEREUM = '0x8000003c',
   LITECOIN = '0x80000002'
 }
+
+/**
+ * Supported feedback languages
+ */
+export enum Lang {
+  en = 'en',
+  es = 'es',
+  ja = 'ja',
+  ko = 'ko',
+  pt = 'pt',
+  ru = 'ru',
+  zh = 'zh'
+}

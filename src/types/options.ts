@@ -1,3 +1,5 @@
+import { Lang } from './enums';
+
 /**
  * Contains the necessary contract addresses to run the current lib.
  */
@@ -13,7 +15,8 @@ export interface ContractAddresses {
  */
 export interface Options {
   contractAddresses?: ContractAddresses,
-  networkId?: number
+  networkId?: number,
+  lang?: Lang,
 }
 
 /**

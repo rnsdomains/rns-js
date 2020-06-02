@@ -8,7 +8,6 @@ import RNSError, { LIBRARY_NOT_COMPOSED, NO_ACCOUNTS_TO_SIGN } from './errors';
 import { getCurrentAddress } from './utils';
 import { TransactionOptions } from './types/options';
 import ErrorWrapper from './errors/ErrorWrapper';
-import { Lang } from './types/enums';
 
 export default abstract class extends ErrorWrapper implements Composable {
   private _contractAddresses!: ContractAddresses;
@@ -31,7 +30,7 @@ export default abstract class extends ErrorWrapper implements Composable {
    * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
    */
   constructor(blockchainApi: Web3 | any, options?: Options) {
-    super(options && options.lang ? options.lang : Lang.en);
+    super(options && options.lang);
 
     this.blockchainApi = blockchainApi as Web3;
 

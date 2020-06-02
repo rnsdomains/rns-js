@@ -1,18 +1,14 @@
 import RNSError from './RNSError';
 import { Lang } from '../types/enums';
 
-interface IErrorWrapper {
-  _throw(errorId: string): void;
-}
-
-export default class implements IErrorWrapper {
+export default class {
   private lang: Lang;
 
-  constructor(lang: Lang) {
+  constructor(lang = Lang.en) {
     this.lang = lang;
   }
 
-  _throw(errorId: string) {
+  protected _throw(errorId: string) {
     throw new RNSError(errorId, this.lang);
   }
 }

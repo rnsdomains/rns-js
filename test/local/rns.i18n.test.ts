@@ -57,7 +57,7 @@ describe.each([
       await registry.setResolver(namehash('noresolver.rsk'), ZERO_ADDRESS);
     });
 
-    it('should throw an error in english', async () => {
+    it('should throw an error in the current language', async () => {
       const rns = new RNS(blockchainApiInstance, options);
 
       await asyncExpectThrowRNSError(() => rns.addr('noresolver.rsk'), NO_RESOLVER, lang);

@@ -150,7 +150,7 @@ describe.each([
 
   describe('custom tx options', () => {
     it('should send custom gasPrice', async () => {
-      const gasPrice = 70000000;
+      const gasPrice = '70000000';
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 

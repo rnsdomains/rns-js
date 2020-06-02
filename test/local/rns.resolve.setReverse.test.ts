@@ -89,7 +89,7 @@ describe.each([
 
   describe('custom tx options', () => {
     it('should send custom gasPrice', async () => {
-      const gasPrice = 70000000;
+      const gasPrice = '70000000';
 
       const txReceipt = await rns.setReverse('alice.rsk', { gasPrice });
 

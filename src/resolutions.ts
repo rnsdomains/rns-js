@@ -9,7 +9,7 @@ import {
 import {
   ZERO_ADDRESS, ADDR_INTERFACE, SET_CHAIN_ADDR_INTERFACE,
   CHAIN_ADDR_INTERFACE, NAME_INTERFACE, ADDR_REVERSE_NAMEHASH,
-  SET_NAME_INTERFACE, NEW_ADDR_INTERFACE,
+  SET_NAME_INTERFACE, NEW_ADDR_INTERFACE, CONTENTHASH_INTERFACE,
 } from './constants';
 import {
   ChainId, Resolutions, Options, NetworkId,
@@ -24,14 +24,18 @@ import {
   NO_CHAIN_ADDR_RESOLUTION_SET, NO_NAME_RESOLUTION, NO_REVERSE_RESOLUTION_SET,
   NO_ACCOUNTS_TO_SIGN, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
   DOMAIN_NOT_EXISTS, INVALID_DOMAIN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD,
+  NO_CONTENTHASH_INTERFACE, NO_CONTENTHASH_SET,
 } from './errors';
 import { TransactionOptions } from './types/options';
 import { CoinType } from './types/enums';
+import ContenthashHelper from './contenthash-helper';
 
 /**
  * Standard resolution protocols.
  */
 export default class extends Composer implements Resolutions {
+  _contenthashHelper: ContenthashHelper;
+
   /**
    *
    * @param blockchainApi - current Web3 or Rsk3 instance
@@ -39,6 +43,7 @@ export default class extends Composer implements Resolutions {
    */
   constructor(public blockchainApi: Web3 | any, options?: Options) {
     super(blockchainApi, options);
+    this._contenthashHelper = new ContenthashHelper(options);
   }
 
   /**
@@ -293,6 +298,50 @@ export default class extends Composer implements Resolutions {
     }
 
     return this.estimateGasAndSendTransaction(contractMethod, options);
+  }
+
+  /**
+   * Get decoded contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   *
+   * @return
+   * Decoded contenthash associated to the given domain
+   */
+  async contenthash(domain: string): Promise<string> {
+    await this.compose();
+    const node: string = namehash(domain);
+
+    const resolver = await this._createResolver(node, createNewAddrResolver);
+
+    const supportsInterface: boolean = await resolver.methods.supportsInterface(
+      CONTENTHASH_INTERFACE,
+    ).call();
+
+    if (!supportsInterface) {
+      this._throw(NO_CONTENTHASH_INTERFACE);
+    }
+
+    const encoded: string = await resolver.methods.contenthash(node).call();
+
+    if (!encoded || encoded === '0x') {
+      this._throw(NO_CONTENTHASH_SET);
+    }
+
+    return this._contenthashHelper.decodeContenthash(encoded);
+  }
+
+  /**
+   * Set contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   * @param content - Content to be associated to the given domain. Must be decoded, the library will encode and save it.
+   *
+   * @return
+   * // TODO
+   */
+  setContenthash(domain: string, content: string, options?: TransactionOptions): any {
+
   }
 
   /**

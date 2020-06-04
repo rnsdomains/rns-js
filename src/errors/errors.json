@@ -286,5 +286,41 @@
    "ru": "Resolver не реализует setChainAddr метод",
    "zh": "解析器未实施setChainAddr方法"
   }
+ },
+ "UNSUPPORTED_CONTENTHASH_PROTOCOL": {
+  "id": "KB025",
+  "message": {
+   "en": "The contenthash protocol is not supported",
+   "es": "",
+   "ja": "",
+   "ko": "",
+   "pt": "",
+   "ru": "",
+   "zh": ""
+  }
+ },
+ "NO_CONTENTHASH_SET": {
+  "id": "KB026",
+  "message": {
+   "en": "No contenthash resolution set",
+   "es": "",
+   "ja": "",
+   "ko": "",
+   "pt": "",
+   "ru": "",
+   "zh": ""
+  }
+ },
+ "NO_CONTENTHASH_INTERFACE": {
+  "id": "KB026",
+  "message": {
+   "en": "No contenthash interface",
+   "es": "",
+   "ja": "",
+   "ko": "",
+   "pt": "",
+   "ru": "",
+   "zh": ""
+  }
  }
 }

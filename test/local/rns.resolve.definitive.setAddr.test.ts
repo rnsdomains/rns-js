@@ -1,13 +1,8 @@
-import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
-import ResolverV1Data from '@rsksmart/rns-resolver/ResolverV1Data.json';
-import ProxyAdminData from '@rsksmart/rns-resolver/ProxyAdminData.json';
-import ProxyFactoryData from '@rsksmart/rns-resolver/ProxyFactoryData.json';
 import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import ChainAddrResolverData from '@rsksmart/rns-resolver/ChainAddrResolverData.json';
 import {
   contract, web3, defaultSender, accounts,
 } from '@openzeppelin/test-environment';
-import { encodeCall } from '@openzeppelin/upgrades';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import Rsk3 from '@rsksmart/rsk3';
@@ -18,6 +13,7 @@ import { ZERO_ADDRESS } from '../../src/constants';
 import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 import RNS from '../../src/index';
 import { labelhash } from '../../src/utils';
+import { deployDefinitiveResolver } from './helpers';
 
 const web3Instance = web3 as unknown as Web3;
 const rsk3Instance = new Rsk3(web3.currentProvider);
@@ -33,25 +29,7 @@ describe.each([
   let rns: RNS;
 
   beforeEach(async () => {
-    const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
-    const ResolverV1 = contract.fromABI(ResolverV1Data.abi, ResolverV1Data.bytecode);
-    const ProxyFactory = contract.fromABI(ProxyFactoryData.abi, ProxyFactoryData.bytecode);
-    const ProxyAdmin = contract.fromABI(ProxyAdminData.abi, ProxyAdminData.bytecode);
-
-    registry = await Registry.new();
-    const proxyFactory = await ProxyFactory.new();
-    const proxyAdmin = await ProxyAdmin.new();
-    const resolverV1 = await ResolverV1.new();
-
-    const salt = '16';
-    const data = encodeCall('initialize', ['address'], [registry.address]);
-    await proxyFactory.deploy(salt, resolverV1.address, proxyAdmin.address, data);
-
-    const resolverAddress = await proxyFactory.getDeploymentAddress(salt, defaultSender);
-
-    await registry.setDefaultResolver(resolverAddress);
-
-    await registry.setSubnodeOwner('0x00', labelhash(TLD), defaultSender);
+    ({ registry } = await deployDefinitiveResolver());
 
     const options = {
       contractAddresses: {
@@ -83,7 +61,7 @@ describe.each([
     expect(actualAddr).toBe(addr);
   });
 
-  it('should set an address with public resolver', async () => {
+  it('should set an address with definitive resolver', async () => {
     await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
 
     await rns.setAddr('alice.rsk', addr);

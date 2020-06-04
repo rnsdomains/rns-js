@@ -58,6 +58,28 @@ export default interface RNS {
   ): Promise<TransactionReceipt>;
 
   /**
+   * Get decoded contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   *
+   * @return
+   * Decoded contenthash associated to the given domain
+   */
+  contenthash(domain: string): Promise<string>;
+
+  /**
+   * Set contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   * @param content - Content to be associated to the given domain. Must be decoded, the library will encode and save it.
+   *
+   * @return
+   * // TODO
+   */
+  setContenthash(domain: string, content: string, options?: TransactionOptions): any;
+
+
+  /**
    * Set resolver of a given domain.
    *
    * @param domain - Domain to set resolver

@@ -8,6 +8,7 @@ export const CHAIN_ADDR_INTERFACE = '0x8be4b5f6';
 export const SET_CHAIN_ADDR_INTERFACE = '0xd278b400';
 export const NEW_ADDR_INTERFACE = '0xf1cb7e06';
 export const SET_ADDT_RESOLVER_V1 = '0x8b95dd71';
+export const CONTENTHASH_INTERFACE = '0xbc1c58d1';
 export const NAME_INTERFACE = '0x691f3431';
 export const SET_NAME_INTERFACE = '0xc47f0027';
 export const AVAILABLE_INTERFACE = '0x96e494e8';

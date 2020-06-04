@@ -40,6 +40,7 @@
     "@rsksmart/rns-reverse": "^1.0.2",
     "@rsksmart/rns-rskregistrar": "^1.2.1",
     "@rsksmart/rsk3": "^0.3.4",
+    "content-hash": "^2.5.2",
     "eth-ens-namehash": "^2.0.8",
     "js-sha3": "^0.8.0",
     "rskjs-util": "^1.0.3",

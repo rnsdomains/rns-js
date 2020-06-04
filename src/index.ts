@@ -103,6 +103,31 @@ export default class extends Composer implements RNS {
   }
 
   /**
+   * Get decoded contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   *
+   * @return
+   * Decoded contenthash associated to the given domain
+   */
+  contenthash(domain: string): Promise<string> {
+    return this._resolutions.contenthash(domain);
+  }
+
+  /**
+   * Set contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   * @param content - Content to be associated to the given domain. Must be decoded, the library will encode and save it.
+   *
+   * @return
+   * // TODO
+   */
+  setContenthash(domain: string, content: string, options?: TransactionOptions): any {
+    return this._resolutions.setContenthash(domain, content, options);
+  }
+
+  /**
    * Set resolver of a given domain.
    *
    * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015

@@ -1,9 +1,4 @@
-import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
-import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
-import ReverseRegistrarData from '@rsksmart/rns-reverse/ReverseRegistrarData.json';
-import {
-  contract, web3, defaultSender, accounts,
-} from '@openzeppelin/test-environment';
+import { web3, defaultSender, accounts } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import Rsk3 from '@rsksmart/rsk3';
@@ -12,9 +7,11 @@ import {
 } from '../../src/errors';
 import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 import RNS from '../../src/index';
-import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
+import {
+  deployRegistryAndCreateTldNode, getRNSInstance, deployNameResolver, deployReverseRegistrar,
+} from './helpers';
 
 const web3Instance = web3 as unknown as Web3;
 const rsk3Instance = new Rsk3(web3.currentProvider);
@@ -27,31 +24,18 @@ describe.each([
   let nameResolver: any;
   let reverseRegistrar: any;
   let rns: RNS;
-  let options: Options;
 
   beforeEach(async () => {
-    const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
-    const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
-    const ReverseRegistrar = contract.fromABI(
-      ReverseRegistrarData.abi,
-      ReverseRegistrarData.bytecode,
-    );
+    registry = await deployRegistryAndCreateTldNode();
 
-    registry = await Registry.new();
-    nameResolver = await NameResolver.new(registry.address);
-    reverseRegistrar = await ReverseRegistrar.new(registry.address);
+    nameResolver = await deployNameResolver(registry);
+    reverseRegistrar = await deployReverseRegistrar(registry);
 
     await registry.setSubnodeOwner('0x00', labelhash('reverse'), defaultSender);
     await registry.setResolver(namehash('reverse'), nameResolver.address);
     await registry.setSubnodeOwner(namehash('reverse'), labelhash('addr'), reverseRegistrar.address);
 
-    options = {
-      contractAddresses: {
-        registry: registry.address,
-      },
-    };
-
-    rns = new RNS(blockchainApiInstance, options);
+    rns = getRNSInstance(blockchainApiInstance, registry);
   });
 
   it('should set reverse resolution of an address', async () => {
@@ -64,27 +48,27 @@ describe.each([
     expect(actual).toBe(expected);
   });
 
-  it('should fail if sending an invalid domain', () => {
-    asyncExpectThrowRNSError(() => rns.setReverse('INV-alid.rsk'), INVALID_DOMAIN);
+  it('should fail if sending an invalid domain', async () => {
+    await asyncExpectThrowRNSError(() => rns.setReverse('INV-alid.rsk'), INVALID_DOMAIN);
   });
 
   it('should fail if no reverse registrar contract address', async () => {
     await registry.setSubnodeOwner(namehash('reverse'), labelhash('addr'), ZERO_ADDRESS);
 
-    asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_REVERSE_REGISTRAR);
+    await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_REVERSE_REGISTRAR);
   });
 
   it('should fail if addr.reverse node owner is an account', async () => {
     const [alice] = accounts;
     await registry.setSubnodeOwner(namehash('reverse'), labelhash('addr'), alice);
 
-    asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_SET_NAME_METHOD);
+    await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_SET_NAME_METHOD);
   });
 
   it('should fail if addr.reverse node owner is a contract that not implement setName method', async () => {
     await registry.setSubnodeOwner(namehash('reverse'), labelhash('addr'), registry.address);
 
-    asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_SET_NAME_METHOD);
+    await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_SET_NAME_METHOD);
   });
 
   describe('custom tx options', () => {
@@ -127,8 +111,8 @@ describe.each([
   ['rsk mainnet', new Rsk3(PUBLIC_NODE_MAINNET)],
   ['rsk testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
 ])('%s - public nodes setReverse', (name, blockchainApiInstance) => {
-  test('should fail when blockchain api instance does not contain accounts to sing the tx', () => {
+  test('should fail when blockchain api instance does not contain accounts to sing the tx', async () => {
     const rns = new RNS(blockchainApiInstance);
-    asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_ACCOUNTS_TO_SIGN);
+    await asyncExpectThrowRNSError(() => rns.setReverse('testing.rsk'), NO_ACCOUNTS_TO_SIGN);
   });
 });

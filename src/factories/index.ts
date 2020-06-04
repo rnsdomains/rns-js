@@ -3,10 +3,10 @@ import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import ChainAddrResolverData from '@rsksmart/rns-resolver/ChainAddrResolverData.json';
 import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
 import ReverseRegistrarData from '@rsksmart/rns-reverse/ReverseRegistrarData.json';
-import ResolverV1Data from '@rsksmart/rns-resolver/ResolverV1Data.json';
 import RSKOwnerData from '@rsksmart/rns-rskregistrar/RSKOwnerData.json';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
+import ResolverV1Data from '../resolvers/ResolverV1Data.json';
 import { NetworkId, ContractAddresses } from '../types';
 import RNSError, { NO_ADDRESSES_PROVIDED } from '../errors';
 

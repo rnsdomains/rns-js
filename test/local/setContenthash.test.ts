@@ -1,20 +1,16 @@
 
-import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
-import {
-  contract, web3, defaultSender,
-} from '@openzeppelin/test-environment';
+import { web3, defaultSender } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import Rsk3 from '@rsksmart/rsk3';
 import {
-  NO_RESOLVER, UNSUPPORTED_CONTENTHASH_PROTOCOL, NO_CONTENTHASH_INTERFACE, NO_CONTENTHASH_SET, NO_ACCOUNTS_TO_SIGN,
+  NO_RESOLVER, UNSUPPORTED_CONTENTHASH_PROTOCOL, NO_ACCOUNTS_TO_SIGN,
 } from '../../src/errors';
 import { ZERO_ADDRESS } from '../../src/constants';
 import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 import RNS from '../../src/index';
-import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
-import { deployDefinitiveResolver } from './helpers';
+import { deployDefinitiveResolver, getRNSInstance } from './helpers';
 import ContenthashHelper from '../../src/contenthash-helper';
 
 const web3Instance = web3 as unknown as Web3;
@@ -24,27 +20,19 @@ describe.each([
   ['web3', web3Instance],
   ['rsk3', rsk3Instance],
 ])('%s - setContenthash', (name, blockchainApiInstance) => {
-  const TLD = 'rsk';
-
   let registry: any;
   let rns: RNS;
-  let options: Options;
   let proxy: any;
   const contenthashHelper = new ContenthashHelper();
+
   beforeEach(async () => {
     ({ proxy, registry } = await deployDefinitiveResolver());
 
-    options = {
-      contractAddresses: {
-        registry: registry.address,
-      },
-    };
-
-    rns = new RNS(blockchainApiInstance, options);
+    rns = getRNSInstance(blockchainApiInstance, registry);
   });
 
   const shouldEncodeProperly = async (contenthash: string) => {
-    await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+    await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
     await rns.setContenthash('alice.rsk', contenthash);
 
@@ -77,13 +65,13 @@ describe.each([
   it('should fail if invalid contenthash', async () => {
     const hash = 'onion1234://zqktlwi4fecvo6ri';
 
-    await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+    await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
     await asyncExpectThrowRNSError(() => rns.setContenthash('alice.rsk', hash), UNSUPPORTED_CONTENTHASH_PROTOCOL);
   });
 
   it('should throw an error when resolver has not been set', async () => {
-    await registry.setSubnodeOwner(namehash(TLD), labelhash('noresolver'), defaultSender);
+    await registry.setSubnodeOwner(namehash('rsk'), labelhash('noresolver'), defaultSender);
     await registry.setResolver(namehash('noresolver.rsk'), ZERO_ADDRESS);
 
     await asyncExpectThrowRNSError(() => rns.contenthash('noresolver.rsk'), NO_RESOLVER);
@@ -96,9 +84,9 @@ describe.each([
   ['rsk mainnet', new Rsk3(PUBLIC_NODE_MAINNET)],
   ['rsk testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
 ])('%s - setContenthash public nodes', (name, blockchainApiInstance) => {
-  test('should fail when web3 instance does not contain accounts to sign the tx', () => {
+  test('should fail when web3 instance does not contain accounts to sign the tx', async () => {
     const rns = new RNS(blockchainApiInstance);
-    asyncExpectThrowRNSError(
+    await asyncExpectThrowRNSError(
       () => rns.setContenthash('testing.rsk', 'check'),
       NO_ACCOUNTS_TO_SIGN,
     );

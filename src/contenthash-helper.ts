@@ -1,8 +1,8 @@
+// most of te code has been copied from https://github.com/ensdomains/ui/blob/b7d36a2a96f6c991a8e109f91f9bd6fb6b1f4589/src/utils/contents.js
 import contentHash from 'content-hash';
 import ErrorWrapper from './errors/ErrorWrapper';
 import { Options } from './types';
 import { UNSUPPORTED_CONTENTHASH_PROTOCOL } from './errors';
-import { DecodedContenthash } from './types/resolutions';
 
 export default class extends ErrorWrapper {
   constructor(options?: Options) {
@@ -10,7 +10,8 @@ export default class extends ErrorWrapper {
   }
 
   decodeContenthash(encoded: string) {
-    let decoded, protocolType = '';
+    let decoded = '';
+    let protocolType = '';
 
     try {
       decoded = contentHash.decode(encoded);
@@ -23,12 +24,14 @@ export default class extends ErrorWrapper {
         protocolType = 'onion';
       } else if (codec === 'onion3') {
         protocolType = 'onion3';
+      } else {
+        this._throw(UNSUPPORTED_CONTENTHASH_PROTOCOL);
       }
-
-      return { decoded, protocolType };
     } catch (e) {
       this._throw(UNSUPPORTED_CONTENTHASH_PROTOCOL);
     }
+
+    return { decoded, protocolType };
   }
 
   encodeContenthash(text: string): string {

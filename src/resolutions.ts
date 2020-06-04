@@ -29,7 +29,6 @@ import {
 import { TransactionOptions } from './types/options';
 import { CoinType } from './types/enums';
 import ContenthashHelper from './contenthash-helper';
-import PromiEvent from 'web3/promiEvent';
 import { DecodedContenthash } from './types/resolutions';
 
 /**
@@ -331,7 +330,7 @@ export default class extends Composer implements Resolutions {
     }
 
     const decoded = this._contenthashHelper.decodeContenthash(encoded);
-    
+
     if (!decoded?.protocolType) {
       this._throw(UNSUPPORTED_CONTENTHASH_PROTOCOL);
     }

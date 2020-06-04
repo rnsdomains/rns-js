@@ -18,9 +18,9 @@ import {
 } from '../../src/errors';
 import { asyncExpectThrowRNSError } from '../utils';
 import RNS from '../../src/index';
-import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
+import { deployRegistryAndCreateTldNode, getRNSInstance } from './helpers';
 
 const web3Instance = web3 as unknown as Web3;
 const rsk3Instance = new Rsk3(web3.currentProvider);
@@ -29,27 +29,14 @@ describe.each([
   ['web3', web3Instance],
   ['rsk3', rsk3Instance],
 ])('%s - subdomains.available', (apiName, blockchainApiInstance) => {
-  const TLD = 'rsk';
-
   let registry: any;
   let rns: RNS;
-  let options: Options;
 
   describe('validations', () => {
     beforeEach(async () => {
-      const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
+      registry = await deployRegistryAndCreateTldNode();
 
-      registry = await Registry.new();
-
-      await registry.setSubnodeOwner('0x00', labelhash(TLD), defaultSender);
-
-      options = {
-        contractAddresses: {
-          registry: registry.address,
-        },
-      };
-
-      rns = new RNS(blockchainApiInstance, options);
+      rns = getRNSInstance(blockchainApiInstance, registry);
     });
 
     it('should return false when sending a subdomain', async () => {
@@ -57,25 +44,41 @@ describe.each([
       expect(available).toBe(false);
     });
 
-    it('should fail when sending an empty string', () => asyncExpectThrowRNSError(() => rns.available(''), INVALID_LABEL));
+    it('should fail when sending an empty string', async () => {
+      await asyncExpectThrowRNSError(() => rns.available(''), INVALID_LABEL);
+    });
 
-    it('should fail when sending an just a dot with no labels', () => asyncExpectThrowRNSError(() => rns.available('.'), INVALID_DOMAIN));
+    it('should fail when sending an just a dot with no labels', async () => {
+      await asyncExpectThrowRNSError(() => rns.available('.'), INVALID_DOMAIN);
+    });
 
-    it('should fail when not sending an .rsk domain', () => asyncExpectThrowRNSError(() => rns.available('domain.notrsk'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS));
+    it('should fail when not sending an .rsk domain', async () => {
+      await asyncExpectThrowRNSError(() => rns.available('domain.notrsk'), SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+    });
 
-    it('should fail when sending upper case domain', () => asyncExpectThrowRNSError(() => rns.available('DOMAIN.rsk'), INVALID_DOMAIN));
+    it('should fail when sending upper case domain', async () => {
+      await asyncExpectThrowRNSError(() => rns.available('DOMAIN.rsk'), INVALID_DOMAIN);
+    });
 
-    it('should fail when sending upper case label', () => asyncExpectThrowRNSError(() => rns.available('DOMAIN'), INVALID_LABEL));
+    it('should fail when sending upper case label', async () => {
+      await asyncExpectThrowRNSError(() => rns.available('DOMAIN'), INVALID_LABEL);
+    });
 
-    it('should fail when sending invalid characters for label', () => asyncExpectThrowRNSError(() => rns.available('dom-ain'), INVALID_LABEL));
+    it('should fail when sending invalid characters for label', async () => {
+      await asyncExpectThrowRNSError(() => rns.available('dom-ain'), INVALID_LABEL);
+    });
 
-    it('should fail when sending invalid characters', () => asyncExpectThrowRNSError(() => rns.available('dom-ain.rsk'), INVALID_DOMAIN));
+    it('should fail when sending invalid characters', async () => {
+      await asyncExpectThrowRNSError(() => rns.available('dom-ain.rsk'), INVALID_DOMAIN);
+    });
 
-    it('should fail when tld does not implement available method', () => asyncExpectThrowRNSError(() => rns.available('domain.rsk'), NO_AVAILABLE_METHOD));
+    it('should fail when tld does not implement available method', async () => {
+      await asyncExpectThrowRNSError(() => rns.available('domain.rsk'), NO_AVAILABLE_METHOD);
+    });
 
     it('should fail when tld node does not have owner', async () => {
-      await registry.setOwner(namehash(TLD), ZERO_ADDRESS);
-      return asyncExpectThrowRNSError(() => rns.available('domain.rsk'), NO_TLD_OWNER);
+      await registry.setOwner(namehash('rsk'), ZERO_ADDRESS);
+      await asyncExpectThrowRNSError(() => rns.available('domain.rsk'), NO_TLD_OWNER);
     });
   });
 
@@ -121,13 +124,13 @@ describe.each([
       await rif.transfer(defaultSender, web3.utils.toBN('50000000000000000000000'));
 
       // token registrar
-      const tokenRegistrar = await TokenRegistrar.new(registry.address, namehash(TLD), rif.address);
+      const tokenRegistrar = await TokenRegistrar.new(registry.address, namehash('rsk'), rif.address);
 
       // rskOwner deployment
-      const rskOwner = await RSKOwner.new(tokenRegistrar.address, registry.address, namehash(TLD));
+      const rskOwner = await RSKOwner.new(tokenRegistrar.address, registry.address, namehash('rsk'));
 
       // give rsk ownership to rskOwner
-      await registry.setSubnodeOwner('0x00', labelhash(TLD), rskOwner.address);
+      await registry.setSubnodeOwner('0x00', labelhash('rsk'), rskOwner.address);
 
       const bytesUtils = await BytesUtils.new();
 
@@ -145,13 +148,7 @@ describe.each([
 
       await rskOwner.addRegistrar(fifsRegistrar.address);
 
-      options = {
-        contractAddresses: {
-          registry: registry.address,
-        },
-      };
-
-      rns = new RNS(blockchainApiInstance, options);
+      rns = getRNSInstance(blockchainApiInstance, registry);
     });
 
     it('should return an empty array just rsk', async () => {

@@ -2,52 +2,43 @@ import contentHash from 'content-hash';
 import ErrorWrapper from './errors/ErrorWrapper';
 import { Options } from './types';
 import { UNSUPPORTED_CONTENTHASH_PROTOCOL } from './errors';
+import { DecodedContenthash } from './types/resolutions';
 
 export default class extends ErrorWrapper {
   constructor(options?: Options) {
     super(options && options.lang);
   }
 
-  decodeContenthash(encoded: string): string {
-    let decoded;
+  decodeContenthash(encoded: string) {
+    let decoded, protocolType = '';
 
     try {
       decoded = contentHash.decode(encoded);
       const codec = contentHash.getCodec(encoded);
       if (codec === 'ipfs-ns') {
-        return `ipfs://${decoded}`;
+        protocolType = 'ipfs';
+      } else if (codec === 'swarm-ns') {
+        protocolType = 'bzz';
+      } else if (codec === 'onion') {
+        protocolType = 'onion';
+      } else if (codec === 'onion3') {
+        protocolType = 'onion3';
       }
 
-      if (codec === 'swarm-ns') {
-        return `bzz://${decoded}`;
-      }
-
-      if (codec === 'onion') {
-        return `onion://${decoded}`;
-      }
-
-      if (codec === 'onion3') {
-        return `onion3://${decoded}`;
-      }
-
-      this._throw(UNSUPPORTED_CONTENTHASH_PROTOCOL);
+      return { decoded, protocolType };
     } catch (e) {
       this._throw(UNSUPPORTED_CONTENTHASH_PROTOCOL);
     }
-
-    return ''; // TODO
   }
 
   encodeContenthash(text: string): string {
     let content = '';
     let contentType = '';
     if (text) {
-      const matched = 
-        text.match(/^(ipfs|bzz|onion|onion3):\/\/(.*)/) || 
-        text.match(/\/(ipfs)\/(.*)/);
+      const matched = text.match(/^(ipfs|bzz|onion|onion3):\/\/(.*)/)
+        || text.match(/\/(ipfs)\/(.*)/);
       if (matched) {
-        contentType = matched[1];
-        content = matched[2];
+        ([, contentType, content] = matched);
       }
 
       try {
@@ -75,6 +66,6 @@ export default class extends ErrorWrapper {
       }
     }
 
-    return ''; // TODO
+    return '';
   }
 }

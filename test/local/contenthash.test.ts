@@ -43,34 +43,35 @@ describe.each([
     rns = new RNS(blockchainApiInstance, options);
   });
 
-  const shouldDecodeProperly = async (expected: string) => {
-    const encoded = contenthashHelper.encodeContenthash(expected);
+  const shouldDecodeProperly = async (expectedProtocol: string, expectedContent: string) => {
+    const encoded = contenthashHelper.encodeContenthash(`${expectedProtocol}://${expectedContent}`);
 
     await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
     await proxy.methods['setContenthash(bytes32,bytes)'](namehash('alice.rsk'), encoded, { from: defaultSender });
 
     const contenthash = await rns.contenthash('alice.rsk');
-    expect(contenthash).toBe(expected);
+    expect(contenthash.protocolType).toBe(expectedProtocol);
+    expect(contenthash.decoded).toBe(expectedContent);
   };
 
   it('should get ipfs contenthash', async () => {
-    const ipfsHash = 'ipfs://QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4';
-    await shouldDecodeProperly(ipfsHash);
+    const hash = 'QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4';
+    await shouldDecodeProperly('ipfs', hash);
   });
 
   it('should get bzz contenthash', async () => {
-    const swarmHash = 'bzz://d1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162';
-    await shouldDecodeProperly(swarmHash);
+    const hash = 'd1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162';
+    await shouldDecodeProperly('bzz', hash);
   });
 
   it('should get onion contenthash', async () => {
-    const onionHash = 'onion://zqktlwi4fecvo6ri';
-    await shouldDecodeProperly(onionHash);
+    const hash = 'zqktlwi4fecvo6ri';
+    await shouldDecodeProperly('onion', hash);
   });
 
   it('should get onion3 contenthash', async () => {
-    const onionHash = 'onion3://p53lf57qovyuvwsc6xnrppyply3vtqm7l6pcobkmyqsiofyeznfu5uqd';
-    await shouldDecodeProperly(onionHash);
+    const hash = 'p53lf57qovyuvwsc6xnrppyply3vtqm7l6pcobkmyqsiofyeznfu5uqd';
+    await shouldDecodeProperly('onion3', hash);
   });
 
   it('should fail if invalid contenthash', async () => {

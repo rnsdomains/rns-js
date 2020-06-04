@@ -13,6 +13,7 @@ import Subdomains from './subdomains';
 import Composer from './composer';
 import * as utils from './utils';
 import { TransactionOptions } from './types/options';
+import { DecodedContenthash } from './types/resolutions';
 
 /**
  * RNS JavaScript library.
@@ -107,10 +108,10 @@ export default class extends Composer implements RNS {
    *
    * @param domain - Domain to be resolved
    *
-   * @return
-   * Decoded contenthash associated to the given domain
+   * @returns
+   * Decoded content and protocolType associated to the given domain
    */
-  contenthash(domain: string): Promise<string> {
+  contenthash(domain: string): Promise<DecodedContenthash> {
     return this._resolutions.contenthash(domain);
   }
 
@@ -120,8 +121,7 @@ export default class extends Composer implements RNS {
    * @param domain - Domain to be resolved
    * @param content - Content to be associated to the given domain. Must be decoded, the library will encode and save it.
    *
-   * @return
-   * // TODO
+   * @returns TransactionReceipt of the submitted tx
    */
   setContenthash(domain: string, content: string, options?: TransactionOptions): any {
     return this._resolutions.setContenthash(domain, content, options);

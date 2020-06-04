@@ -24,11 +24,13 @@ import {
   NO_CHAIN_ADDR_RESOLUTION_SET, NO_NAME_RESOLUTION, NO_REVERSE_RESOLUTION_SET,
   NO_ACCOUNTS_TO_SIGN, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
   DOMAIN_NOT_EXISTS, INVALID_DOMAIN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD,
-  NO_CONTENTHASH_INTERFACE, NO_CONTENTHASH_SET,
+  NO_CONTENTHASH_INTERFACE, NO_CONTENTHASH_SET, UNSUPPORTED_CONTENTHASH_PROTOCOL,
 } from './errors';
 import { TransactionOptions } from './types/options';
 import { CoinType } from './types/enums';
 import ContenthashHelper from './contenthash-helper';
+import PromiEvent from 'web3/promiEvent';
+import { DecodedContenthash } from './types/resolutions';
 
 /**
  * Standard resolution protocols.
@@ -308,7 +310,7 @@ export default class extends Composer implements Resolutions {
    * @return
    * Decoded contenthash associated to the given domain
    */
-  async contenthash(domain: string): Promise<string> {
+  async contenthash(domain: string): Promise<DecodedContenthash> {
     await this.compose();
     const node: string = namehash(domain);
 
@@ -328,7 +330,13 @@ export default class extends Composer implements Resolutions {
       this._throw(NO_CONTENTHASH_SET);
     }
 
-    return this._contenthashHelper.decodeContenthash(encoded);
+    const decoded = this._contenthashHelper.decodeContenthash(encoded);
+    
+    if (!decoded?.protocolType) {
+      this._throw(UNSUPPORTED_CONTENTHASH_PROTOCOL);
+    }
+
+    return decoded!;
   }
 
   /**
@@ -338,10 +346,26 @@ export default class extends Composer implements Resolutions {
    * @param content - Content to be associated to the given domain. Must be decoded, the library will encode and save it.
    *
    * @return
-   * // TODO
+   * TransactionReceipt of the submitted tx
    */
-  setContenthash(domain: string, content: string, options?: TransactionOptions): any {
+  async setContenthash(
+    domain: string, content: string, options?: TransactionOptions,
+  ): Promise<TransactionReceipt> {
+    await this.compose();
 
+    if (!await hasAccounts(this.blockchainApi)) {
+      this._throw(NO_ACCOUNTS_TO_SIGN);
+    }
+
+    const node: string = namehash(domain);
+
+    const resolver = await this._createResolver(node, createNewAddrResolver);
+
+    const encodedContenthash = this._contenthashHelper.encodeContenthash(content);
+
+    const contractMethod = resolver.methods['setContenthash(bytes32,bytes)'](node, encodedContenthash);
+
+    return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
   /**

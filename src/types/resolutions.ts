@@ -51,20 +51,14 @@ export interface Resolutions {
    * Get decoded contenthash of a given domain.
    *
    * @param domain - Domain to be resolved
-   *
-   * @return
-   * Decoded contenthash associated to the given domain
    */
-  contenthash(domain: string): Promise<string>;
+  contenthash(domain: string): Promise<DecodedContenthash>;
 
   /**
    * Set contenthash of a given domain.
    *
    * @param domain - Domain to be resolved
    * @param content - Content to be associated to the given domain. Must be decoded, the library will encode and save it.
-   *
-   * @return
-   * // TODO
    */
   setContenthash(domain: string, content: string, options?: TransactionOptions): any;
 
@@ -98,4 +92,10 @@ export interface Resolutions {
    * Domain or subdomain associated to the given address.
    */
   name(address: string): Promise<string>;
+}
+
+export interface DecodedContenthash {
+  protocolType: string;
+
+  decoded: string;
 }

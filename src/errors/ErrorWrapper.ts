@@ -8,7 +8,7 @@ export default class {
     this.lang = lang;
   }
 
-  protected _throw(errorId: string): Error {
+  protected _throw(errorId: string) {
     throw new RNSError(errorId, this.lang);
   }
 }

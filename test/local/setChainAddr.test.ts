@@ -49,8 +49,14 @@ describe.each([
 
       await rns.setAddr('alice.rsk', rskAddr, ChainId.RSK);
 
-      const actualAddr = await rns.addr('alice.rsk', ChainId.RSK);
+      let actualAddr = await rns.addr('alice.rsk', ChainId.RSK);
       expect(actualAddr).toBe(rskAddr);
+
+      // set it back to zero
+      await rns.setAddr('alice.rsk', ZERO_ADDRESS, ChainId.RSK);
+
+      actualAddr = await multichainResolver.chainAddr(namehash('alice.rsk'), ChainId.RSK);
+      expect(actualAddr).toEqual(ZERO_ADDRESS);
     });
 
     it('should set an address for ETH', async () => {
@@ -58,8 +64,14 @@ describe.each([
 
       await rns.setAddr('alice.rsk', ethAddr, ChainId.ETHEREUM);
 
-      const actualAddr = await rns.addr('alice.rsk', ChainId.ETHEREUM);
+      let actualAddr = await rns.addr('alice.rsk', ChainId.ETHEREUM);
       expect(actualAddr).toBe(ethAddr);
+
+      // set it back to zero
+      await rns.setAddr('alice.rsk', ZERO_ADDRESS, ChainId.ETHEREUM);
+
+      actualAddr = await multichainResolver.chainAddr(namehash('alice.rsk'), ChainId.ETHEREUM);
+      expect(actualAddr).toEqual(ZERO_ADDRESS);
     });
 
     it('should set an address for BTC', async () => {
@@ -67,8 +79,14 @@ describe.each([
 
       await rns.setAddr('alice.rsk', btcAddr, ChainId.BITCOIN);
 
-      const actualAddr = await rns.addr('alice.rsk', ChainId.BITCOIN);
+      let actualAddr = await rns.addr('alice.rsk', ChainId.BITCOIN);
       expect(actualAddr).toBe(btcAddr);
+
+      // set it back to zero
+      await rns.setAddr('alice.rsk', '', ChainId.BITCOIN);
+
+      actualAddr = await multichainResolver.chainAddr(namehash('alice.rsk'), ChainId.BITCOIN);
+      expect(actualAddr).toEqual('');
     });
 
     it('should return a tx receipt when setting an address', async () => {
@@ -144,6 +162,22 @@ describe.each([
 
   describe('definitive resolver', () => {
     let proxy: any;
+
+    const getAddress = async (coinType: CoinType) => {
+      const decodedAddr = await proxy.methods['addr(bytes32,uint256)'](
+        namehash('alice.rsk'),
+        coinType,
+      );
+
+      if (!decodedAddr) {
+        return '';
+      }
+
+      const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
+
+      return formatsByCoinType[coinType].encoder(buff);
+    };
+
     beforeEach(async () => {
       ({ registry, proxy } = await deployDefinitiveResolver());
 
@@ -155,14 +189,15 @@ describe.each([
 
       await rns.setAddr('alice.rsk', rskAddr, ChainId.RSK);
 
-      const decodedAddr = await proxy.methods['addr(bytes32,uint256)'](
-        namehash('alice.rsk'),
-        CoinType.RSK,
-      );
+      let actualAddr = await getAddress(CoinType.RSK);
 
-      const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
+      expect(actualAddr).toBe(rskAddr);
 
-      expect(formatsByCoinType[CoinType.RSK].encoder(buff)).toBe(rskAddr);
+      // set it back to zero
+      await rns.setAddr('alice.rsk', ZERO_ADDRESS, ChainId.RSK);
+
+      actualAddr = await getAddress(CoinType.RSK);
+      expect(actualAddr).toBe(ZERO_ADDRESS);
     });
 
     it('should set an address for ETH', async () => {
@@ -170,14 +205,15 @@ describe.each([
 
       await rns.setAddr('alice.rsk', ethAddr, ChainId.ETHEREUM);
 
-      const decodedAddr = await proxy.methods['addr(bytes32,uint256)'](
-        namehash('alice.rsk'),
-        CoinType.ETHEREUM,
-      );
+      let actualAddr = await getAddress(CoinType.ETHEREUM);
 
-      const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
+      expect(actualAddr).toBe(ethAddr);
 
-      expect(formatsByCoinType[CoinType.ETHEREUM].encoder(buff)).toBe(ethAddr);
+      // set it back to zero
+      await rns.setAddr('alice.rsk', ZERO_ADDRESS, ChainId.ETHEREUM);
+
+      actualAddr = await getAddress(CoinType.ETHEREUM);
+      expect(actualAddr).toBe(ZERO_ADDRESS);
     });
 
     it('should set an address for BTC', async () => {
@@ -185,14 +221,15 @@ describe.each([
 
       await rns.setAddr('alice.rsk', btcAddr, ChainId.BITCOIN);
 
-      const decodedAddr = await proxy.methods['addr(bytes32,uint256)'](
-        namehash('alice.rsk'),
-        CoinType.BITCOIN,
-      );
+      let actualAddr = await getAddress(CoinType.BITCOIN);
 
-      const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
+      expect(actualAddr).toBe(btcAddr);
 
-      expect(formatsByCoinType[CoinType.BITCOIN].encoder(buff)).toBe(btcAddr);
+      // set it back to zero
+      await rns.setAddr('alice.rsk', '', ChainId.BITCOIN);
+
+      actualAddr = await getAddress(CoinType.BITCOIN);
+      expect(actualAddr).toBe('');
     });
   });
 });

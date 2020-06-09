@@ -179,7 +179,13 @@ export default class extends Composer implements Resolutions {
 
       const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
 
-      return formatsByCoinType[coinType].encoder(buff);
+      const addr = formatsByCoinType[coinType].encoder(buff);
+
+      if (!addr || addr === ZERO_ADDRESS) {
+        this._throw(NO_CHAIN_ADDR_RESOLUTION_SET);
+      }
+
+      return addr;
     }
 
     const chainResolver = await this._createResolver(node, createChainAddrResolver);
@@ -293,7 +299,7 @@ export default class extends Composer implements Resolutions {
 
       const coinType = this._getCoinTypeFromChainId(chainId);
 
-      const decodedAddr = formatsByCoinType[coinType].decoder(addr);
+      const decodedAddr = addr ? formatsByCoinType[coinType].decoder(addr) : '0x';
 
       contractMethod = resolver.methods['setAddr(bytes32,uint256,bytes)'](node, coinType, decodedAddr);
     }

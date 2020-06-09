@@ -43,8 +43,14 @@ describe.each([
 
       await rns.setAddr('alice.rsk', addr);
 
-      const actualAddr = await rns.addr('alice.rsk');
+      let actualAddr = await rns.addr('alice.rsk');
       expect(actualAddr).toBe(addr);
+
+      // set it back to zero
+      await rns.setAddr('alice.rsk', ZERO_ADDRESS);
+
+      actualAddr = await publicResolver.addr(namehash('alice.rsk'));
+      expect(actualAddr).toEqual(ZERO_ADDRESS);
     });
 
     it('should set an address if implements the multichain resolver', async () => {
@@ -55,8 +61,14 @@ describe.each([
 
       await rns.setAddr('alice.rsk', addr);
 
-      const actualAddr = await rns.addr('alice.rsk');
+      let actualAddr = await rns.addr('alice.rsk');
       expect(actualAddr).toBe(addr);
+
+      // set it back to zero
+      await rns.setAddr('alice.rsk', ZERO_ADDRESS);
+
+      actualAddr = await multichainResolver.addr(namehash('alice.rsk'));
+      expect(actualAddr).toEqual(ZERO_ADDRESS);
     });
 
     it('should return a tx receipt when setting an address', async () => {
@@ -145,8 +157,9 @@ describe.each([
   });
 
   describe('definitive resolver', () => {
+    let proxy: any;
     beforeEach(async () => {
-      ({ registry } = await deployDefinitiveResolver());
+      ({ registry, proxy } = await deployDefinitiveResolver());
 
       rns = getRNSInstance(blockchainApiInstance, registry);
     });
@@ -156,8 +169,14 @@ describe.each([
 
       await rns.setAddr('alice.rsk', addr);
 
-      const actualAddr = await rns.addr('alice.rsk');
+      let actualAddr = await rns.addr('alice.rsk');
       expect(actualAddr).toBe(addr);
+
+      // set it back to zero
+      await rns.setAddr('alice.rsk', ZERO_ADDRESS);
+
+      actualAddr = await proxy.methods['addr(bytes32)'].call(namehash('alice.rsk'));
+      expect(actualAddr).toEqual(ZERO_ADDRESS);
     });
   });
 });

@@ -5,18 +5,18 @@ import { NO_ADDR_RESOLUTION_SET, NO_RESOLVER, NO_ADDR_RESOLUTION } from '../../s
 import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 
 describe.each([
-  new Web3(PUBLIC_NODE_MAINNET),
-  new Web3(PUBLIC_NODE_TESTNET),
-  new Rsk3(PUBLIC_NODE_MAINNET),
-  new Rsk3(PUBLIC_NODE_TESTNET),
-])('addr resolution', (blockchainApiInstance) => {
+  ['web3 mainnet', new Web3(PUBLIC_NODE_MAINNET)],
+  ['web3 testnet', new Web3(PUBLIC_NODE_TESTNET)],
+  ['rsk3 mainnet', new Rsk3(PUBLIC_NODE_MAINNET)],
+  ['rsk3 testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
+])('%s - addr resolution', (name, blockchainApiInstance) => {
   let rns: RNS;
 
   beforeEach(() => {
     rns = new RNS(blockchainApiInstance);
   });
 
-  it('should resolve a name', async () => {
+  it('should resolve a name with public resolver', async () => {
     const addr = await rns.addr('testing.rsk');
     expect(addr).toBe('0x0000000000000000000000000000000001000006');
   });
@@ -30,11 +30,40 @@ describe.each([
     await asyncExpectThrowRNSError(() => rns.addr('noaddrresolver.testing.rsk'), NO_ADDR_RESOLUTION);
   });
 
-  it('should throw an error when no resolution set', async () => {
+  it('should throw an error when no resolution set with public resolver', async () => {
     await asyncExpectThrowRNSError(() => rns.addr('noresolution.testing.rsk'), NO_ADDR_RESOLUTION_SET);
+  });
+
+  it('should throw an error when no resolution set with multichain resolver', async () => {
+    await asyncExpectThrowRNSError(() => rns.addr('noresolution.multichain.testing.rsk'), NO_ADDR_RESOLUTION_SET);
   });
 
   it('should throw an error when domain do not exist', async () => {
     await asyncExpectThrowRNSError(() => rns.addr('noexists.testing.rsk'), NO_RESOLVER);
+  });
+});
+
+describe.each([
+  ['web3 testnet', new Web3(PUBLIC_NODE_TESTNET)],
+  ['rsk3 testnet', new Rsk3(PUBLIC_NODE_TESTNET)],
+])('%s - addr resolution only testnet', (name, blockchainApiInstance) => {
+  let rns: RNS;
+
+  beforeEach(() => {
+    rns = new RNS(blockchainApiInstance);
+  });
+
+  it('should resolve a name with multichain resolver', async () => {
+    const addr = await rns.addr('multichain.testing.rsk');
+    expect(addr).toBe('0x0000000000000000000000000000000001000006');
+  });
+
+  it('should resolve a name with definitive resolver', async () => {
+    const addr = await rns.addr('addr.definitive.testing.rsk');
+    expect(addr).toBe('0x0000000000000000000000000000000001000006');
+  });
+
+  it('should throw an error when no resolution set with definitive resolver', async () => {
+    await asyncExpectThrowRNSError(() => rns.addr('noresolution.definitive.testing.rsk'), NO_ADDR_RESOLUTION_SET);
   });
 });

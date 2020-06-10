@@ -5,6 +5,7 @@ import { ChainId } from './enums';
 import { Utils } from './utils';
 import { Subdomains } from './subdomains';
 import { TransactionOptions } from './options';
+import { DecodedContenthash } from './resolutions';
 
 /**
  * web3.eth.Contract wrapper. Contains an instance for each Contract used to run the lib.
@@ -56,6 +57,22 @@ export default interface RNS {
   setAddr(
     domain: string, addr: string, chainId?: ChainId, options?: TransactionOptions,
   ): Promise<TransactionReceipt>;
+
+  /**
+   * Get decoded contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   */
+  contenthash(domain: string): Promise<DecodedContenthash>;
+
+  /**
+   * Set contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   * @param content - Content to be associated to the given domain. Must be decoded, the library will encode and save it.
+   */
+  setContenthash(domain: string, content: string, options?: TransactionOptions): any;
+
 
   /**
    * Set resolver of a given domain.

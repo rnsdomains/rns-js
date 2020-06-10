@@ -18,9 +18,9 @@ import {
 } from '../../src/errors';
 import { asyncExpectThrowRNSError } from '../utils';
 import RNS from '../../src/index';
-import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
+import { deployRegistryAndCreateTldNode, getRNSInstance } from './helpers';
 
 const web3Instance = web3 as unknown as Web3;
 const rsk3Instance = new Rsk3(web3.currentProvider);
@@ -29,27 +29,14 @@ describe.each([
   ['web3', web3Instance],
   ['rsk3', rsk3Instance],
 ])('%s - subdomains.available', (apiName, blockchainApiInstance) => {
-  const TLD = 'rsk';
-
   let registry: any;
   let rns: RNS;
-  let options: Options;
 
   describe('validations', () => {
     beforeEach(async () => {
-      const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
+      registry = await deployRegistryAndCreateTldNode();
 
-      registry = await Registry.new();
-
-      await registry.setSubnodeOwner('0x00', labelhash(TLD), defaultSender);
-
-      options = {
-        contractAddresses: {
-          registry: registry.address,
-        },
-      };
-
-      rns = new RNS(blockchainApiInstance, options);
+      rns = getRNSInstance(blockchainApiInstance, registry);
     });
 
     it('should return false when sending a subdomain', async () => {
@@ -90,7 +77,7 @@ describe.each([
     });
 
     it('should fail when tld node does not have owner', async () => {
-      await registry.setOwner(namehash(TLD), ZERO_ADDRESS);
+      await registry.setOwner(namehash('rsk'), ZERO_ADDRESS);
       await asyncExpectThrowRNSError(() => rns.available('domain.rsk'), NO_TLD_OWNER);
     });
   });
@@ -137,13 +124,13 @@ describe.each([
       await rif.transfer(defaultSender, web3.utils.toBN('50000000000000000000000'));
 
       // token registrar
-      const tokenRegistrar = await TokenRegistrar.new(registry.address, namehash(TLD), rif.address);
+      const tokenRegistrar = await TokenRegistrar.new(registry.address, namehash('rsk'), rif.address);
 
       // rskOwner deployment
-      const rskOwner = await RSKOwner.new(tokenRegistrar.address, registry.address, namehash(TLD));
+      const rskOwner = await RSKOwner.new(tokenRegistrar.address, registry.address, namehash('rsk'));
 
       // give rsk ownership to rskOwner
-      await registry.setSubnodeOwner('0x00', labelhash(TLD), rskOwner.address);
+      await registry.setSubnodeOwner('0x00', labelhash('rsk'), rskOwner.address);
 
       const bytesUtils = await BytesUtils.new();
 
@@ -161,13 +148,7 @@ describe.each([
 
       await rskOwner.addRegistrar(fifsRegistrar.address);
 
-      options = {
-        contractAddresses: {
-          registry: registry.address,
-        },
-      };
-
-      rns = new RNS(blockchainApiInstance, options);
+      rns = getRNSInstance(blockchainApiInstance, registry);
     });
 
     it('should return an empty array just rsk', async () => {

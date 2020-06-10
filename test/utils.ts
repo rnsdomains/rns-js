@@ -15,30 +15,24 @@ const asyncTryCatchAssert = async (prom: any, assertion: (error: any) => void) =
   }
 };
 
-export const asyncExpectThrowRNSError = async (
+export const asyncExpectThrowRNSError = (
   prom: any,
   expectedError: string,
   expectedLang = Lang.en,
-) => {
-  await asyncTryCatchAssert(
-    prom,
-    (error) => expect(error).toEqual(new RNSError(expectedError, expectedLang)),
-  );
-};
+) => asyncTryCatchAssert(
+  prom,
+  (error) => expect(error).toEqual(new RNSError(expectedError, expectedLang)),
+);
 
-export const asyncExpectThrowVMRevert = async (prom: any) => {
-  await asyncTryCatchAssert(
-    prom,
-    (error) => expect(error.message).toContain('VM Exception while processing transaction: revert'),
-  );
-};
+export const asyncExpectThrowVMRevert = (prom: any) => asyncTryCatchAssert(
+  prom,
+  (error) => expect(error.message).toContain('VM Exception while processing transaction: revert'),
+);
 
-export const asyncExpectThrowError = async (prom: any) => {
-  await asyncTryCatchAssert(
-    prom,
-    (error) => expect(error).toBeInstanceOf(Error),
-  );
-};
+export const asyncExpectThrowError = (prom: any) => asyncTryCatchAssert(
+  prom,
+  (error) => expect(error).toBeInstanceOf(Error),
+);
 
 export const expectThrowRNSError = (fn: any, expectedError: string) => {
   let error;

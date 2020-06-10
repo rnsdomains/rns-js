@@ -41,14 +41,14 @@ describe.each([
     expect(actualResolver).toBe(addr);
   });
 
-  it('should return a tx receipt', async () => {
+  it('should return a tx hash', async () => {
     const addr = '0x0000000000000000000000000000000001000006';
 
     await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-    const tx = await rns.setResolver('alice.rsk', addr);
+    const txHash = await rns.setResolver('alice.rsk', addr);
 
-    expect(tx.transactionHash).toBeTruthy();
+    expect(txHash).toBeTruthy();
   });
 
   it('should throw an error when address is invalid', async () => {
@@ -78,9 +78,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-      const txReceipt = await rns.setResolver('alice.rsk', addr, { gasPrice });
+      const txHash = await rns.setResolver('alice.rsk', addr, { gasPrice });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gasPrice).toEqual(gasPrice.toString());
     });
@@ -90,9 +90,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-      const txReceipt = await rns.setResolver('alice.rsk', addr, { gas });
+      const txHash = await rns.setResolver('alice.rsk', addr, { gas });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gas).toEqual(gas);
       expect(tx.from).toEqual(defaultSender);
@@ -103,9 +103,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), from);
 
-      const txReceipt = await rns.setResolver('alice.rsk', addr, { from });
+      const txHash = await rns.setResolver('alice.rsk', addr, { from });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.from).toEqual(from);
     });

@@ -75,9 +75,9 @@ describe.each([
     it('should send custom gasPrice', async () => {
       const gasPrice = '70000000';
 
-      const txReceipt = await rns.setReverse('alice.rsk', { gasPrice });
+      const txHash = await rns.setReverse('alice.rsk', { gasPrice });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gasPrice).toEqual(gasPrice.toString());
     });
@@ -85,9 +85,9 @@ describe.each([
     it('should send custom gas', async () => {
       const gas = 800000;
 
-      const txReceipt = await rns.setReverse('alice.rsk', { gas });
+      const txHash = await rns.setReverse('alice.rsk', { gas });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gas).toEqual(gas);
       expect(tx.from).toEqual(defaultSender);
@@ -96,9 +96,9 @@ describe.each([
     it('should send custom sender', async () => {
       const [from] = accounts;
 
-      const txReceipt = await rns.setReverse('alice.rsk', { from });
+      const txHash = await rns.setReverse('alice.rsk', { from });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.from).toEqual(from);
     });

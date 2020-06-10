@@ -1,6 +1,5 @@
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
-import { TransactionReceipt } from 'web3-eth';
 import { formatsByCoinType } from '@ensdomains/address-encoder';
 import {
   createAddrResolver, createChainAddrResolver, createNameResolver,
@@ -31,34 +30,14 @@ import { CoinType } from './types/enums';
 import ContenthashHelper from './contenthash-helper';
 import { DecodedContenthash } from './types/resolutions';
 
-/**
- * Standard resolution protocols.
- */
 export default class extends Composer implements Resolutions {
   _contenthashHelper: ContenthashHelper;
 
-  /**
-   *
-   * @param blockchainApi - current Web3 or Rsk3 instance
-   * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
-   */
   constructor(public blockchainApi: Web3 | any, options?: Options) {
     super(blockchainApi, options);
     this._contenthashHelper = new ContenthashHelper(options);
   }
 
-  /**
-   * Instance the resolver associated with the given node and checks if is valid according to the given interface.
-   *
-   * @throws provided `errorMessage` if the resolver is not ERC165 or it doesn't implement the necessary given interface.
-   * @throws `noResolverError` || NO_RESOLVER when the domain doesn't have resolver - KB003.
-   *
-   * @param node - namehash of the domain to resolve
-   * @param methodInterface - standard resolution interface id
-   * @param errorMessage - error message in case the resolver is not valid
-   * @param contractFactory - factory function used to instance the resolver
-   * @param noResolverError - custom error to throw if no resolver found
-   */
   private async _createResolver(
     node: string,
     contractFactory: (blockchainApi: Web3 | any, address: string) => Contract,
@@ -111,18 +90,6 @@ export default class extends Composer implements Resolutions {
     }
   }
 
-  /**
-   * addr resolution protocol.
-
-   * @throws NO_ADDR_RESOLUTION_SET if the resolution hasn't been set yet - KB001.
-   * @throws NO_ADDR_RESOLUTION it has an invalid resolver - KB002.
-   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
-   *
-   * @param domain - Domain to be resolved
-   *
-   * @return
-   * Address resolution for the given domain
-   */
   async addr(domain: string): Promise<string> {
     await this.compose();
     const node: string = namehash(domain);
@@ -146,19 +113,6 @@ export default class extends Composer implements Resolutions {
     return toChecksumAddress(addr, this.currentNetworkId);
   }
 
-  /**
-   * chainAddr resolution protocol.
-   *
-   * @throws NO_CHAIN_ADDR_RESOLUTION_SET if the resolution hasn't been set yet - KB007.
-   * @throws NO_CHAIN_ADDR_RESOLUTION it has an invalid resolver - KB006.
-   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
-   *
-   * @param domain - Domain to be resolved
-   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
-   *
-   * @return
-   * Address resolution for a domain in a given chain
-   */
   async chainAddr(domain: string, chainId: ChainId): Promise<string> {
     await this.compose();
     const node: string = namehash(domain);
@@ -216,23 +170,9 @@ export default class extends Composer implements Resolutions {
     return addr;
   }
 
-  /**
-   * Sets addr for the given domain using the AbstractAddrResolver interface.
-   *
-   * @throws NO_SET_ADDR it has an invalid resolver - KB018.
-   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
-   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchainApi instance does not have associated accounts to sign the transaction - KB015
-   * @throws INVALID_ADDRESS if the given addr is invalid - KB017
-   * @throws INVALID_CHECKSUM_ADDRESS if the given addr has an invalid checksum - KB019
-   *
-   * @param domain - Domain to set resolution
-   * @param addr - Address to be set as the resolution of the given domain
-   * @param options - Custom configs to be used when submitting the transaction
-   *
-   */
   async setAddr(
     domain: string, addr: string, options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
@@ -250,25 +190,9 @@ export default class extends Composer implements Resolutions {
     return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
-  /**
-   * Sets addr for the given domain using the AbstractAddrResolver interface.
-   *
-   * @throws NO_SET_CHAIN_ADDR if it has an invalid resolver - KB024.
-   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
-   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
-   * @throws INVALID_ADDRESS if the given addr is invalid when the chainId belongs to an EVM compatible blockchain - KB017
-   * @throws INVALID_CHECKSUM_ADDRESS if the given addr has an invalid checksum and the chainId belongs to an EVM compatible blockchain - KB019
-   *
-   * @param domain - Domain to set resolution
-   * @param addr - Address to be set as the resolution of the given domain
-   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
-   * @param options - Custom configs to be used when submitting the transaction
-   *
-   *
-   */
   async setChainAddr(
     domain: string, addr: string, chainId: ChainId, options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
@@ -307,14 +231,6 @@ export default class extends Composer implements Resolutions {
     return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
-  /**
-   * Get decoded contenthash of a given domain.
-   *
-   * @param domain - Domain to be resolved
-   *
-   * @return
-   * Decoded contenthash associated to the given domain
-   */
   async contenthash(domain: string): Promise<DecodedContenthash> {
     await this.compose();
     const node: string = namehash(domain);
@@ -344,18 +260,9 @@ export default class extends Composer implements Resolutions {
     return decoded!;
   }
 
-  /**
-   * Set contenthash of a given domain.
-   *
-   * @param domain - Domain to be resolved
-   * @param content - Content to be associated to the given domain. Must be decoded, the library will encode and save it.
-   *
-   * @return
-   * TransactionReceipt of the submitted tx
-   */
   async setContenthash(
     domain: string, content: string, options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
@@ -373,22 +280,9 @@ export default class extends Composer implements Resolutions {
     return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
-  /**
-   * Set resolver of a given domain.
-   *
-   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
-   * @throws INVALID_ADDRESS if the given resolver address is invalid - KB017
-   * @throws INVALID_CHECKSUM_ADDRESS if the given resolver address has an invalid checksum - KB019
-   * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
-   *
-   * @param domain - Domain to set resolver
-   * @param resolver - Address to be set as the resolver of the given domain
-   * @param options - Custom configs to be used when submitting the transaction
-   *
-   */
   async setResolver(
     domain: string, resolver: string, options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
@@ -409,21 +303,7 @@ export default class extends Composer implements Resolutions {
     return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
-  /**
-   * Set reverse resolution with the given name for the current address
-   *
-   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
-   * @throws INVALID_DOMAIN if the given domain is empty, is not alphanumeric or if has uppercase characters - KB010
-   * @throws NO_REVERSE_REGISTRAR if there is no owner for `addr.reverse` node - KB022
-   * @throws NO_SET_NAME_METHOD if reverse registrar does not implement `setName` method - KB023
-   *
-   * @param name - Domain to set resolver
-   * @param resolver - Address to be set as the resolver of the given domain
-   * @param options - Custom configs to be used when submitting the transaction
-   *
-   * @returns TransactionReceipt of the submitted tx
-   */
-  async setName(name: string, options?: TransactionOptions): Promise<TransactionReceipt> {
+  async setName(name: string, options?: TransactionOptions): Promise<string> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
@@ -457,17 +337,6 @@ export default class extends Composer implements Resolutions {
     return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
-  /**
-   * name resolution protocol.
-   *
-   * @throws NO_REVERSE_RESOLUTION_SET when the domain has not the reverse resolution set - KB014.
-   * @throws NO_NAME_RESOLUTION if has an invalid name resolver - KB013.
-   *
-   * @param address - address to be resolved
-   *
-   * @return
-   * Domain or subdomain associated to the given address.
-   */
   async name(address: string): Promise<string> {
     await this.compose();
     const convertedAddress = address.substring(2).toLowerCase(); // remove '0x'

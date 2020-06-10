@@ -2,7 +2,6 @@ import Web3 from 'web3';
 import { accounts, web3, defaultSender } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Rsk3 from '@rsksmart/rsk3';
-import { TransactionReceipt } from 'web3-eth';
 import RNS from '../../src/index';
 import { Options, NetworkId } from '../../src/types';
 import {
@@ -146,7 +145,7 @@ describe.each([
     const addr = '0x0000000000000000000000000000000001000006';
     let expectedAddr: string;
     let expectedOwner: string;
-    let tx: TransactionReceipt | null;
+    let tx: string | null;
 
     beforeEach(async () => {
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
@@ -195,7 +194,6 @@ describe.each([
       expect(actualAddr).toEqual(expectedAddr);
 
       expect(tx).toBeTruthy();
-      expect(tx?.transactionHash).toBeTruthy();
 
       tx = null;
       expectedAddr = '';
@@ -211,9 +209,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-      const txReceipt = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { gasPrice });
+      const txHash = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { gasPrice });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gasPrice).toEqual(gasPrice.toString());
     });
@@ -223,9 +221,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-      const txReceipt = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { gas });
+      const txHash = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { gas });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gas).toEqual(gas);
       expect(tx.from).toEqual(defaultSender);
@@ -236,9 +234,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), from);
 
-      const txReceipt = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { from });
+      const txHash = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { from });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.from).toEqual(from);
     });

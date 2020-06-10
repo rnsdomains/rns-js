@@ -366,7 +366,7 @@ export default class extends Composer implements Resolutions {
 
     const resolver = await this._createResolver(node, createNewAddrResolver);
 
-    const encodedContenthash = this._contenthashHelper.encodeContenthash(content);
+    const encodedContenthash = content ? this._contenthashHelper.encodeContenthash(content) : '0x';
 
     const contractMethod = resolver.methods['setContenthash(bytes32,bytes)'](node, encodedContenthash);
 

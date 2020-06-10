@@ -169,13 +169,13 @@ describe.each([
         coinType,
       );
 
-      if (!decodedAddr) {
-        return '';
+      if (decodedAddr) {
+        const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
+
+        return formatsByCoinType[coinType].encoder(buff);
       }
 
-      const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
-
-      return formatsByCoinType[coinType].encoder(buff);
+      return decodedAddr;
     };
 
     beforeEach(async () => {
@@ -229,7 +229,7 @@ describe.each([
       await rns.setAddr('alice.rsk', '', ChainId.BITCOIN);
 
       actualAddr = await getAddress(CoinType.BITCOIN);
-      expect(actualAddr).toBe('');
+      expect(actualAddr).toBe(null);
     });
   });
 });

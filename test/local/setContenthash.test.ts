@@ -38,7 +38,7 @@ describe.each([
 
     const actual = await proxy.methods['contenthash(bytes32)'](namehash('alice.rsk'), { from: defaultSender });
 
-    const expected = contenthashHelper.encodeContenthash(contenthash);
+    const expected = contenthash ? contenthashHelper.encodeContenthash(contenthash) : null;
     expect(actual).toBe(expected);
   };
 
@@ -60,6 +60,11 @@ describe.each([
   it('should set onion3 contenthash', async () => {
     const onionHash = 'onion3://p53lf57qovyuvwsc6xnrppyply3vtqm7l6pcobkmyqsiofyeznfu5uqd';
     await shouldEncodeProperly(onionHash);
+  });
+
+  it('should set empty contenthash', async () => {
+    const emptyHash = '';
+    await shouldEncodeProperly(emptyHash);
   });
 
   it('should fail if invalid contenthash', async () => {

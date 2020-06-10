@@ -1,5 +1,4 @@
 import Web3 from 'web3';
-import { TransactionReceipt } from 'web3-eth';
 import { Subdomains, Options, Resolutions } from './types';
 import {
   SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN,
@@ -16,15 +15,7 @@ import {
 } from './utils';
 import { TransactionOptions } from './types/options';
 
-/**
- * Set of subdomains related methods
- */
 export default class extends Composer implements Subdomains {
-  /**
-   *
-   * @param blockchainApi - current Web3 or Rsk3 instance
-   * @param registry - RNS registry used to look for given domains
-   */
   constructor(blockchainApi: Web3 | any, private _resolutions: Resolutions, options?: Options) {
     super(blockchainApi, options);
   }
@@ -34,7 +25,7 @@ export default class extends Composer implements Subdomains {
     label: string,
     owner: string,
     options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     const contractMethod = this._contracts.registry
       .methods
       .setSubnodeOwner(
@@ -114,11 +105,11 @@ export default class extends Composer implements Subdomains {
    * @param owner - The owner of the new subdomain
    * @param options - Custom configs to be used when submitting the transaction
    *
-   * @returns Transaction receipt
+   * @returns Transaction hash
    */
   async setOwner(
     domain: string, label: string, owner: string, options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
@@ -158,7 +149,7 @@ export default class extends Composer implements Subdomains {
    * @param addr - The address to be set as resolution of the new subdomain
    * @param options - Custom configs to be used when submitting the transaction
    *
-   * @returns Transaction receipt
+   * @returns Transaction hash of the latest transaction
    */
   async create(
     domain: string,
@@ -166,7 +157,7 @@ export default class extends Composer implements Subdomains {
     owner?: string,
     addr?: string,
     options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {

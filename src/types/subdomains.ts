@@ -1,4 +1,3 @@
-import { TransactionReceipt } from 'web3-eth';
 import { TransactionOptions } from './options';
 
 /**
@@ -27,7 +26,7 @@ export interface Subdomains {
    */
   setOwner(
     domain: string, label: string, owner: string, options?: TransactionOptions,
-  ): Promise<TransactionReceipt>;
+  ): Promise<string>;
 
   /**
    * Creates a new subdomain under the given domain tree if it is available, and sets its resolution if addr is provided.
@@ -42,5 +41,5 @@ export interface Subdomains {
    */
   create(
     domain: string, label: string, owner?: string, addr?: string, options?: TransactionOptions,
-  ): Promise<TransactionReceipt>;
+  ): Promise<string>;
 }

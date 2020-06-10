@@ -71,12 +71,12 @@ describe.each([
       expect(actualAddr).toEqual(ZERO_ADDRESS);
     });
 
-    it('should return a tx receipt when setting an address', async () => {
+    it('should return the txHash when setting an address', async () => {
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
       const tx = await rns.setAddr('alice.rsk', addr);
 
-      expect(tx.transactionHash).toBeTruthy();
+      expect(tx).toBeTruthy();
     });
 
     it('should set an address when the library is instantiated with a different networkId', async () => {
@@ -122,9 +122,9 @@ describe.each([
 
         await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-        const txReceipt = await rns.setAddr('alice.rsk', addr, undefined, { gasPrice });
+        const txHash = await rns.setAddr('alice.rsk', addr, undefined, { gasPrice });
 
-        const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+        const tx = await web3.eth.getTransaction(txHash);
 
         expect(tx.gasPrice).toEqual(gasPrice.toString());
       });
@@ -134,9 +134,9 @@ describe.each([
 
         await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-        const txReceipt = await rns.setAddr('alice.rsk', addr, undefined, { gas });
+        const txHash = await rns.setAddr('alice.rsk', addr, undefined, { gas });
 
-        const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+        const tx = await web3.eth.getTransaction(txHash);
 
         expect(tx.gas).toEqual(gas);
         expect(tx.from).toEqual(defaultSender);
@@ -147,9 +147,9 @@ describe.each([
 
         await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), from);
 
-        const txReceipt = await rns.setAddr('alice.rsk', addr, undefined, { from });
+        const txHash = await rns.setAddr('alice.rsk', addr, undefined, { from });
 
-        const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+        const tx = await web3.eth.getTransaction(txHash);
 
         expect(tx.from).toEqual(from);
       });

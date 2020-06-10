@@ -92,9 +92,9 @@ describe.each([
     it('should return a tx receipt when setting an address', async () => {
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-      const tx = await rns.setAddr('alice.rsk', rskAddr, ChainId.RSK);
+      const txHash = await rns.setAddr('alice.rsk', rskAddr, ChainId.RSK);
 
-      expect(tx.transactionHash).toBeTruthy();
+      expect(txHash).toBeTruthy();
     });
 
     it('should throw an error when invalid checksum for RSK', async () => {
@@ -126,9 +126,9 @@ describe.each([
 
         await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-        const txReceipt = await rns.setAddr('alice.rsk', btcAddr, ChainId.BITCOIN, { gasPrice });
+        const txHash = await rns.setAddr('alice.rsk', btcAddr, ChainId.BITCOIN, { gasPrice });
 
-        const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+        const tx = await web3.eth.getTransaction(txHash);
 
         expect(tx.gasPrice).toEqual(gasPrice.toString());
       });
@@ -138,9 +138,9 @@ describe.each([
 
         await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-        const txReceipt = await rns.setAddr('alice.rsk', ethAddr, ChainId.ETHEREUM, { gas });
+        const txHash = await rns.setAddr('alice.rsk', ethAddr, ChainId.ETHEREUM, { gas });
 
-        const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+        const tx = await web3.eth.getTransaction(txHash);
 
         expect(tx.gas).toEqual(gas);
         expect(tx.from).toEqual(defaultSender);
@@ -151,9 +151,9 @@ describe.each([
 
         await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), from);
 
-        const txReceipt = await rns.setAddr('alice.rsk', ethAddr, ChainId.ETHEREUM, { from });
+        const txHash = await rns.setAddr('alice.rsk', ethAddr, ChainId.ETHEREUM, { from });
 
-        const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+        const tx = await web3.eth.getTransaction(txHash);
 
         expect(tx.from).toEqual(from);
       });

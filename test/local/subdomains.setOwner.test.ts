@@ -114,9 +114,9 @@ describe.each([
   it('should return a tx receipt', async () => {
     await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-    const tx = await rns.subdomains.setOwner('alice.rsk', 'test', owner);
+    const txHash = await rns.subdomains.setOwner('alice.rsk', 'test', owner);
 
-    expect(tx.transactionHash).toBeTruthy();
+    expect(txHash).toBeTruthy();
   });
 
   it('should create a subdomain even if is not available', async () => {
@@ -143,9 +143,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-      const txReceipt = await rns.subdomains.setOwner('alice.rsk', 'test', owner, { gasPrice });
+      const txHash = await rns.subdomains.setOwner('alice.rsk', 'test', owner, { gasPrice });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gasPrice).toEqual(gasPrice.toString());
     });
@@ -155,9 +155,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-      const txReceipt = await rns.subdomains.setOwner('alice.rsk', 'test', owner, { gas });
+      const txHash = await rns.subdomains.setOwner('alice.rsk', 'test', owner, { gas });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gas).toEqual(gas);
       expect(tx.from).toEqual(defaultSender);
@@ -168,9 +168,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), from);
 
-      const txReceipt = await rns.subdomains.setOwner('alice.rsk', 'test', owner, { from });
+      const txHash = await rns.subdomains.setOwner('alice.rsk', 'test', owner, { from });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.from).toEqual(from);
     });

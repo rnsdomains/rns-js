@@ -1,5 +1,4 @@
 import Web3 from 'web3';
-import { TransactionReceipt } from 'web3-eth';
 import {
   RNS, Contracts, Options, ChainId, Utils,
   Resolutions as IResolutions,
@@ -91,11 +90,11 @@ export default class extends Composer implements RNS {
    * @param chainId - Should match one of the listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    * @param options - Custom configs to be used when submitting the transaction
    *
-   * @returns TransactionReceipt of the submitted tx
+   * @returns Transaction hash
    */
   setAddr(
     domain: string, addr: string, chainId?: ChainId, options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     if (!chainId) {
       return this._resolutions.setAddr(domain, addr, options);
     }
@@ -105,6 +104,11 @@ export default class extends Composer implements RNS {
 
   /**
    * Get decoded contenthash of a given domain.
+   *
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
+   * @throws NO_CONTENTHASH_INTERFACE if has an invalid resolver - KB025.
+   * @throws NO_CONTENTHASH_SET it there is not contenthash resolution set - KB026.
+   * @throws UNSUPPORTED_CONTENTHASH_PROTOCOL if the contenthash could not be decoded - KB027.
    *
    * @param domain - Domain to be resolved
    *
@@ -118,10 +122,14 @@ export default class extends Composer implements RNS {
   /**
    * Set contenthash of a given domain.
    *
+   * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003.
+   * @throws UNSUPPORTED_CONTENTHASH_PROTOCOL if the contenthash could not be encoded - KB027.
+   *
    * @param domain - Domain to be resolved
    * @param content - Content to be associated to the given domain. Must be decoded, the library will encode and save it.
    *
-   * @returns TransactionReceipt of the submitted tx
+   * @returns Transaction hash
    */
   setContenthash(domain: string, content: string, options?: TransactionOptions): any {
     return this._resolutions.setContenthash(domain, content, options);
@@ -139,11 +147,11 @@ export default class extends Composer implements RNS {
    * @param resolver - Address to be set as the resolver of the given domain
    * @param options - Custom configs to be used when submitting the transaction
    *
-   * @returns TransactionReceipt of the submitted tx
+   * @returns Transaction hash
    */
   setResolver(
     domain: string, resolver: string, options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     return this._resolutions.setResolver(domain, resolver, options);
   }
 
@@ -172,9 +180,9 @@ export default class extends Composer implements RNS {
    * @throws NO_REVERSE_REGISTRAR if there is no owner for `addr.reverse` node - KB022
    * @throws NO_SET_NAME_METHOD if reverse registrar does not implement `setName` method - KB023
    *
-   * @returns TransactionReceipt of the submitted tx
+   * @returns Transaction hash
    */
-  setReverse(name: string, options?: TransactionOptions): Promise<TransactionReceipt> {
+  setReverse(name: string, options?: TransactionOptions): Promise<string> {
     return this._resolutions.setName(name, options);
   }
 

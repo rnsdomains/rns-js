@@ -1,26 +1,326 @@
 {
-  "NO_ADDR_RESOLUTION_SET": { "id": "KB001", "message": "No addr resolution set" },
-  "NO_ADDR_RESOLUTION": { "id": "KB002", "message": "No addr resolution" },
-  "NO_RESOLVER": { "id": "KB003", "message": "No resolver" },
-  "LIBRARY_NOT_COMPOSED": { "id": "KB004", "message": "Library not composed" },
-  "NO_ADDRESSES_PROVIDED": { "id": "KB005", "message": "No contract addresses provided" },
-  "NO_CHAIN_ADDR_RESOLUTION": { "id": "KB006", "message": "No chain address resolution" },
-  "NO_CHAIN_ADDR_RESOLUTION_SET": { "id": "KB007", "message": "No chain address resolution set" },
-  "SEARCH_ONLY_SIMPLE_DOMAINS": { "id": "KB008", "message": "Search only domains" },
-  "SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS": { "id": "KB009", "message": "Search only .rsk domains" },
-  "INVALID_DOMAIN": { "id": "KB010", "message": "Invalid domain, must be alphanumeric and lower case" },
-  "INVALID_LABEL": { "id": "KB011", "message": "Invalid label, must be alphanumeric and lower case" },
-  "DOMAIN_NOT_EXISTS": { "id": "KB012", "message": "The given domain does not exist" },
-  "NO_NAME_RESOLUTION": { "id": "KB013", "message": "No name resolution" },
-  "NO_REVERSE_RESOLUTION_SET": { "id": "KB014", "message": "No reverse resolution set" },
-  "NO_ACCOUNTS_TO_SIGN": { "id": "KB015", "message": "There are no accounts to sign the transaction" },
-  "SUBDOMAIN_NOT_AVAILABLE": { "id": "KB016", "message": "The subdomain is not available" },
-  "INVALID_ADDRESS": { "id": "KB017", "message": "The given address is invalid" },
-  "NO_SET_ADDR": { "id": "KB018", "message": "The resolver does not implements setAddr method" },
-  "INVALID_CHECKSUM_ADDRESS": { "id": "KB019", "message": "The address provided is not valid for the given blockchain" },
-  "NO_TLD_OWNER": { "id": "KB020", "message": "The given TLD does not exists" },
-  "NO_AVAILABLE_METHOD": { "id": "KB021", "message": "The owner of the TLD does not implement the available method" },
-  "NO_REVERSE_REGISTRAR": { "id": "KB022", "message": "No reverse registrar" },
-  "NO_SET_NAME_METHOD": { "id": "KB023", "message": "The reverse registrar does not implement setName method" },
-  "NO_SET_CHAIN_ADDR": { "id": "KB024", "message": "The resolver does not implement setChainAddr method" }
+ "NO_ADDR_RESOLUTION_SET": {
+  "id": "KB001",
+  "message": {
+   "en": "No addr resolution set",
+   "es": "Sin resolución de addr (dirección) establecida",
+   "ja": "アドレスの解決が設定されていません",
+   "ko": "주소 결정 미설정",
+   "pt": "Nenhuma resolução de endereço definida",
+   "ru": "Разрешение для адреса не установлено",
+   "zh": "无地址解析集"
+  }
+ },
+ "NO_ADDR_RESOLUTION": {
+  "id": "KB002",
+  "message": {
+   "en": "No addr resolution",
+   "es": "Sin resolución de addr",
+   "ja": "アドレスの解決が存在しません",
+   "ko": "주소 결정 없음",
+   "pt": "Sem resolução de endereço",
+   "ru": "Разрешение для адреса отсутствует",
+   "zh": "无地址解析"
+  }
+ },
+ "NO_RESOLVER": {
+  "id": "KB003",
+  "message": {
+   "en": "No resolver",
+   "es": "Sin resolver",
+   "ja": "Resolverが存在しません",
+   "ko": "Resolver 없음",
+   "pt": "Sem resolver",
+   "ru": "Resolver отсутствует",
+   "zh": "无解析器"
+  }
+ },
+ "LIBRARY_NOT_COMPOSED": {
+  "id": "KB004",
+  "message": {
+   "en": "Library not composed",
+   "es": "Biblioteca no compuesta",
+   "ja": "ライブラリが構成されていません",
+   "ko": "라이브러리 미구성",
+   "pt": "Biblioteca não composta",
+   "ru": "Библиотека не сформирована",
+   "zh": "库未组成"
+  }
+ },
+ "NO_ADDRESSES_PROVIDED": {
+  "id": "KB005",
+  "message": {
+   "en": "No contract addresses provided",
+   "es": "No se proporcionan direcciones de contrato",
+   "ja": "コントラクトアドレスが提供されていません",
+   "ko": "컨트랙트 주소 미제공",
+   "pt": "Nenhum endereço de contrato fornecido",
+   "ru": "Адреса контактов не предоставлены",
+   "zh": "未提供合约地址"
+  }
+ },
+ "NO_CHAIN_ADDR_RESOLUTION": {
+  "id": "KB006",
+  "message": {
+   "en": "No chain address resolution",
+   "es": "Sin resolución de dirección de cadena",
+   "ja": "チェーンアドレスの解決が存在しません",
+   "ko": "체인 주소 결정 없음",
+   "pt": "Nenhuma resolução de endereço da cadeia",
+   "ru": "Разрешение для адреса цепочки отсутствует",
+   "zh": "无链地址解析"
+  }
+ },
+ "NO_CHAIN_ADDR_RESOLUTION_SET": {
+  "id": "KB007",
+  "message": {
+   "en": "No chain address resolution set",
+   "es": "Sin resolución de dirección de cadena establecida",
+   "ja": "チェーンアドレスの解決が設定されていません",
+   "ko": "체인 주소 결정 미설정",
+   "pt": "Sem resolução de endereço da cadeia",
+   "ru": "Разрешение для адреса цепочки не установлено",
+   "zh": "无链地址解析集"
+  }
+ },
+ "SEARCH_ONLY_SIMPLE_DOMAINS": {
+  "id": "KB008",
+  "message": {
+   "en": "Search only domains",
+   "es": "Buscar solo dominios",
+   "ja": "ドメインのみ検索",
+   "ko": "도메인만 검색",
+   "pt": "Pesquisar apenas domínios",
+   "ru": "Искать только домены",
+   "zh": "仅搜索域"
+  }
+ },
+ "SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS": {
+  "id": "KB009",
+  "message": {
+   "en": "Search only .rsk domains",
+   "es": "Buscar solo dominios .rsk",
+   "ja": ".rskドメインのみ検索",
+   "ko": ".rsk 도메인만 검색",
+   "pt": "Pesquisar apenas domínios .rsk",
+   "ru": "Искать только домены .rsk",
+   "zh": "仅搜索 .rsk 域"
+  }
+ },
+ "INVALID_DOMAIN": {
+  "id": "KB010",
+  "message": {
+   "en": "Invalid domain, must be alphanumeric and lower case",
+   "es": "Dominio no válido; debe ser alfanumérico y en minúsculas",
+   "ja": "ドメインが無効です。小文字の英数字で入力してください",
+   "ko": "유효하지 않은 도메인. 글자, 숫자 및 소문자만 사용 가능",
+   "pt": "Domínio inválido, deve ser alfanumérico e minúsculo",
+   "ru": "Недействительный домен, домен должен быть буквенно-цифровым и строчным",
+   "zh": "无效的域，必须是字母数字和小写字母"
+  }
+ },
+ "INVALID_LABEL": {
+  "id": "KB011",
+  "message": {
+   "en": "Invalid label, must be alphanumeric and lower case",
+   "es": "Etiqueta no válida; debe ser alfanumérica y en minúsculas",
+   "ja": "ラベルが無効です。小文字の英数字で入力してください",
+   "ko": "유효하지 않은 라벨. 글자, 숫자 및 소문자만 사용 가능",
+   "pt": "Etiqueta inválida, deve ser alfanumérica e minúscula",
+   "ru": "Недействительная метка, метка должна быть буквенно-цифровой и строчной",
+   "zh": "无效标签，必须是字母数字和小写字母"
+  }
+ },
+ "DOMAIN_NOT_EXISTS": {
+  "id": "KB012",
+  "message": {
+   "en": "The given domain does not exist",
+   "es": "El dominio proporcionado no existe",
+   "ja": "与えられたドメインが存在しません",
+   "ko": "해당 도메인이 존재하지 않습니다",
+   "pt": "O domínio fornecido não existe",
+   "ru": "Данный домен не существует",
+   "zh": "指定的域不存在"
+  }
+ },
+ "NO_NAME_RESOLUTION": {
+  "id": "KB013",
+  "message": {
+   "en": "No name resolution",
+   "es": "Sin resolución de nombre",
+   "ja": "名前の解決が存在しません",
+   "ko": "이름 결정 없음",
+   "pt": "Sem resolução de nomes",
+   "ru": "Разрешение для имени отсутствует",
+   "zh": "无名字解析"
+  }
+ },
+ "NO_REVERSE_RESOLUTION_SET": {
+  "id": "KB014",
+  "message": {
+   "en": "No reverse resolution set",
+   "es": "Sin resolución inversa establecida",
+   "ja": "リバース解決が設定されていません",
+   "ko": "리버스 결정 미설정",
+   "pt": "Nenhuma resolução reversa definida",
+   "ru": "Обратное разрешение не установлено",
+   "zh": "无反向解析集"
+  }
+ },
+ "NO_ACCOUNTS_TO_SIGN": {
+  "id": "KB015",
+  "message": {
+   "en": "There are no accounts to sign the transaction",
+   "es": "No hay cuentas para firmar la transacción",
+   "ja": "トランザクションをサインするアカウントが存在しません",
+   "ko": "거래에 서명할 계정이 없습니다",
+   "pt": "Não há contas para assinar a transação",
+   "ru": "Учетные записи для подписи транзакции отсутствуют",
+   "zh": "没有用于签署交易的帐户"
+  }
+ },
+ "SUBDOMAIN_NOT_AVAILABLE": {
+  "id": "KB016",
+  "message": {
+   "en": "The subdomain is not available",
+   "es": "El subdominio no está disponible",
+   "ja": "サブドメインは利用できません",
+   "ko": "서브도메인을 사용할 수 없습니다",
+   "pt": "O subdomínio não está disponível",
+   "ru": "Поддомен недоступен",
+   "zh": "子域不可用"
+  }
+ },
+ "INVALID_ADDRESS": {
+  "id": "KB017",
+  "message": {
+   "en": "The given address is invalid",
+   "es": "La dirección proporcionada no es válida",
+   "ja": "与えられたアドレスは無効です",
+   "ko": "해당 주소가 유효하지 않습니다",
+   "pt": "O endereço fornecido é inválido",
+   "ru": "Данный адрес недействителен",
+   "zh": "指定的地址无效"
+  }
+ },
+ "NO_SET_ADDR": {
+  "id": "KB018",
+  "message": {
+   "en": "The resolver does not implements setAddr method",
+   "es": "El resolver no implementa el método setAddr",
+   "ja": "ResolverはsetAddr手法を実装していません",
+   "ko": "Resolver가 setAddr 방식을 구현하지 않습니다",
+   "pt": "O resolver não implementa o método setAddr",
+   "ru": "Resolver не реализует setAddr метод",
+   "zh": "解析器未实施setAddr方法"
+  }
+ },
+ "INVALID_CHECKSUM_ADDRESS": {
+  "id": "KB019",
+  "message": {
+   "en": "The address provided is not valid for the given blockchain",
+   "es": "La dirección proporcionada no es válida para la blockchain suministrada",
+   "ja": "与えられたアドレスはこのブロックチェーンでは無効です",
+   "ko": "제공된 주소가 해당 블록체인에서 유효하지 않습니다",
+   "pt": "O endereço fornecido não é válido para o blockchain especificado",
+   "ru": "Указанный адрес недействителен для данного блокчейна",
+   "zh": "提供的地址对于指定的区块链无效"
+  }
+ },
+ "NO_TLD_OWNER": {
+  "id": "KB020",
+  "message": {
+   "en": "The given TLD does not exists",
+   "es": "El TLD proporcionado no existe",
+   "ja": "与えられたTLDは存在しません",
+   "ko": "해당 TLD가 존재하지 않습니다",
+   "pt": "O TLD fornecido não existe",
+   "ru": "Данный TLD не существует",
+   "zh": "指定的TLD不存在"
+  }
+ },
+ "NO_AVAILABLE_METHOD": {
+  "id": "KB021",
+  "message": {
+   "en": "The owner of the TLD does not implement the available method",
+   "es": "El propietario del TLD no implementa el método disponible",
+   "ja": "TLDの所有者は利用可能な手法を実装していません",
+   "ko": "TLD의 주인이 제공 방식을 구현하지 않습니다",
+   "pt": "O proprietário do TLD não implementa o método disponível",
+   "ru": "Владелец TLD не реализует доступный метод",
+   "zh": "TLD的所有者未实施可用方法"
+  }
+ },
+ "NO_REVERSE_REGISTRAR": {
+  "id": "KB022",
+  "message": {
+   "en": "No reverse registrar",
+   "es": "Sin registrar inverso",
+   "ja": "リバースRegistrarが存在しません",
+   "ko": "리버스 registrar 없음",
+   "pt": "Nenhum registrar reverso",
+   "ru": "Обратный Registrar отсутствует",
+   "zh": "无反向注册商"
+  }
+ },
+ "NO_SET_NAME_METHOD": {
+  "id": "KB023",
+  "message": {
+   "en": "The reverse registrar does not implement setName method",
+   "es": "El registrar inverso no implementa el método setName",
+   "ja": "リバースRegistrarはsetName手法を実装していません",
+   "ko": "리버스 registrar가 setName 방식을 구현하지 않습니다",
+   "pt": "O registrar reverso não implementa o método setName",
+   "ru": "Обратный Registrar не реализует setName метод",
+   "zh": "反向注册商未实施setName方法"
+  }
+ },
+ "NO_SET_CHAIN_ADDR": {
+  "id": "KB024",
+  "message": {
+   "en": "The resolver does not implement setChainAddr method",
+   "es": "El resolver no implementa el método setChainAddr",
+   "ja": "ResolverはsetChainAddr手法を実装していません",
+   "ko": "Resolver가 setChainAddr 방식을 구현하지 않습니다",
+   "pt": "O resolver não implementa o método setChainAddr",
+   "ru": "Resolver не реализует setChainAddr метод",
+   "zh": "解析器未实施setChainAddr方法"
+  }
+ },
+ "UNSUPPORTED_CONTENTHASH_PROTOCOL": {
+  "id": "KB025",
+  "message": {
+   "en": "The contenthash protocol is not supported",
+   "es": "",
+   "ja": "",
+   "ko": "",
+   "pt": "",
+   "ru": "",
+   "zh": ""
+  }
+ },
+ "NO_CONTENTHASH_SET": {
+  "id": "KB026",
+  "message": {
+   "en": "No contenthash resolution set",
+   "es": "",
+   "ja": "",
+   "ko": "",
+   "pt": "",
+   "ru": "",
+   "zh": ""
+  }
+ },
+ "NO_CONTENTHASH_INTERFACE": {
+  "id": "KB027",
+  "message": {
+   "en": "No contenthash interface",
+   "es": "",
+   "ja": "",
+   "ko": "",
+   "pt": "",
+   "ru": "",
+   "zh": ""
+  }
+ }
 }

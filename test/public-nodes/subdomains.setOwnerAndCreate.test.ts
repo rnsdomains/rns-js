@@ -10,7 +10,7 @@ describe.each([
   new Rsk3(PUBLIC_NODE_MAINNET),
   new Rsk3(PUBLIC_NODE_TESTNET),
 ])('subdomains', (blockchainApiInstance) => {
-  test('subdomains.setOwner should fail when web3 instance does not contain accounts to sign the tx', async () => {
+  it('subdomains.setOwner should fail when web3 instance does not contain accounts to sign the tx', async () => {
     const rns = new RNS(blockchainApiInstance);
     await asyncExpectThrowRNSError(
       () => rns.subdomains.setOwner('multichain.testing.rsk', 'check', '0x0000000000000000000000000000000000000001'),
@@ -18,7 +18,7 @@ describe.each([
     );
   });
 
-  test('subdomains.create should fail when web3 instance does not contain accounts to sign the tx', async () => {
+  it('subdomains.create should fail when web3 instance does not contain accounts to sign the tx', async () => {
     const rns = new RNS(blockchainApiInstance);
     await asyncExpectThrowRNSError(
       () => rns.subdomains.create('multichain.testing.rsk', 'check'),

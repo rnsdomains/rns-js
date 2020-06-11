@@ -1,10 +1,10 @@
 import { Contract } from 'web3-eth-contract';
 import Web3 from 'web3';
-import { TransactionReceipt } from 'web3-eth';
 import { ChainId } from './enums';
 import { Utils } from './utils';
 import { Subdomains } from './subdomains';
 import { TransactionOptions } from './options';
+import { DecodedContenthash } from './resolutions';
 
 /**
  * web3.eth.Contract wrapper. Contains an instance for each Contract used to run the lib.
@@ -55,7 +55,23 @@ export default interface RNS {
    */
   setAddr(
     domain: string, addr: string, chainId?: ChainId, options?: TransactionOptions,
-  ): Promise<TransactionReceipt>;
+  ): Promise<string>;
+
+  /**
+   * Get decoded contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   */
+  contenthash(domain: string): Promise<DecodedContenthash>;
+
+  /**
+   * Set contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   * @param content - Content to be associated to the given domain. Must be decoded, the library will encode and save it.
+   */
+  setContenthash(domain: string, content: string, options?: TransactionOptions): any;
+
 
   /**
    * Set resolver of a given domain.
@@ -67,7 +83,7 @@ export default interface RNS {
    */
   setResolver(
     domain: string, resolver: string, options?: TransactionOptions,
-  ): Promise<TransactionReceipt>;
+  ): Promise<string>;
 
   /**
    * Set reverse resolution with the given name for the current address.
@@ -76,7 +92,7 @@ export default interface RNS {
    * @param options - Custom configs to be used when submitting the transaction
    *
    */
-  setReverse(name: string, options?: TransactionOptions): Promise<TransactionReceipt>;
+  setReverse(name: string, options?: TransactionOptions): Promise<string>;
 
   /**
    * Reverse lookup: get name of a given address.

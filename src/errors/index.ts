@@ -1,6 +1,7 @@
 import RNSError from './RNSError';
 
 export default RNSError;
+export { default as ErrorWrapper } from './ErrorWrapper';
 
 export const NO_ADDR_RESOLUTION_SET = 'NO_ADDR_RESOLUTION_SET';
 export const NO_ADDR_RESOLUTION = 'NO_ADDR_RESOLUTION';
@@ -26,3 +27,6 @@ export const NO_AVAILABLE_METHOD = 'NO_AVAILABLE_METHOD';
 export const NO_REVERSE_REGISTRAR = 'NO_REVERSE_REGISTRAR';
 export const NO_SET_NAME_METHOD = 'NO_SET_NAME_METHOD';
 export const NO_SET_CHAIN_ADDR = 'NO_SET_CHAIN_ADDR';
+export const NO_CONTENTHASH_INTERFACE = 'NO_CONTENTHASH_INTERFACE';
+export const UNSUPPORTED_CONTENTHASH_PROTOCOL = 'UNSUPPORTED_CONTENTHASH_PROTOCOL';
+export const NO_CONTENTHASH_SET = 'NO_CONTENTHASH_SET';

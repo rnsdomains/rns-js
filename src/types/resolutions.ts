@@ -1,4 +1,3 @@
-import { TransactionReceipt } from 'web3-eth';
 import { ChainId } from './enums';
 import { TransactionOptions } from './options';
 
@@ -20,7 +19,7 @@ export interface Resolutions {
    * Resolves the given domain using the AbstractMultiChainResolver interface
    *
    * @param domain - Domain to be resolved
-   * @param chainId - chain identifier listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+   * @param chainId - chain hexa or index listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
    */
   chainAddr(domain: string, chainId: ChainId): Promise<string>;
 
@@ -32,7 +31,7 @@ export interface Resolutions {
    * @param options - Custom configs to be used when submitting the transaction
    *
    */
-  setAddr(domain: string, addr: string, options?: TransactionOptions): Promise<TransactionReceipt>;
+  setAddr(domain: string, addr: string, options?: TransactionOptions): Promise<string>;
 
   /**
    * Sets addr for the given domain using the AbstractMultiChainResolver interface.
@@ -45,7 +44,22 @@ export interface Resolutions {
    */
   setChainAddr(
     domain: string, addr: string, chainId: ChainId, options?: TransactionOptions
-  ): Promise<TransactionReceipt>;
+  ): Promise<string>;
+
+  /**
+   * Get decoded contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   */
+  contenthash(domain: string): Promise<DecodedContenthash>;
+
+  /**
+   * Set contenthash of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   * @param content - Content to be associated to the given domain. Must be decoded, the library will encode and save it.
+   */
+  setContenthash(domain: string, content: string, options?: TransactionOptions): any;
 
   /**
    * Set resolver of a given domain.
@@ -57,7 +71,7 @@ export interface Resolutions {
    */
   setResolver(
     domain: string, resolver: string, options?: TransactionOptions,
-  ): Promise<TransactionReceipt>;
+  ): Promise<string>;
 
   /**
    * Set reverse resolution with the given name for the current address.
@@ -66,7 +80,7 @@ export interface Resolutions {
    * @param options - Custom configs to be used when submitting the transaction
    *
    */
-  setName(name: string, options?: TransactionOptions): Promise<TransactionReceipt>;
+  setName(name: string, options?: TransactionOptions): Promise<string>;
 
   /**
    * Reverse lookup: get name of a given address.
@@ -77,4 +91,10 @@ export interface Resolutions {
    * Domain or subdomain associated to the given address.
    */
   name(address: string): Promise<string>;
+}
+
+export interface DecodedContenthash {
+  protocolType: string;
+
+  decoded: string;
 }

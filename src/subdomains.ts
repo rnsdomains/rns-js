@@ -1,7 +1,6 @@
 import Web3 from 'web3';
-import { TransactionReceipt } from 'web3-eth';
 import { Subdomains, Options, Resolutions } from './types';
-import RNSError, {
+import {
   SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS, INVALID_DOMAIN,
   INVALID_LABEL, DOMAIN_NOT_EXISTS, NO_ACCOUNTS_TO_SIGN,
   SUBDOMAIN_NOT_AVAILABLE,
@@ -16,15 +15,7 @@ import {
 } from './utils';
 import { TransactionOptions } from './types/options';
 
-/**
- * Set of subdomains related methods
- */
 export default class extends Composer implements Subdomains {
-  /**
-   *
-   * @param blockchainApi - current Web3 or Rsk3 instance
-   * @param registry - RNS registry used to look for given domains
-   */
   constructor(blockchainApi: Web3 | any, private _resolutions: Resolutions, options?: Options) {
     super(blockchainApi, options);
   }
@@ -34,7 +25,7 @@ export default class extends Composer implements Subdomains {
     label: string,
     owner: string,
     options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     const contractMethod = this._contracts.registry
       .methods
       .setSubnodeOwner(
@@ -48,23 +39,23 @@ export default class extends Composer implements Subdomains {
 
   private _validateDomainAndLabel(domain: string, label: string): void {
     if (!isValidDomain(domain)) {
-      throw new RNSError(INVALID_DOMAIN);
+      this._throw(INVALID_DOMAIN);
     }
     if (!isValidTld(domain)) {
-      throw new RNSError(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
+      this._throw(SEARCH_DOMAINS_UNDER_AVAILABLE_TLDS);
     }
     if (!isValidLabel(label)) {
-      throw new RNSError(INVALID_LABEL);
+      this._throw(INVALID_LABEL);
     }
   }
 
   private _validateAddress(addr: string) {
     if (!isValidAddress(addr)) {
-      throw new RNSError(INVALID_ADDRESS);
+      this._throw(INVALID_ADDRESS);
     }
 
     if (!isValidChecksumAddress(addr, this.currentNetworkId)) {
-      throw new RNSError(INVALID_CHECKSUM_ADDRESS);
+      this._throw(INVALID_CHECKSUM_ADDRESS);
     }
   }
 
@@ -89,7 +80,7 @@ export default class extends Composer implements Subdomains {
 
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
-      throw new RNSError(DOMAIN_NOT_EXISTS);
+      this._throw(DOMAIN_NOT_EXISTS);
     }
 
     const node: string = namehash(`${label}.${domain}`);
@@ -114,15 +105,15 @@ export default class extends Composer implements Subdomains {
    * @param owner - The owner of the new subdomain
    * @param options - Custom configs to be used when submitting the transaction
    *
-   * @returns Transaction receipt
+   * @returns Transaction hash
    */
   async setOwner(
     domain: string, label: string, owner: string, options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
-      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+      this._throw(NO_ACCOUNTS_TO_SIGN);
     }
 
     this._validateDomainAndLabel(domain, label);
@@ -131,7 +122,7 @@ export default class extends Composer implements Subdomains {
 
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
-      throw new RNSError(DOMAIN_NOT_EXISTS);
+      this._throw(DOMAIN_NOT_EXISTS);
     }
 
     const node: string = namehash(`${domain}`);
@@ -158,7 +149,7 @@ export default class extends Composer implements Subdomains {
    * @param addr - The address to be set as resolution of the new subdomain
    * @param options - Custom configs to be used when submitting the transaction
    *
-   * @returns Transaction receipt
+   * @returns Transaction hash of the latest transaction
    */
   async create(
     domain: string,
@@ -166,11 +157,11 @@ export default class extends Composer implements Subdomains {
     owner?: string,
     addr?: string,
     options?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     await this.compose();
 
     if (!await hasAccounts(this.blockchainApi)) {
-      throw new RNSError(NO_ACCOUNTS_TO_SIGN);
+      this._throw(NO_ACCOUNTS_TO_SIGN);
     }
 
     this._validateDomainAndLabel(domain, label);
@@ -185,11 +176,11 @@ export default class extends Composer implements Subdomains {
 
     const domainOwner = await this._contracts.registry.methods.owner(namehash(domain)).call();
     if (domainOwner === ZERO_ADDRESS) {
-      throw new RNSError(DOMAIN_NOT_EXISTS);
+      this._throw(DOMAIN_NOT_EXISTS);
     }
 
     if (!await this.available(domain, label)) {
-      throw new RNSError(SUBDOMAIN_NOT_AVAILABLE);
+      this._throw(SUBDOMAIN_NOT_AVAILABLE);
     }
 
     const node: string = namehash(`${domain}`);
@@ -198,8 +189,14 @@ export default class extends Composer implements Subdomains {
     if (options && options.from) {
       sender = options.from;
     } else {
-      sender = await getCurrentAddress(this.blockchainApi);
+      try {
+        sender = await getCurrentAddress(this.blockchainApi);
+      } catch {
+        this._throw(NO_ACCOUNTS_TO_SIGN);
+      }
     }
+
+    sender = sender as string;
 
     if (!addr) {
       return this._setSubnodeOwner(node, label, owner || sender, options);

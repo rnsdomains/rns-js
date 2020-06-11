@@ -1,4 +1,3 @@
-import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
 import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
 import { contract, web3, accounts } from '@openzeppelin/test-environment';
 import Web3 from 'web3';
@@ -8,6 +7,7 @@ import Rsk3 from '@rsksmart/rsk3';
 import RNS from '../../src/index';
 import { Options, NetworkId } from '../../src/types';
 import { ADDR_INTERFACE } from '../../src/constants';
+import { deployRegistryAndCreateTldNode } from './helpers';
 
 const web3Instance = web3 as unknown as Web3;
 const rsk3Instance = new Rsk3(web3.currentProvider);
@@ -21,9 +21,7 @@ describe.each([
   let options: Options;
 
   beforeEach(async () => {
-    const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
-
-    registry = await Registry.new();
+    registry = await deployRegistryAndCreateTldNode();
 
     options = {
       contractAddresses: {

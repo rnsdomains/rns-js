@@ -1,9 +1,4 @@
-import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
-import NameResolverData from '@rsksmart/rns-reverse/NameResolverData.json';
-import ReverseRegistrarData from '@rsksmart/rns-reverse/ReverseRegistrarData.json';
-import {
-  contract, web3, defaultSender, accounts,
-} from '@openzeppelin/test-environment';
+import { web3, defaultSender, accounts } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Web3 from 'web3';
 import Rsk3 from '@rsksmart/rsk3';
@@ -12,9 +7,11 @@ import {
 } from '../../src/errors';
 import { asyncExpectThrowRNSError, PUBLIC_NODE_MAINNET, PUBLIC_NODE_TESTNET } from '../utils';
 import RNS from '../../src/index';
-import { Options } from '../../src/types';
 import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
+import {
+  deployRegistryAndCreateTldNode, getRNSInstance, deployNameResolver, deployReverseRegistrar,
+} from './helpers';
 
 const web3Instance = web3 as unknown as Web3;
 const rsk3Instance = new Rsk3(web3.currentProvider);
@@ -27,31 +24,18 @@ describe.each([
   let nameResolver: any;
   let reverseRegistrar: any;
   let rns: RNS;
-  let options: Options;
 
   beforeEach(async () => {
-    const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
-    const NameResolver = contract.fromABI(NameResolverData.abi, NameResolverData.bytecode);
-    const ReverseRegistrar = contract.fromABI(
-      ReverseRegistrarData.abi,
-      ReverseRegistrarData.bytecode,
-    );
+    registry = await deployRegistryAndCreateTldNode();
 
-    registry = await Registry.new();
-    nameResolver = await NameResolver.new(registry.address);
-    reverseRegistrar = await ReverseRegistrar.new(registry.address);
+    nameResolver = await deployNameResolver(registry);
+    reverseRegistrar = await deployReverseRegistrar(registry);
 
     await registry.setSubnodeOwner('0x00', labelhash('reverse'), defaultSender);
     await registry.setResolver(namehash('reverse'), nameResolver.address);
     await registry.setSubnodeOwner(namehash('reverse'), labelhash('addr'), reverseRegistrar.address);
 
-    options = {
-      contractAddresses: {
-        registry: registry.address,
-      },
-    };
-
-    rns = new RNS(blockchainApiInstance, options);
+    rns = getRNSInstance(blockchainApiInstance, registry);
   });
 
   it('should set reverse resolution of an address', async () => {
@@ -91,9 +75,9 @@ describe.each([
     it('should send custom gasPrice', async () => {
       const gasPrice = '70000000';
 
-      const txReceipt = await rns.setReverse('alice.rsk', { gasPrice });
+      const txHash = await rns.setReverse('alice.rsk', { gasPrice });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gasPrice).toEqual(gasPrice.toString());
     });
@@ -101,9 +85,9 @@ describe.each([
     it('should send custom gas', async () => {
       const gas = 800000;
 
-      const txReceipt = await rns.setReverse('alice.rsk', { gas });
+      const txHash = await rns.setReverse('alice.rsk', { gas });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gas).toEqual(gas);
       expect(tx.from).toEqual(defaultSender);
@@ -112,9 +96,9 @@ describe.each([
     it('should send custom sender', async () => {
       const [from] = accounts;
 
-      const txReceipt = await rns.setReverse('alice.rsk', { from });
+      const txHash = await rns.setReverse('alice.rsk', { from });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.from).toEqual(from);
     });

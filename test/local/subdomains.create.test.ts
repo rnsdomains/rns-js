@@ -1,12 +1,7 @@
 import Web3 from 'web3';
-import RNSRegistryData from '@rsksmart/rns-registry/RNSRegistryData.json';
-import AddrResolverData from '@rsksmart/rns-resolver/AddrResolverData.json';
-import {
-  accounts, contract, web3, defaultSender,
-} from '@openzeppelin/test-environment';
+import { accounts, web3, defaultSender } from '@openzeppelin/test-environment';
 import { hash as namehash } from 'eth-ens-namehash';
 import Rsk3 from '@rsksmart/rsk3';
-import { TransactionReceipt } from 'web3-eth';
 import RNS from '../../src/index';
 import { Options, NetworkId } from '../../src/types';
 import {
@@ -19,6 +14,9 @@ import {
 } from '../../src/errors';
 import { labelhash } from '../../src/utils';
 import { ZERO_ADDRESS } from '../../src/constants';
+import {
+  deployRegistryAndCreateTldNode, getRNSInstance, deployPublicResolver,
+} from './helpers';
 
 const web3Instance = web3 as unknown as Web3;
 const rsk3Instance = new Rsk3(web3.currentProvider);
@@ -27,8 +25,6 @@ describe.each([
   ['web3', web3Instance],
   ['rsk3', rsk3Instance],
 ])('%s - subdomains.create', (name, blockchainApiInstance) => {
-  const TLD = 'rsk';
-
   let registry: any;
   let publicResolver: any;
   let rns: RNS;
@@ -36,26 +32,18 @@ describe.each([
   const [owner] = accounts;
 
   beforeEach(async () => {
-    const Registry = contract.fromABI(RNSRegistryData.abi, RNSRegistryData.bytecode);
-    const PublicResolver = contract.fromABI(AddrResolverData.abi, AddrResolverData.bytecode);
-    registry = await Registry.new();
-    publicResolver = await PublicResolver.new(registry.address);
+    registry = await deployRegistryAndCreateTldNode();
 
-    await registry.setSubnodeOwner('0x00', labelhash(TLD), defaultSender);
+    publicResolver = await deployPublicResolver(registry);
 
-    await registry.setResolver(namehash(TLD), publicResolver.address);
+    await registry.setResolver(namehash('rsk'), publicResolver.address);
 
-    options = {
-      contractAddresses: {
-        registry: registry.address,
-      },
-    };
-    rns = new RNS(blockchainApiInstance, options);
+    rns = getRNSInstance(blockchainApiInstance, registry);
   });
 
   describe('validations', () => {
     it('should not fail when sending a subdomain', async () => {
-      await registry.setSubnodeOwner(namehash(TLD), labelhash('alice'), defaultSender);
+      await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
       await registry.setSubnodeOwner(namehash('alice.rsk'), labelhash('subdomain'), defaultSender);
       await rns.subdomains.create('subdomain.alice.rsk', 'check', owner);
     });
@@ -157,7 +145,7 @@ describe.each([
     const addr = '0x0000000000000000000000000000000001000006';
     let expectedAddr: string;
     let expectedOwner: string;
-    let tx: TransactionReceipt | null;
+    let tx: string | null;
 
     beforeEach(async () => {
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
@@ -206,7 +194,6 @@ describe.each([
       expect(actualAddr).toEqual(expectedAddr);
 
       expect(tx).toBeTruthy();
-      expect(tx?.transactionHash).toBeTruthy();
 
       tx = null;
       expectedAddr = '';
@@ -222,9 +209,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-      const txReceipt = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { gasPrice });
+      const txHash = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { gasPrice });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gasPrice).toEqual(gasPrice.toString());
     });
@@ -234,9 +221,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), defaultSender);
 
-      const txReceipt = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { gas });
+      const txHash = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { gas });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.gas).toEqual(gas);
       expect(tx.from).toEqual(defaultSender);
@@ -247,9 +234,9 @@ describe.each([
 
       await registry.setSubnodeOwner(namehash('rsk'), labelhash('alice'), from);
 
-      const txReceipt = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { from });
+      const txHash = await rns.subdomains.create('alice.rsk', 'test', owner, addr, { from });
 
-      const tx = await web3.eth.getTransaction(txReceipt.transactionHash);
+      const tx = await web3.eth.getTransaction(txHash);
 
       expect(tx.from).toEqual(from);
     });

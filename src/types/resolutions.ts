@@ -1,4 +1,3 @@
-import { TransactionReceipt } from 'web3-eth';
 import { ChainId } from './enums';
 import { TransactionOptions } from './options';
 
@@ -32,7 +31,7 @@ export interface Resolutions {
    * @param options - Custom configs to be used when submitting the transaction
    *
    */
-  setAddr(domain: string, addr: string, options?: TransactionOptions): Promise<TransactionReceipt>;
+  setAddr(domain: string, addr: string, options?: TransactionOptions): Promise<string>;
 
   /**
    * Sets addr for the given domain using the AbstractMultiChainResolver interface.
@@ -45,7 +44,7 @@ export interface Resolutions {
    */
   setChainAddr(
     domain: string, addr: string, chainId: ChainId, options?: TransactionOptions
-  ): Promise<TransactionReceipt>;
+  ): Promise<string>;
 
   /**
    * Get decoded contenthash of a given domain.
@@ -72,7 +71,7 @@ export interface Resolutions {
    */
   setResolver(
     domain: string, resolver: string, options?: TransactionOptions,
-  ): Promise<TransactionReceipt>;
+  ): Promise<string>;
 
   /**
    * Set reverse resolution with the given name for the current address.
@@ -81,7 +80,7 @@ export interface Resolutions {
    * @param options - Custom configs to be used when submitting the transaction
    *
    */
-  setName(name: string, options?: TransactionOptions): Promise<TransactionReceipt>;
+  setName(name: string, options?: TransactionOptions): Promise<string>;
 
   /**
    * Reverse lookup: get name of a given address.

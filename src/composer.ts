@@ -1,5 +1,4 @@
 import Web3 from 'web3';
-import { TransactionReceipt } from 'web3-eth';
 import {
   Composable, Options, ContractAddresses, Contracts,
 } from './types';
@@ -20,15 +19,6 @@ export default abstract class extends ErrorWrapper implements Composable {
 
   public blockchainApi: Web3;
 
-  /**
-   * Create RNS library.
-   *
-   * @remarks
-   * If the blockchain api points to RSK Mainnet or RSK Testnet, no options are required. Contract addresses are detected automatically.
-   *
-   * @param blockchainApi - Web3 or Rsk3 instance
-   * @param options - Overrides network defaults. Optional on RSK Mainnet and RSK Testnet, required for other networks.
-   */
   constructor(blockchainApi: Web3 | any, options?: Options) {
     super(options && options.lang);
 
@@ -72,7 +62,7 @@ export default abstract class extends ErrorWrapper implements Composable {
   protected async estimateGasAndSendTransaction(
     contractMethod: any,
     customOptions?: TransactionOptions,
-  ): Promise<TransactionReceipt> {
+  ): Promise<string> {
     let options: any;
 
     if (customOptions && customOptions.from) {
@@ -117,7 +107,7 @@ export default abstract class extends ErrorWrapper implements Composable {
     }
 
     return new Promise((resolve, reject) => contractMethod.send(options)
-      .on('confirmation', (confirmations: Number, receipt: TransactionReceipt) => resolve(receipt))
+      .on('transactionHash', (hash: string) => resolve(hash))
       .on('error', reject));
   }
 

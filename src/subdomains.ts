@@ -200,16 +200,19 @@ export default class extends Composer implements Subdomains {
 
     if (!addr) {
       return this._setSubnodeOwner(node, label, owner || sender, options);
-    } if (!owner || owner.toLowerCase() === sender.toLowerCase()) {
+    }
+    
+    // const estimated = await contractMethod.estimateGas()
+    if (!owner || owner.toLowerCase() === sender.toLowerCase()) {
       // submits just two transactions
       await this._setSubnodeOwner(node, label, sender, options);
 
-      return this._resolutions.setAddr(`${label}.${domain}`, addr, options);
+      return this._resolutions.setAddr(`${label}.${domain}`, addr, options, node);
     }
     // needs to submit three txs
     await this._setSubnodeOwner(node, label, sender, options);
 
-    await this._resolutions.setAddr(`${label}.${domain}`, addr, options);
+    await this._resolutions.setAddr(`${label}.${domain}`, addr, options, node);
 
     return this._setSubnodeOwner(node, label, owner, options);
   }

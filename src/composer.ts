@@ -59,11 +59,21 @@ export default abstract class extends ErrorWrapper implements Composable {
     }
   }
 
-  protected async estimateGasAndSendTransaction(
+  protected async getTxGas(contractMethod: any, from?: string): Promise<number> {
+    if (!from) {
+      from = await getCurrentAddress(this.blockchainApi);
+    }
+
+    const estimated = await contractMethod.estimateGas({ from });
+
+    return Math.floor(estimated * 1.1);
+  }
+
+  protected async getTxOptions(
     contractMethod: any,
-    customOptions?: TransactionOptions,
-  ): Promise<string> {
-    let options: any;
+    customOptions?: TransactionOptions
+  ): Promise<TransactionOptions> {
+    let options: TransactionOptions;
 
     if (customOptions && customOptions.from) {
       options = {
@@ -89,10 +99,8 @@ export default abstract class extends ErrorWrapper implements Composable {
         gas: customOptions.gas,
       };
     } else {
-      const estimated = await contractMethod.estimateGas(options);
-
-      const gas = Math.floor(estimated * 1.1);
-
+      const gas = await this.getTxGas(contractMethod, options.from!);
+      
       options = {
         ...options,
         gas,
@@ -105,6 +113,15 @@ export default abstract class extends ErrorWrapper implements Composable {
         gasPrice: customOptions.gasPrice,
       };
     }
+
+    return options;
+  }
+
+  protected async estimateGasAndSendTransaction(
+    contractMethod: any,
+    customOptions?: TransactionOptions,
+  ): Promise<string> {
+    const options = await this.getTxOptions(contractMethod, customOptions);
 
     return new Promise((resolve, reject) => contractMethod.send(options)
       .on('transactionHash', (hash: string) => resolve(hash))

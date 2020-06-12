@@ -29,9 +29,12 @@ export interface Resolutions {
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
    * @param options - Custom configs to be used when submitting the transaction
+   * @param validateResolver - Flag to indicate if the resolver existance should be validated or not. Should be used if the method is called right after a subdomain creation tx.
    *
    */
-  setAddr(domain: string, addr: string, options?: TransactionOptions): Promise<string>;
+  setAddr(
+    domain: string, addr: string, options?: TransactionOptions, parentNode?: string
+  ): Promise<string>;
 
   /**
    * Sets addr for the given domain using the AbstractMultiChainResolver interface.

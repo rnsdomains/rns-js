@@ -322,5 +322,17 @@
    "ru": "",
    "zh": ""
   }
+ },
+ "CHAIN_ID_NOT_SUPPORTED": {
+  "id": "KB027",
+  "message": {
+   "en": "The given chainId is not supported",
+   "es": "",
+   "ja": "",
+   "ko": "",
+   "pt": "",
+   "ru": "",
+   "zh": ""
+  }
  }
 }

@@ -24,9 +24,10 @@ import {
   NO_ACCOUNTS_TO_SIGN, INVALID_ADDRESS, INVALID_CHECKSUM_ADDRESS,
   DOMAIN_NOT_EXISTS, INVALID_DOMAIN, NO_REVERSE_REGISTRAR, NO_SET_NAME_METHOD,
   NO_CONTENTHASH_INTERFACE, NO_CONTENTHASH_SET, UNSUPPORTED_CONTENTHASH_PROTOCOL,
+  CHAIN_ID_NOT_SUPPORTED,
 } from './errors';
 import { TransactionOptions } from './types/options';
-import { CoinType } from './types/enums';
+import networks from './types/networks.json';
 import ContenthashHelper from './contenthash-helper';
 import { DecodedContenthash } from './types/resolutions';
 
@@ -55,7 +56,7 @@ export default class extends Composer implements Resolutions {
   }
 
   private _validateAddress(addr: string, chainId?: ChainId) {
-    if (!chainId || chainId === ChainId.RSK || chainId === ChainId.ETHEREUM) {
+    if (!chainId || [ChainId.RSK, ChainId.ETC, ChainId.ETH, ChainId.XDAI].includes(chainId)) {
       if (!isValidAddress(addr)) {
         this._throw(INVALID_ADDRESS);
       }
@@ -68,26 +69,45 @@ export default class extends Composer implements Resolutions {
         if (!isValidChecksumAddress(addr, NetworkId.RSK_MAINNET)) {
           this._throw(INVALID_CHECKSUM_ADDRESS);
         }
-      } else if (chainId === ChainId.ETHEREUM) {
-        if (!isValidChecksumAddress(addr)) {
-          this._throw(INVALID_CHECKSUM_ADDRESS);
-        }
+      } else if (!isValidChecksumAddress(addr)) {
+        this._throw(INVALID_CHECKSUM_ADDRESS);
       }
     }
   }
 
   _getCoinTypeFromChainId(chainId: ChainId): number {
-    switch (chainId) {
-      case ChainId.BITCOIN:
-        return CoinType.BITCOIN;
-      case ChainId.ETHEREUM:
-        return CoinType.ETHEREUM;
-      case ChainId.LITECOIN:
-        return CoinType.LITECOIN;
-      case ChainId.RSK:
-      default:
-        return CoinType.RSK;
+    const coinType = networks.find((net) => net.id === chainId)?.index;
+
+    if (coinType !== 0 && !coinType) {
+      this._throw(CHAIN_ID_NOT_SUPPORTED);
     }
+
+    return coinType!;
+  }
+
+  _decodeAddressByCoinType(addr: string, coinType: number) {
+    try {
+      const decoded = formatsByCoinType[coinType].decoder(addr);
+
+      return decoded;
+    } catch (err) {
+      this._throw(INVALID_ADDRESS);
+    }
+
+    return '';
+  }
+
+  _encodeAddressByCoinType(decodedAddr: string, coinType: number): string {
+    let encoded = '';
+    try {
+      const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
+
+      encoded = formatsByCoinType[coinType].encoder(buff);
+    } catch (err) {
+      this._throw(INVALID_ADDRESS);
+    }
+
+    return encoded;
   }
 
   async addr(domain: string): Promise<string> {
@@ -131,9 +151,7 @@ export default class extends Composer implements Resolutions {
         this._throw(NO_CHAIN_ADDR_RESOLUTION_SET);
       }
 
-      const buff = Buffer.from(decodedAddr.replace('0x', ''), 'hex');
-
-      const addr = formatsByCoinType[coinType].encoder(buff);
+      const addr = this._encodeAddressByCoinType(decodedAddr, coinType);
 
       if (!addr || addr === ZERO_ADDRESS) {
         this._throw(NO_CHAIN_ADDR_RESOLUTION_SET);
@@ -223,7 +241,7 @@ export default class extends Composer implements Resolutions {
 
       const coinType = this._getCoinTypeFromChainId(chainId);
 
-      const decodedAddr = addr ? formatsByCoinType[coinType].decoder(addr) : '0x';
+      const decodedAddr = addr ? this._decodeAddressByCoinType(addr, coinType) : '0x';
 
       contractMethod = resolver.methods['setAddr(bytes32,uint256,bytes)'](node, coinType, decodedAddr);
     }

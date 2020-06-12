@@ -11,19 +11,23 @@ export enum NetworkId {
  */
 export enum ChainId {
   RSK = '0x80000089',
-  BITCOIN = '0x80000000',
-  ETHEREUM = '0x8000003c',
-  LITECOIN = '0x80000002'
-}
-
-/**
- * Represents some of the chain index listed in SLIP44 (https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
- */
-export enum CoinType {
-  RSK = 137,
-  BITCOIN = 0,
-  ETHEREUM = 60,
-  LITECOIN = 2
+  BTC = '0x80000000',
+  ETH = '0x8000003c',
+  LTC = '0x80000002',
+  DOGE = '0x80000003',
+  MONA = '0x80000016',
+  DASH = '0x80000005',
+  ETC = '0x8000003d',
+  XDAI = '0x800002bc',
+  XRP = '0x80000090',
+  BCH = '0x80000091',
+  BNB = '0x800002ca',
+  XLM = '0x80000094',
+  ATOM = '0x80000076',
+  TRX = '0x800000c3',
+  NEM = '0x8000002b',
+  EOS = '0x800000c2',
+  KSM = '0x800001b2'
 }
 
 /**

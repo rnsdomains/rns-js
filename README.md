@@ -75,6 +75,40 @@ async function myCustomGetOwner(domain) {
 }
 ```
 
+## Resource record implementations
+
+- Contract addresses - [EIP-137](https://eips.ethereum.org/EIPS/eip-137#resolver-specification)
+- Multicoin addresses - [EIP-2304](https://eips.ethereum.org/EIPS/eip-2304)
+- Contenthash - [EIP-1577](https://eips.ethereum.org/EIPS/eip-1577)
+
+Coins supported:
+
+ - BTC (base58check P2PKH and P2SH, and bech32 segwit)
+ - LTC (base58check P2PHK and P2SH, and bech32 segwit)
+ - DOGE (base58check P2PKH and P2SH)
+ - MONA (base58check P2PKH and P2SH, and bech32 segwit)
+ - DASH (base58check P2PKH and P2SH)
+ - ETH (checksummed-hex)
+ - ETC (checksummed-hex)
+ - RSK (checksummed-hex)
+ - XDAI (checksummed-hex)
+ - XRP (base58check-ripple)
+ - BCH (base58check and cashAddr; decodes to cashAddr)
+ - BNB (bech32)
+ - XLM (ed25519 public key)
+ - ATOM (bech32)
+ - TRX (base58check)
+ - NEM (base32)
+ - EOS
+ - KSM (ss58)
+ 
+ Content types supported:
+ 
+ - `ipfs`
+ - `bzz`
+ - `onion`
+ - `onion3`
+
 ## Run for development
 
 Install dependencies:

@@ -200,7 +200,7 @@ export default class extends Composer implements Subdomains {
 
     if (!addr) {
       return this._setSubnodeOwner(node, label, owner || sender, options);
-    } if (!owner || owner === sender) {
+    } if (!owner || owner.toLowerCase() === sender.toLowerCase()) {
       // submits just two transactions
       await this._setSubnodeOwner(node, label, sender, options);
 

@@ -291,36 +291,36 @@
   "id": "KB025",
   "message": {
    "en": "The contenthash protocol is not supported",
-   "es": "",
-   "ja": "",
-   "ko": "",
-   "pt": "",
-   "ru": "",
-   "zh": ""
+   "es": "El protocolo contenthash no es compatible",
+   "ja": "contenthashプロトコルはサポートされていません",
+   "ko": "해당 contenthash protocol이 지원되지 않습니다",
+   "pt": "O protocolo content-hash não é suportado",
+   "ru": "Протокол contenthash не поддерживается",
+   "zh": "不支持contenthash协议"
   }
  },
  "NO_CONTENTHASH_SET": {
   "id": "KB026",
   "message": {
    "en": "No contenthash resolution set",
-   "es": "",
-   "ja": "",
-   "ko": "",
-   "pt": "",
-   "ru": "",
-   "zh": ""
+   "es": "No se ha establecido la resolución de contentHash",
+   "ja": "contenthash解決が設定されていません",
+   "ko": "contenthash resolution이 설정되지 않음",
+   "pt": "Não há resolução de content-hash definida",
+   "ru": "Разрешение contenthash не установлено",
+   "zh": "未设置contenthash解析"
   }
  },
  "NO_CONTENTHASH_INTERFACE": {
   "id": "KB027",
   "message": {
    "en": "No contenthash interface",
-   "es": "",
-   "ja": "",
-   "ko": "",
-   "pt": "",
-   "ru": "",
-   "zh": ""
+   "es": "Sin interfaz contenthash",
+   "ja": "contenthashインターフェイスが存在しません",
+   "ko": "contenthash interface 없음",
+   "pt": "Não há interface content-hash",
+   "ru": "Интерфейс contenthash отсутствует",
+   "zh": "没有contenthash界面"
   }
  },
  "CHAIN_ID_NOT_SUPPORTED": {

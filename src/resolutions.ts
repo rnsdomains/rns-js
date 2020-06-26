@@ -43,8 +43,11 @@ export default class extends Composer implements Resolutions {
     node: string,
     contractFactory: (blockchainApi: Web3 | any, address: string) => Contract,
     noResolverError?: string,
+    parentNode?: string,
   ): Promise<Contract> {
-    const resolverAddress: string = await this._contracts.registry.methods.resolver(node).call();
+    const resolverAddress: string = await this._contracts
+      .registry.methods
+      .resolver(parentNode || node).call();
 
     if (resolverAddress === ZERO_ADDRESS) {
       this._throw(noResolverError || NO_RESOLVER);
@@ -189,7 +192,7 @@ export default class extends Composer implements Resolutions {
   }
 
   async setAddr(
-    domain: string, addr: string, options?: TransactionOptions,
+    domain: string, addr: string, options?: TransactionOptions, parentNode?: string,
   ): Promise<string> {
     await this.compose();
 
@@ -201,7 +204,7 @@ export default class extends Composer implements Resolutions {
 
     const node: string = namehash(domain);
 
-    const resolver = await this._createResolver(node, createAddrResolver);
+    const resolver = await this._createResolver(node, createAddrResolver, undefined, parentNode);
 
     const contractMethod = resolver.methods.setAddr(node, addr);
 

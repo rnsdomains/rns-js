@@ -45,7 +45,9 @@ export default class extends Composer implements Resolutions {
     noResolverError?: string,
     parentNode?: string,
   ): Promise<Contract> {
-    const resolverAddress: string = await this._contracts.registry.methods.resolver(parentNode || node).call();
+    const resolverAddress: string = await this._contracts
+      .registry.methods
+      .resolver(parentNode || node).call();
 
     if (resolverAddress === ZERO_ADDRESS) {
       this._throw(noResolverError || NO_RESOLVER);
@@ -203,15 +205,6 @@ export default class extends Composer implements Resolutions {
     const node: string = namehash(domain);
 
     const resolver = await this._createResolver(node, createAddrResolver, undefined, parentNode);
-
-    if (parentNode && !options?.gas) {
-      const gas = await this.getTxGas(resolver.methods.setAddr(parentNode, addr));
-      console.log('the hola gas', gas)
-      options = {
-        ...options,
-        gas,
-      }
-    }
 
     const contractMethod = resolver.methods.setAddr(node, addr);
 

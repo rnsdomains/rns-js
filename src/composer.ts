@@ -59,10 +59,8 @@ export default abstract class extends ErrorWrapper implements Composable {
     }
   }
 
-  protected async getTxGas(contractMethod: any, from?: string): Promise<number> {
-    if (!from) {
-      from = await getCurrentAddress(this.blockchainApi);
-    }
+  protected async getTxGas(contractMethod: any, sender?: string): Promise<number> {
+    const from = sender || await getCurrentAddress(this.blockchainApi);
 
     const estimated = await contractMethod.estimateGas({ from });
 
@@ -71,7 +69,7 @@ export default abstract class extends ErrorWrapper implements Composable {
 
   protected async getTxOptions(
     contractMethod: any,
-    customOptions?: TransactionOptions
+    customOptions?: TransactionOptions,
   ): Promise<TransactionOptions> {
     let options: TransactionOptions;
 
@@ -100,7 +98,7 @@ export default abstract class extends ErrorWrapper implements Composable {
       };
     } else {
       const gas = await this.getTxGas(contractMethod, options.from!);
-      
+
       options = {
         ...options,
         gas,

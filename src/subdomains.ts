@@ -201,8 +201,7 @@ export default class extends Composer implements Subdomains {
     if (!addr) {
       return this._setSubnodeOwner(node, label, owner || sender, options);
     }
-    
-    // const estimated = await contractMethod.estimateGas()
+
     if (!owner || owner.toLowerCase() === sender.toLowerCase()) {
       // submits just two transactions
       await this._setSubnodeOwner(node, label, sender, options);

@@ -29,7 +29,8 @@ export interface Resolutions {
    * @param domain - Domain to set resolution
    * @param addr - Address to be set as the resolution of the given domain
    * @param options - Custom configs to be used when submitting the transaction
-   * @param validateResolver - Flag to indicate if the resolver existance should be validated or not. Should be used if the method is called right after a subdomain creation tx.
+   * @param parentNode - The namehash of the parentNode. Should be used if the method is called right after a subdomain creation tx,
+   * in this case, it will get the resolver of this node because it will be the same than the just created node.
    *
    */
   setAddr(

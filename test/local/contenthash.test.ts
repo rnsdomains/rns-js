@@ -50,6 +50,11 @@ describe.each([
     await shouldDecodeProperly('ipfs', hash);
   });
 
+  it('should get ipns contenthash', async () => {
+    const hash = 'bafybeigt4dyi52vkulfr4mysiiqxivxhunh2ugjgw4sa5lvxv3z63bboga';
+    await shouldDecodeProperly('ipns', hash);
+  });
+
   it('should get bzz contenthash', async () => {
     const hash = 'd1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162';
     await shouldDecodeProperly('bzz', hash);

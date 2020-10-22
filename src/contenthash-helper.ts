@@ -1,5 +1,6 @@
 // most of te code has been copied from https://github.com/ensdomains/ui/blob/b7d36a2a96f6c991a8e109f91f9bd6fb6b1f4589/src/utils/contents.js
 import contentHash from 'content-hash';
+import bs58 from 'bs58';
 import ErrorWrapper from './errors/ErrorWrapper';
 import { Options } from './types';
 import { UNSUPPORTED_CONTENTHASH_PROTOCOL } from './errors';
@@ -18,6 +19,9 @@ export default class extends ErrorWrapper {
       const codec = contentHash.getCodec(encoded);
       if (codec === 'ipfs-ns') {
         protocolType = 'ipfs';
+      } else if (codec === 'ipns-ns') {
+        decoded = bs58.decode(decoded).slice(2).toString();
+        protocolType = 'ipns';
       } else if (codec === 'swarm-ns') {
         protocolType = 'bzz';
       } else if (codec === 'onion') {
@@ -38,7 +42,7 @@ export default class extends ErrorWrapper {
     let content = '';
     let contentType = '';
     if (text) {
-      const matched = text.match(/^(ipfs|bzz|onion|onion3):\/\/(.*)/)
+      const matched = text.match(/^(ipfs|ipns|bzz|onion|onion3):\/\/(.*)/)
         || text.match(/\/(ipfs)\/(.*)/);
       if (matched) {
         ([, contentType, content] = matched);
@@ -47,8 +51,16 @@ export default class extends ErrorWrapper {
       try {
         if (contentType === 'ipfs') {
           if (content.length >= 4) {
-            return `0x${contentHash.fromIpfs(content)}`;
+            return `0x${contentHash.encode('ipfs-ns', content)}`;
           }
+        } else if (contentType === 'ipns') {
+          const bs58content = bs58.encode(
+            Buffer.concat([
+              Buffer.from([0, content.length]),
+              Buffer.from(content),
+            ]),
+          );
+          return `0x${contentHash.encode('ipns-ns', bs58content)}`;
         } else if (contentType === 'bzz') {
           if (content.length >= 4) {
             return `0x${contentHash.fromSwarm(content)}`;

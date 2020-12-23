@@ -136,6 +136,20 @@ export default class extends Composer implements RNS {
   }
 
   /**
+   * Get decoded contenthash of a given domain.
+   *
+   * @throws DOMAIN_NOT_EXISTS if the given domain does not exists - KB012
+   * @throws NO_RESOLVER when the domain doesn't have resolver - KB003
+   *
+   * @param domain - Domain to be resolved
+   *
+   * @returns Address of the resolver associated with the given domain
+   */
+  resolver(domain: string): Promise<string> {
+    return this._resolutions.resolver(domain);
+  }
+
+  /**
    * Set resolver of a given domain.
    *
    * @throws NO_ACCOUNTS_TO_SIGN if the given blockchain api instance does not have associated accounts to sign the transaction - KB015

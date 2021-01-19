@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/rnsdomains/rns-js/issues"
   },
-  "license": "ISC",
+  "license": "MIT",
   "files": [
     "lib",
     "types"

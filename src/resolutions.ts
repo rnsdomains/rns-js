@@ -301,6 +301,25 @@ export default class extends Composer implements Resolutions {
     return this.estimateGasAndSendTransaction(contractMethod, options);
   }
 
+  async resolver(domain: string): Promise<string> {
+    await this.compose();
+    const node: string = namehash(domain);
+
+    const domainOwner = await
+    this._contracts.registry.methods.owner(node).call();
+    if (domainOwner === ZERO_ADDRESS) {
+      this._throw(DOMAIN_NOT_EXISTS);
+    }
+
+    const resolverAddress: string = await
+    this._contracts.registry.methods.resolver(node).call();
+    if (resolverAddress === ZERO_ADDRESS) {
+      this._throw(NO_RESOLVER);
+    }
+
+    return resolverAddress;
+  }
+
   async setResolver(
     domain: string, resolver: string, options?: TransactionOptions,
   ): Promise<string> {

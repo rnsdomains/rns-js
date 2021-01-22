@@ -66,6 +66,13 @@ export interface Resolutions {
   setContenthash(domain: string, content: string, options?: TransactionOptions): any;
 
   /**
+   * Get resolver of a given domain.
+   *
+   * @param domain - Domain to be resolved
+   */
+  resolver(domain: string): Promise<string>;
+
+  /**
    * Set resolver of a given domain.
    *
    * @param domain - Domain to set resolver
